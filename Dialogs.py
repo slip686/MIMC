@@ -109,6 +109,8 @@ class AddDocDialog(QDialog):
 
         return new_folder
 
+    print('poop')
+
     def set_doc_sub_folder_name(self):
 
         if not self.multiple_documents:
