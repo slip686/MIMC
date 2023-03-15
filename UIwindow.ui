@@ -7458,7 +7458,7 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QFrame" name="frame_38">
+                                <widget class="QFrameWithResizeSignal" name="frame_38">
                                  <property name="styleSheet">
                                   <string notr="true"/>
                                  </property>
@@ -7488,7 +7488,7 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
                                    <number>0</number>
                                   </property>
                                   <item alignment="Qt::AlignRight">
-                                   <widget class="QCustomSlideMenu" name="searchDocsWidget" native="true">
+                                   <widget class="QCustomSlideFrame3" name="searchDocsFrame">
                                     <property name="minimumSize">
                                      <size>
                                       <width>0</width>
@@ -7866,7 +7866,7 @@ border-radius: 6px</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QFrame" name="frame_41">
+                                <widget class="QFrameWithResizeSignal" name="frame_41">
                                  <property name="styleSheet">
                                   <string notr="true"/>
                                  </property>
@@ -7896,7 +7896,7 @@ border-radius: 6px</string>
                                    <number>0</number>
                                   </property>
                                   <item alignment="Qt::AlignRight">
-                                   <widget class="QCustomSlideMenu" name="searchDocsWidget_2" native="true">
+                                   <widget class="QCustomSlideFrame3" name="searchDocsFrame_2">
                                     <property name="minimumSize">
                                      <size>
                                       <width>0</width>
@@ -8268,7 +8268,7 @@ border-radius: 6px</string>
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QFrame" name="frame_44">
+                                <widget class="QFrameWithResizeSignal" name="frame_44">
                                  <property name="styleSheet">
                                   <string notr="true"/>
                                  </property>
@@ -8298,7 +8298,7 @@ border-radius: 6px</string>
                                    <number>0</number>
                                   </property>
                                   <item alignment="Qt::AlignRight">
-                                   <widget class="QCustomSlideMenu" name="searchDocsWidget_3" native="true">
+                                   <widget class="QCustomSlideFrame3" name="searchDocsFrame_3">
                                     <property name="minimumSize">
                                      <size>
                                       <width>0</width>
@@ -8752,6 +8752,12 @@ border-radius: 6px</string>
   </customwidget>
   <customwidget>
    <class>QFrameWithResizeSignal</class>
+   <extends>QFrame</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSlideFrame3</class>
    <extends>QFrame</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>

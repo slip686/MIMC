@@ -1840,7 +1840,8 @@ class QCustomTitleBar(QWidget):
 class QCustomSlideFrame(QFrame):
     def __init__(self, parent=None):
         super(QCustomSlideFrame, self).__init__(parent)
-
+        self.collapsed_width = 1
+        self.expanded_width = 400
         self.animation = QVariantAnimation(self)
         self.animation.setDuration(150)
         self.animation.valueChanged.connect(self.animation_process)
@@ -1848,12 +1849,18 @@ class QCustomSlideFrame(QFrame):
 
         self.stored_width_value = None
 
+    def trigger_func(self):
+        if self.isHidden():
+            self.show_animate()
+        else:
+            self.hide_animate()
+
     def animation_process(self, width):
         self.setFixedWidth(width)
 
     def hide_animate(self):
         self.animation.setStartValue(self.width())
-        self.animation.setEndValue(1)
+        self.animation.setEndValue(self.collapsed_width)
         self.animation.start()
 
     def show_animate(self):
@@ -1862,7 +1869,7 @@ class QCustomSlideFrame(QFrame):
         if self.stored_width_value:
             self.animation.setEndValue(self.stored_width_value)
         else:
-            self.animation.setEndValue(400)
+            self.animation.setEndValue(self.expanded_width)
         self.animation.start()
 
     def finished_animate(self):
@@ -2469,20 +2476,22 @@ class QFrameWithResizeSignal(QFrame):
         self.resized.emit()
 
 
-class NotificationMenu(QFrame):
+class QCustomSlideFrame2(QFrame):
     def __init__(self, parent: QFrameWithResizeSignal = None):
-        super(NotificationMenu, self).__init__(parent)
+        super(QCustomSlideFrame2, self).__init__(parent)
         self.parent_widget = parent
         self.setStyleSheet(u'background-color: rgb(50,100,100)')
         self.animation = QPropertyAnimation(self, b"geometry")
         self.animation.setEasingCurve(QEasingCurve.Linear)
         self.animation.setDuration(150)
         self.animation.finished.connect(lambda: self.finished_animate())
-        self.stored_width_value = None
+        self.collapsed_width = 0
+        self.expanded_width = 300
         self.parent().resized.connect(lambda: self.correct_self_position())
         if self.parent:
-            self.setGeometry(self.parent_widget.width(), 0, 0, self.parent_widget.height())
-            self.hide()
+            self.setGeometry(self.parent_widget.width()-self.collapsed_width, 0,
+                             self.expanded_width, self.parent_widget.height())
+            # self.hide()
 
     def correct_self_position(self):
         self.setGeometry(self.parent_widget.width()-self.width(), 0, self.width(), self.parent_widget.height())
@@ -2493,28 +2502,58 @@ class NotificationMenu(QFrame):
         else:
             self.hide_animate()
 
-    # def animation_process(self, width):
-    #     self.setFixedWidth(width)
-
     def hide_animate(self):
         self.animation.setStartValue(self.geometry())
-        end_rect = QRect(self.parent_widget.width(), 0, 0, self.parent_widget.height())
+        end_rect = QRect(self.parent_widget.width(), 0, self.collapsed_width, self.parent_widget.height())
         self.animation.setEndValue(end_rect)
         self.animation.start()
 
     def show_animate(self):
         self.show()
         self.animation.setStartValue(self.geometry())
-        if self.stored_width_value:
-            self.animation.setEndValue(self.stored_width_value)
-        else:
-            end_rect = QRect(self.parent_widget.width() - 300, 0, 300, self.parent_widget.height())
-            self.animation.setEndValue(end_rect)
+        end_rect = QRect(self.parent_widget.width() - self.expanded_width, 0,
+                         self.expanded_width, self.parent_widget.height())
+        self.animation.setEndValue(end_rect)
         self.animation.start()
 
     def finished_animate(self):
         if self.width() < 5:
             self.hide()
+
+
+class QCustomSlideFrame3(QFrame):
+    def __init__(self, parent: QFrameWithResizeSignal = None):
+        super(QCustomSlideFrame3, self).__init__(parent)
+        self.parent_widget = parent
+        # self.setFixedWidth(24)
+        self.animation = QVariantAnimation()
+        self.animation.valueChanged.connect(self.animation_process)
+
+        # self.animation.setEasingCurve(QEasingCurve.Linear)
+        self.animation.setDuration(300)
+
+    def animation_process(self, width):
+        self.setFixedWidth(width)
+
+    def hide_show_func(self):
+        if self.width() < 35:
+            self.show_animate()
+        else:
+            self.hide_animate()
+
+    def hide_animate(self):
+        self.animation.setStartValue(self.width())
+        self.animation.setEndValue(30)
+        self.animation.start()
+
+    def show_animate(self):
+        self.animation.setStartValue(self.width())
+        self.animation.setEndValue(450)
+        self.animation.start()
+
+    def finished_animate(self):
+        pass
+
 
 
 

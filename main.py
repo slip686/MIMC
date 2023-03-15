@@ -71,7 +71,8 @@ class MainWindow(QMainWindow):
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
         self.ui.initDocsTableWidget.main_table = True
-        self.notif_menu = NotificationMenu(self.ui.interfaceBodySubContainer)
+        self.notif_menu = QCustomSlideFrame2(self.ui.interfaceBodySubContainer)
+        self.notif_menu.hide()
 
         if get_platform() == 'win':
             self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
@@ -1331,15 +1332,16 @@ class MainWindow(QMainWindow):
 
         # table view elements
 
+        self.ui.searchDocsBtn.clicked.connect(lambda: self.ui.searchDocsFrame.hide_show_func())
+        self.ui.searchDocsBtn_2.clicked.connect(lambda: self.ui.searchDocsFrame_2.hide_show_func())
+        self.ui.searchDocsBtn_3.clicked.connect(lambda: self.ui.searchDocsFrame_3.hide_show_func())
+
         self.ui.releaseBtn.hide()
         self.ui.searchDocsLine.clearFocus()
-        self.ui.searchDocsWidget.collapseMenu()
         self.ui.releaseBtn_2.hide()
         self.ui.searchDocsLine_2.clearFocus()
-        self.ui.searchDocsWidget_2.collapseMenu()
         self.ui.releaseBtn_3.hide()
         self.ui.searchDocsLine_3.clearFocus()
-        self.ui.searchDocsWidget_3.collapseMenu()
 
         def search_line_hiding():
             self.doc_search_line = None

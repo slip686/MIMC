@@ -23,8 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QWidget)
 
 from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    QCustomSlideFrame, QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar,
-    QFrameWithResizeSignal)
+    QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget,
+    QCustomTitleBar, QFrameWithResizeSignal)
 from Custom_Widgets.Widgets import QCustomSlideMenu
 import resources_rc_rc
 import resources_rc_rc
@@ -2951,7 +2951,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_28.addWidget(self.folderNameLabel)
 
-        self.frame_38 = QFrame(self.frame_37)
+        self.frame_38 = QFrameWithResizeSignal(self.frame_37)
         self.frame_38.setObjectName(u"frame_38")
         self.frame_38.setStyleSheet(u"")
         self.frame_38.setFrameShape(QFrame.StyledPanel)
@@ -2961,16 +2961,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout_46.setObjectName(u"horizontalLayout_46")
         self.horizontalLayout_46.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_46.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsWidget = QCustomSlideMenu(self.frame_38)
-        self.searchDocsWidget.setObjectName(u"searchDocsWidget")
-        self.searchDocsWidget.setMinimumSize(QSize(0, 30))
-        self.searchDocsWidget.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsWidget.setStyleSheet(u"")
-        self.horizontalLayout_45 = QHBoxLayout(self.searchDocsWidget)
+        self.searchDocsFrame = QCustomSlideFrame3(self.frame_38)
+        self.searchDocsFrame.setObjectName(u"searchDocsFrame")
+        self.searchDocsFrame.setMinimumSize(QSize(0, 30))
+        self.searchDocsFrame.setMaximumSize(QSize(16777215, 30))
+        self.searchDocsFrame.setStyleSheet(u"")
+        self.horizontalLayout_45 = QHBoxLayout(self.searchDocsFrame)
         self.horizontalLayout_45.setSpacing(0)
         self.horizontalLayout_45.setObjectName(u"horizontalLayout_45")
         self.horizontalLayout_45.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsBtn = QPushButton(self.searchDocsWidget)
+        self.searchDocsBtn = QPushButton(self.searchDocsFrame)
         self.searchDocsBtn.setObjectName(u"searchDocsBtn")
         self.searchDocsBtn.setMinimumSize(QSize(30, 30))
         self.searchDocsBtn.setMaximumSize(QSize(30, 30))
@@ -2985,7 +2985,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_45.addWidget(self.searchDocsBtn)
 
-        self.frame_39 = QFrame(self.searchDocsWidget)
+        self.frame_39 = QFrame(self.searchDocsFrame)
         self.frame_39.setObjectName(u"frame_39")
         self.frame_39.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
@@ -3023,7 +3023,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_45.addWidget(self.frame_39)
 
 
-        self.horizontalLayout_46.addWidget(self.searchDocsWidget, 0, Qt.AlignRight)
+        self.horizontalLayout_46.addWidget(self.searchDocsFrame, 0, Qt.AlignRight)
 
 
         self.horizontalLayout_28.addWidget(self.frame_38)
@@ -3117,7 +3117,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_38.addWidget(self.folderNameLabel_2)
 
-        self.frame_41 = QFrame(self.frame_40)
+        self.frame_41 = QFrameWithResizeSignal(self.frame_40)
         self.frame_41.setObjectName(u"frame_41")
         self.frame_41.setStyleSheet(u"")
         self.frame_41.setFrameShape(QFrame.StyledPanel)
@@ -3127,16 +3127,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout_48.setObjectName(u"horizontalLayout_48")
         self.horizontalLayout_48.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_48.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsWidget_2 = QCustomSlideMenu(self.frame_41)
-        self.searchDocsWidget_2.setObjectName(u"searchDocsWidget_2")
-        self.searchDocsWidget_2.setMinimumSize(QSize(0, 30))
-        self.searchDocsWidget_2.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsWidget_2.setStyleSheet(u"")
-        self.horizontalLayout_49 = QHBoxLayout(self.searchDocsWidget_2)
+        self.searchDocsFrame_2 = QCustomSlideFrame3(self.frame_41)
+        self.searchDocsFrame_2.setObjectName(u"searchDocsFrame_2")
+        self.searchDocsFrame_2.setMinimumSize(QSize(0, 30))
+        self.searchDocsFrame_2.setMaximumSize(QSize(16777215, 30))
+        self.searchDocsFrame_2.setStyleSheet(u"")
+        self.horizontalLayout_49 = QHBoxLayout(self.searchDocsFrame_2)
         self.horizontalLayout_49.setSpacing(0)
         self.horizontalLayout_49.setObjectName(u"horizontalLayout_49")
         self.horizontalLayout_49.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsBtn_2 = QPushButton(self.searchDocsWidget_2)
+        self.searchDocsBtn_2 = QPushButton(self.searchDocsFrame_2)
         self.searchDocsBtn_2.setObjectName(u"searchDocsBtn_2")
         self.searchDocsBtn_2.setMinimumSize(QSize(30, 30))
         self.searchDocsBtn_2.setMaximumSize(QSize(30, 30))
@@ -3151,7 +3151,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_49.addWidget(self.searchDocsBtn_2)
 
-        self.frame_42 = QFrame(self.searchDocsWidget_2)
+        self.frame_42 = QFrame(self.searchDocsFrame_2)
         self.frame_42.setObjectName(u"frame_42")
         self.frame_42.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
@@ -3189,7 +3189,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_49.addWidget(self.frame_42)
 
 
-        self.horizontalLayout_48.addWidget(self.searchDocsWidget_2, 0, Qt.AlignRight)
+        self.horizontalLayout_48.addWidget(self.searchDocsFrame_2, 0, Qt.AlignRight)
 
 
         self.horizontalLayout_38.addWidget(self.frame_41)
@@ -3279,7 +3279,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_42.addWidget(self.folderNameLabel_3)
 
-        self.frame_44 = QFrame(self.frame_43)
+        self.frame_44 = QFrameWithResizeSignal(self.frame_43)
         self.frame_44.setObjectName(u"frame_44")
         self.frame_44.setStyleSheet(u"")
         self.frame_44.setFrameShape(QFrame.StyledPanel)
@@ -3289,16 +3289,16 @@ class Ui_MainWindow(object):
         self.horizontalLayout_51.setObjectName(u"horizontalLayout_51")
         self.horizontalLayout_51.setSizeConstraint(QLayout.SetNoConstraint)
         self.horizontalLayout_51.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsWidget_3 = QCustomSlideMenu(self.frame_44)
-        self.searchDocsWidget_3.setObjectName(u"searchDocsWidget_3")
-        self.searchDocsWidget_3.setMinimumSize(QSize(0, 30))
-        self.searchDocsWidget_3.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsWidget_3.setStyleSheet(u"")
-        self.horizontalLayout_52 = QHBoxLayout(self.searchDocsWidget_3)
+        self.searchDocsFrame_3 = QCustomSlideFrame3(self.frame_44)
+        self.searchDocsFrame_3.setObjectName(u"searchDocsFrame_3")
+        self.searchDocsFrame_3.setMinimumSize(QSize(0, 30))
+        self.searchDocsFrame_3.setMaximumSize(QSize(16777215, 30))
+        self.searchDocsFrame_3.setStyleSheet(u"")
+        self.horizontalLayout_52 = QHBoxLayout(self.searchDocsFrame_3)
         self.horizontalLayout_52.setSpacing(0)
         self.horizontalLayout_52.setObjectName(u"horizontalLayout_52")
         self.horizontalLayout_52.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsBtn_3 = QPushButton(self.searchDocsWidget_3)
+        self.searchDocsBtn_3 = QPushButton(self.searchDocsFrame_3)
         self.searchDocsBtn_3.setObjectName(u"searchDocsBtn_3")
         self.searchDocsBtn_3.setMinimumSize(QSize(30, 30))
         self.searchDocsBtn_3.setMaximumSize(QSize(30, 30))
@@ -3313,7 +3313,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_52.addWidget(self.searchDocsBtn_3)
 
-        self.frame_45 = QFrame(self.searchDocsWidget_3)
+        self.frame_45 = QFrame(self.searchDocsFrame_3)
         self.frame_45.setObjectName(u"frame_45")
         self.frame_45.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
@@ -3351,7 +3351,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_52.addWidget(self.frame_45)
 
 
-        self.horizontalLayout_51.addWidget(self.searchDocsWidget_3, 0, Qt.AlignRight)
+        self.horizontalLayout_51.addWidget(self.searchDocsFrame_3, 0, Qt.AlignRight)
 
 
         self.horizontalLayout_42.addWidget(self.frame_44)
