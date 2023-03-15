@@ -3428,52 +3428,6 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_57.addWidget(self.interfaceBodyStackedWidgetFrame)
 
-        self.rightSidePopUpMenu = QCustomSlideMenu(self.interfaceBodySubContainer)
-        self.rightSidePopUpMenu.setObjectName(u"rightSidePopUpMenu")
-        self.rightSidePopUpMenu.setMaximumSize(QSize(50, 16777215))
-        self.rightSidePopUpMenu.setStyleSheet(u"background-color: rgb(65, 65, 65);")
-        self.verticalLayout_44 = QVBoxLayout(self.rightSidePopUpMenu)
-        self.verticalLayout_44.setSpacing(0)
-        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
-        self.verticalLayout_44.setContentsMargins(0, 0, 0, 0)
-        self.stackedWidget_2 = QStackedWidget(self.rightSidePopUpMenu)
-        self.stackedWidget_2.setObjectName(u"stackedWidget_2")
-        self.page_5 = QWidget()
-        self.page_5.setObjectName(u"page_5")
-        self.verticalLayout_39 = QVBoxLayout(self.page_5)
-        self.verticalLayout_39.setSpacing(0)
-        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
-        self.verticalLayout_39.setContentsMargins(0, 0, 0, 0)
-        self.frame_4 = QFrame(self.page_5)
-        self.frame_4.setObjectName(u"frame_4")
-        self.frame_4.setMinimumSize(QSize(0, 0))
-        self.frame_4.setMaximumSize(QSize(100, 16777215))
-        self.frame_4.setFrameShape(QFrame.StyledPanel)
-        self.frame_4.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_43 = QVBoxLayout(self.frame_4)
-        self.verticalLayout_43.setSpacing(0)
-        self.verticalLayout_43.setObjectName(u"verticalLayout_43")
-        self.verticalLayout_43.setContentsMargins(0, 6, 0, 0)
-        self.label = QLabel(self.frame_4)
-        self.label.setObjectName(u"label")
-        self.label.setMinimumSize(QSize(0, 0))
-        self.label.setAlignment(Qt.AlignCenter)
-
-        self.verticalLayout_43.addWidget(self.label, 0, Qt.AlignHCenter|Qt.AlignTop)
-
-
-        self.verticalLayout_39.addWidget(self.frame_4)
-
-        self.stackedWidget_2.addWidget(self.page_5)
-        self.page_6 = QWidget()
-        self.page_6.setObjectName(u"page_6")
-        self.stackedWidget_2.addWidget(self.page_6)
-
-        self.verticalLayout_44.addWidget(self.stackedWidget_2)
-
-
-        self.horizontalLayout_57.addWidget(self.rightSidePopUpMenu)
-
 
         self.horizontalLayout_23.addWidget(self.interfaceBodySubContainer)
 
@@ -3766,7 +3720,6 @@ class Ui_MainWindow(object):
         self.subMenuBtn_3.setText("")
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.initDocsTab), QCoreApplication.translate("MainWindow", u"INITIAL PERMIT DOCS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Gantt), QCoreApplication.translate("MainWindow", u"PROJECT GANTT", None))
-        self.label.setText(QCoreApplication.translate("MainWindow", u"Notifications", None))
         self.statusLabel.setText("")
     # retranslateUi
 
