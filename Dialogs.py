@@ -8,6 +8,8 @@ from random import randint as rand
 
 from query_list import add_doc
 
+print('poop')
+
 
 class AddDocDialog(QDialog):
     def __init__(self, parent=None, multiple_loading_dict: dict = None, window_object=None):
