@@ -1,0 +1,8 @@
+{
+  "user":"register_user",
+  "password":"qwe321qwe",
+  "host":"sliplab.net",
+  "port":"5432",
+  "database":"mimcprojects",
+  "stash_url": "https://cloud.sliplab.net"
+}
