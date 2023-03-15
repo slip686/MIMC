@@ -23,7 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QWidget)
 
 from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    QCustomSlideFrame, QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar)
+    QCustomSlideFrame, QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar,
+    QFrameWithResizeSignal)
 from Custom_Widgets.Widgets import QCustomSlideMenu
 import resources_rc_rc
 import resources_rc_rc
@@ -1296,7 +1297,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_23.setSpacing(0)
         self.horizontalLayout_23.setObjectName(u"horizontalLayout_23")
         self.horizontalLayout_23.setContentsMargins(0, 0, 0, 0)
-        self.interfaceBodySubContainer = QFrame(self.interfaceBodyContainer)
+        self.interfaceBodySubContainer = QFrameWithResizeSignal(self.interfaceBodyContainer)
         self.interfaceBodySubContainer.setObjectName(u"interfaceBodySubContainer")
         sizePolicy.setHeightForWidth(self.interfaceBodySubContainer.sizePolicy().hasHeightForWidth())
         self.interfaceBodySubContainer.setSizePolicy(sizePolicy)

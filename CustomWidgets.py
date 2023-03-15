@@ -2,7 +2,7 @@ from searchRow import Ui_Form as Row
 from ProjectWidget import Ui_Form
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData
+    QMimeData, QEasingCurve, QAbstractAnimation
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
@@ -850,7 +850,6 @@ class HeaderCell(QWidget):
                 self.parent_table.horizontalHeader().fixPositions()
         if get_platform() == 'win':
             if self.parent_table.columnWidth(self.logical_index) < 33:
-                print('poop')
                 self.parent_table.hideColumn(self.logical_index)
                 self.parent_table.horizontalHeader().fix_resize_mode()
                 self.parent_table.horizontalHeader().fixPositions()
@@ -1838,7 +1837,7 @@ class QCustomTitleBar(QWidget):
         self.parent().parent().showMinimized()
 
 
-class QCustomSlideFrame(QtWidgets.QFrame):
+class QCustomSlideFrame(QFrame):
     def __init__(self, parent=None):
         super(QCustomSlideFrame, self).__init__(parent)
 
@@ -2458,3 +2457,64 @@ def iterate_row(parent_table: QCustomTableWidget, parent_column_logical_index: i
         if item:
             child_table.setCellWidget(row_num, child_column_logical_index,
                                       DraggableCell(item.text, doc_id=item.doc_id, row=item.row_num))
+
+
+class QFrameWithResizeSignal(QFrame):
+    resized = Signal()
+
+    def __init__(self, parent: QFrame = None):
+        super(QFrameWithResizeSignal, self).__init__(parent)
+
+    def resizeEvent(self, event):
+        self.resized.emit()
+
+
+class NotificationMenu(QFrame):
+    def __init__(self, parent: QFrameWithResizeSignal = None):
+        super(NotificationMenu, self).__init__(parent)
+        self.parent_widget = parent
+        self.setStyleSheet(u'background-color: rgb(50,100,100)')
+        self.animation = QPropertyAnimation(self, b"geometry")
+        self.animation.setEasingCurve(QEasingCurve.Linear)
+        self.animation.setDuration(150)
+        self.animation.finished.connect(lambda: self.finished_animate())
+        self.stored_width_value = None
+        self.parent().resized.connect(lambda: self.correct_self_position())
+        if self.parent:
+            self.setGeometry(self.parent_widget.width(), 0, 0, self.parent_widget.height())
+            self.hide()
+
+    def correct_self_position(self):
+        self.setGeometry(self.parent_widget.width()-self.width(), 0, self.width(), self.parent_widget.height())
+
+    def hide_show_func(self):
+        if self.isHidden():
+            self.show_animate()
+        else:
+            self.hide_animate()
+
+    # def animation_process(self, width):
+    #     self.setFixedWidth(width)
+
+    def hide_animate(self):
+        self.animation.setStartValue(self.geometry())
+        end_rect = QRect(self.parent_widget.width(), 0, 0, self.parent_widget.height())
+        self.animation.setEndValue(end_rect)
+        self.animation.start()
+
+    def show_animate(self):
+        self.show()
+        self.animation.setStartValue(self.geometry())
+        if self.stored_width_value:
+            self.animation.setEndValue(self.stored_width_value)
+        else:
+            end_rect = QRect(self.parent_widget.width() - 300, 0, 300, self.parent_widget.height())
+            self.animation.setEndValue(end_rect)
+        self.animation.start()
+
+    def finished_animate(self):
+        if self.width() < 5:
+            self.hide()
+
+
+

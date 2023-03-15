@@ -27,7 +27,6 @@ class MainWindow(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        loadJsonStyle(self, self.ui)
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.show()
@@ -72,6 +71,7 @@ class MainWindow(QMainWindow):
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
         self.ui.initDocsTableWidget.main_table = True
+        self.notif_menu = NotificationMenu(self.ui.interfaceBodySubContainer)
 
         if get_platform() == 'win':
             self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
@@ -1234,6 +1234,7 @@ class MainWindow(QMainWindow):
         self.ui.logOutBtn.clicked.connect(lambda: self.ui.statusLabel.setText(''))
         self.ui.logOutBtn.clicked.connect(self.clear_projects)
         self.ui.loginBtn.clicked.connect(lambda: self.ui.rememberCheckBox.setChecked(False))
+        self.ui.notificationsBtn.clicked.connect(lambda: self.notif_menu.hide_show_func())
 
         # new project creation
         self.ui.newProjectBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(0))

@@ -3145,7 +3145,7 @@ Successfully!</string>
             <number>0</number>
            </property>
            <item>
-            <widget class="QFrame" name="interfaceBodySubContainer">
+            <widget class="QFrameWithResizeSignal" name="interfaceBodySubContainer">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                <horstretch>0</horstretch>
@@ -8746,6 +8746,12 @@ border-radius: 6px</string>
   </customwidget>
   <customwidget>
    <class>QCustomSlideFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QFrameWithResizeSignal</class>
    <extends>QFrame</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>
