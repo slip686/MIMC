@@ -1,14 +1,10 @@
-from searchRow import Ui_Form as Row
-from ProjectWidget import Ui_Form
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData, QEasingCurve, QAbstractAnimation
+    QMimeData, QEasingCurve
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
-    QLineEdit, QDialog, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator
-from query_list import *
-from psycopg2.extensions import AsIs
+    QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator
 from core import *
 
 
@@ -872,8 +868,8 @@ class QCustomTableWidget(QTableWidget):
         super(QCustomTableWidget, self).__init__(*args, **kwargs)
         self.setMouseTracking(True)
         self.new_row_height = None
-        self.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.setShowGrid(False)
+        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
         self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
                                                'border-top-right-radius: 6px;\n'
                                                'border-bottom-right-radius: 6px}'
@@ -882,7 +878,6 @@ class QCustomTableWidget(QTableWidget):
                                                'margin: 3px}'
                                                'QScrollBar::add-line:vertical {border: none; background: none}'
                                                'QScrollBar::sub-line:vertical {border: none; background: none}')
-
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
@@ -967,17 +962,14 @@ class QCustomTableWidget(QTableWidget):
         if self.selected_row_num == 0 or self.selected_row_num:
             for k in (range(self.columnCount())):
                 cell = self.cellWidget(self.selected_row_num, k)
-                if hasattr(cell, 'textEdit'):
-                    cell.textEdit.setStyleSheet(u'background-color: transparent;'
-                                                u'border-radius: 0px')
-        self.selectRow(row_num)
+                if hasattr(cell, 'textLabel'):
+                    cell.textLabel.setStyleSheet(u'background-color: transparent; border-radius: 0px')
         self.selected_row_num = row_num
         self.selected_doc_id = doc_id
         for k in (range(self.columnCount())):
             cell = self.cellWidget(row_num, k)
-            if hasattr(cell, 'textEdit'):
-                cell.textEdit.setStyleSheet(u'background-color: rgb(136, 136, 136);'
-                                            u'border-radius: 0px')
+            if hasattr(cell, 'textLabel'):
+                cell.textLabel.setStyleSheet(u'background-color: rgb(136, 136, 136); border-radius: 0px')
 
     def scrollContentsBy(self, dx, dy):
         super(QCustomTableWidget, self).scrollContentsBy(dx, dy)
@@ -1204,6 +1196,7 @@ class QCustomTableWidget(QTableWidget):
                         self.horizontal_scroll_bar.show_animate()
 
     def showEvent(self, event):
+        self.correct_row_heights()
         if self.pinned_table:
             if hasattr(self.horizontalHeader(), 'show_hide_scrollbars'):
                 self.horizontalHeader().show_hide_scrollbars()
@@ -1221,8 +1214,9 @@ class CQLabel2(QLabel):
         self.setWordWrap(True)
         self.setMouseTracking(True)
         self.setMargin(4)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
 
-    def mousePressEvent(self, event):
+    def mouseReleaseEvent(self, event):
         self.clicked.emit()
 
     def mouseMoveEvent(self, event):
@@ -1233,7 +1227,7 @@ class CQLabel2(QLabel):
 class DraggableCell(QWidget):
     start_drag = Signal()
 
-    def __init__(self, text=None, doc_id=None, row=None):
+    def __init__(self, main_window, text=None, doc_id=None, row=None):
         super(DraggableCell, self).__init__()
         self.cursor_pos = None
         self.setStyleSheet(u'border-top: 0.5px solid rgb(136, 136, 136)')
@@ -1251,6 +1245,7 @@ class DraggableCell(QWidget):
         self.layout.addWidget(self.textLabel)
         self.setLayout(self.layout)
         self.textLabel.clicked.connect(lambda: self.parent().parent().row_select(self.row_num, self.doc_id))
+        self.textLabel.clicked.connect(lambda: main_window.document_view_dialog())
 
     def translate_cursor_pos(self, position: QPoint):
         self.cursor_pos = self.mapToParent(position)

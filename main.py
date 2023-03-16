@@ -1771,35 +1771,36 @@ class MainWindow(QMainWindow):
                 if table == self.ui.designDocsTableWidget:
                     if doc['place_id']:
                         place = ast.literal_eval(doc['place_id'])[-1]
-                        table.setCellWidget(row, 0, DraggableCell(place, doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
+
                     else:
-                        table.setCellWidget(row, 0, DraggableCell('All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1, DraggableCell(doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2, DraggableCell(doc['document_name'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 3, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 4, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 5, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6, DraggableCell('No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7, DraggableCell('No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8, DraggableCell(doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 9, DraggableCell(doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0, DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 1, DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 2, DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 6, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 7, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 8, DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
                     row += 1
 
                 if table == self.ui.constructionDocsTableWidget:
                     if doc['place_id']:
                         place = ast.literal_eval(doc['place_id'])[-1]
-                        table.setCellWidget(row, 0, DraggableCell(place, doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
                     else:
-                        table.setCellWidget(row, 0, DraggableCell('All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1, DraggableCell(doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2, DraggableCell(doc['document_name'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 3, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 4, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 5, DraggableCell('No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6, DraggableCell('No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7, DraggableCell('No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8, DraggableCell(doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 9, DraggableCell(doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0, DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 1, DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 2, DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 6, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 7, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 8, DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
                     row += 1
 
                 if table == self.ui.initDocsTableWidget:
@@ -1831,6 +1832,10 @@ class MainWindow(QMainWindow):
 
     def add_document_dialog(self):
         dlg = AddDocDialog(self, window_object=self)
+        dlg.exec()
+
+    def document_view_dialog(self):
+        dlg = DocViewDialog(self)
         dlg.exec()
 
 

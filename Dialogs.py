@@ -2,7 +2,8 @@ from PySide6.QtCore import Qt
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtWidgets import QDialog
-from AddDocDialog import Ui_Dialog as Dialog
+from AddDocDialog import Ui_Dialog as AddingDialog
+from DocViewDialog import Ui_Dialog as ViewingDialog
 from core import ProjectDocument
 from random import randint as rand
 
@@ -12,9 +13,8 @@ class AddDocDialog(QDialog):
     def __init__(self, parent=None, multiple_loading_dict: dict = None, window_object=None):
         super().__init__(parent)
         self.window_object = window_object
-        print(window_object)
         self.doc_type = None
-        self.dialog = Dialog()
+        self.dialog = AddingDialog()
         self.dialog.setupUi(self)
         self.multiple_loading_dict = multiple_loading_dict
         self.setWindowFlag(Qt.FramelessWindowHint)
@@ -26,6 +26,7 @@ class AddDocDialog(QDialog):
         self.dialog.revisionLabel.hide()
         self.dialog.versionLabel.hide()
         self.parent_window = None
+        self.dialog.mainHeader.minimizeBtn.hide()
 
         self.pdf_view = QPdfView()
         self.pdf_document = QPdfDocument()
@@ -248,4 +249,37 @@ class AddDocDialog(QDialog):
         else:
             for i in self.multiple_documents:
                 self.add_document_function(i)
-                # print(i.file_folder)
+
+
+class DocViewDialog(QDialog):
+    def __init__(self, parent=None, doc_id=None):
+        super().__init__(parent)
+        self.dialog = ViewingDialog()
+        self.dialog.setupUi(self)
+        self.setWindowFlag(Qt.FramelessWindowHint)
+        self.setAttribute(Qt.WA_TranslucentBackground)
+        self.dialog.mainHeader.minimizeBtn.hide()
+
+        self.pdf_view = QPdfView()
+        self.pdf_document = QPdfDocument()
+        self.pdf_view.setDocument(self.pdf_document)
+        self.pdf_view.setStyleSheet(u'border-radius: 6 px')
+        # self.dialog.verticalLayout_25.addWidget(self.pdf_view)
+        # self.dialog.dropMainDocFrame.dropped.connect(lambda: self.set_main_doc_file_path())
+        # self.dialog.dropEditableArchive.dropped.connect(lambda: self.set_zipped_archive_file_path())
+        # self.dialog.dropAdditionalDoc.dropped.connect(lambda: self.set_support_doc_file_path())
+
+        self.document = ProjectDocument()
+        self.document.release_to_work_date = None
+        self.document.start_develop_date = None
+        self.document.end_develop_date = None
+
+    def set_main_doc_file_path(self):
+        if self.dialog.dropMainDocFrame.suitable_format:
+            self.document.main_doc_file_path = self.dialog.dropMainDocFrame.file_path
+            self.dialog.stackedWidget.setCurrentIndex(1)
+            self.pdf_document.load(self.document.main_doc_file_path)
+
+        else:
+            self.dialog.label_18.setText('Wrong file format')
+
