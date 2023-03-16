@@ -12,6 +12,7 @@ class AddDocDialog(QDialog):
     def __init__(self, parent=None, multiple_loading_dict: dict = None, window_object=None):
         super().__init__(parent)
         self.window_object = window_object
+        print(window_object)
         self.doc_type = None
         self.dialog = Dialog()
         self.dialog.setupUi(self)
@@ -24,6 +25,7 @@ class AddDocDialog(QDialog):
         self.dialog.mainHeader.MIMC.setAlignment(Qt.AlignCenter)
         self.dialog.revisionLabel.hide()
         self.dialog.versionLabel.hide()
+        self.parent_window = None
 
         self.pdf_view = QPdfView()
         self.pdf_document = QPdfDocument()
@@ -75,7 +77,12 @@ class AddDocDialog(QDialog):
         self.dialog.deleteEditableArchive.clicked.connect(lambda: self.delete_zipped_archive_file_path())
         self.dialog.deleteAdditionalDoc.clicked.connect(lambda: self.delete_support_doc_file_path())
 
-        self.set_folder_in_structure(self.parent())
+        if self.window_object:
+            self.parent_window = self.window_object
+        else:
+            self.window_object = self.parent()
+
+        self.set_folder_in_structure(self.parent_window)
 
     def go_back(self):
         self.pdf_view.back()
@@ -132,25 +139,25 @@ class AddDocDialog(QDialog):
                 for document in self.multiple_documents:
                     document.type = "init_permit"
                 self.set_doc_sub_folder_name()
+        else:
+            if self.parent_window.ui.stackedWidget_3.currentIndex() == 0:
+                self.dialog.folderLineEdit.setText(self.parent_window.current_design_docs_folder_path)
+                self.place_id = self.parent_window.current_design_docs_folder
+                self.document.type = "design"
+                # self.set_doc_sub_folder_name()
+            elif self.parent_window.ui.stackedWidget_3.currentIndex() == 1:
+                self.dialog.folderLineEdit.setText(self.parent_window.current_construction_docs_folder_path)
+                self.place_id = self.parent_window.current_construction_docs_folder
+                self.document.type = "construction"
+                # self.set_doc_sub_folder_name()
+            elif self.parent_window.ui.stackedWidget_3.currentIndex() == 2:
+                self.dialog.folderLineEdit.setText(self.parent_window.current_init_permission_docs_folder_path)
+                self.place_id = self.parent_window.current_init_permission_docs_folder
+                self.document.type = "init_permit"
+                # self.set_doc_sub_folder_name()
 
-        if self.parent().ui.stackedWidget_3.currentIndex() == 0:
-            self.dialog.folderLineEdit.setText(self.parent().current_design_docs_folder_path)
-            self.place_id = self.parent().current_design_docs_folder
-            self.document.type = "design"
-            # self.set_doc_sub_folder_name()
-        elif self.parent().ui.stackedWidget_3.currentIndex() == 1:
-            self.dialog.folderLineEdit.setText(self.parent().current_construction_docs_folder_path)
-            self.place_id = self.parent().current_construction_docs_folder
-            self.document.type = "construction"
-            # self.set_doc_sub_folder_name()
-        elif self.parent().ui.stackedWidget_3.currentIndex() == 2:
-            self.dialog.folderLineEdit.setText(self.parent().current_init_permission_docs_folder_path)
-            self.place_id = self.parent().current_init_permission_docs_folder
-            self.document.type = "init_permit"
-            # self.set_doc_sub_folder_name()
-
-            self.set_doc_sub_folder_name()
-            self.document.place_id = self.place_id
+                self.set_doc_sub_folder_name()
+                self.document.place_id = self.place_id
 
     def set_doc_name(self):
         self.document.document_name = self.dialog.docNameLineEdit.text()
