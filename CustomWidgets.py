@@ -846,7 +846,7 @@ class HeaderCell(QWidget):
                 self.parent_table.horizontalHeader().fix_resize_mode()
                 self.parent_table.horizontalHeader().fixPositions()
         if get_platform() == 'win':
-            if self.parent_table.columnWidth(self.logical_index) < 33:
+            if self.parent_table.columnWidth(self.logical_index) < 40:
                 self.parent_table.hideColumn(self.logical_index)
                 self.parent_table.horizontalHeader().fix_resize_mode()
                 self.parent_table.horizontalHeader().fixPositions()
