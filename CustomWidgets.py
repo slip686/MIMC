@@ -378,7 +378,8 @@ class HeaderCell(QWidget):
         icon.addFile(u":/icon/icons/more-vertical.svg", QSize(), QIcon.Normal, QIcon.On)
         self.contextBtn.setIcon(icon)
         self.setStyleSheet(u"QPushButton:pressed {background-color: rgb(120, 120, 120); border-radius: 4px}\n"
-                           "QPushButton::menu-indicator{width:0px;}")
+                           "QPushButton::menu-indicator{width:0px;}"
+                           "QWidget {background-color: rgb(136,136,136)}")
         self.label.setProperty("cursor", QCursor(Qt.ArrowCursor))
         self.contextBtn.setProperty("cursor", QCursor(Qt.ArrowCursor))
 
@@ -2525,11 +2526,9 @@ class QCustomSlideFrame3(QFrame):
     def __init__(self, parent: QFrameWithResizeSignal = None):
         super(QCustomSlideFrame3, self).__init__(parent)
         self.parent_widget = parent
-        # self.setFixedWidth(24)
+        self.expanded_width = 400
         self.animation = QVariantAnimation()
         self.animation.valueChanged.connect(self.animation_process)
-
-        # self.animation.setEasingCurve(QEasingCurve.Linear)
         self.animation.setDuration(300)
 
     def animation_process(self, width):
@@ -2548,12 +2547,8 @@ class QCustomSlideFrame3(QFrame):
 
     def show_animate(self):
         self.animation.setStartValue(self.width())
-        self.animation.setEndValue(450)
+        self.animation.setEndValue(self.expanded_width)
         self.animation.start()
-
-    def finished_animate(self):
-        pass
-
 
 
 

@@ -25,7 +25,6 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
 from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
     QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget,
     QCustomTitleBar, QFrameWithResizeSignal)
-from Custom_Widgets.Widgets import QCustomSlideMenu
 import resources_rc_rc
 import resources_rc_rc
 import resources_rc_rc
@@ -1369,19 +1368,81 @@ class Ui_MainWindow(object):
         self.horizontalLayout_33.setSpacing(3)
         self.horizontalLayout_33.setObjectName(u"horizontalLayout_33")
         self.horizontalLayout_33.setContentsMargins(0, 0, 0, 0)
-        self.searchBarBtn = QPushButton(self.page_12)
+        self.frame_26 = QCustomSlideFrame3(self.page_12)
+        self.frame_26.setObjectName(u"frame_26")
+        self.frame_26.setStyleSheet(u"")
+        self.frame_26.setFrameShape(QFrame.StyledPanel)
+        self.frame_26.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_30 = QHBoxLayout(self.frame_26)
+        self.horizontalLayout_30.setSpacing(0)
+        self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
+        self.horizontalLayout_30.setContentsMargins(0, 0, 0, 0)
+        self.searchBarBtn = QPushButton(self.frame_26)
         self.searchBarBtn.setObjectName(u"searchBarBtn")
         self.searchBarBtn.setMinimumSize(QSize(30, 30))
         self.searchBarBtn.setMaximumSize(QSize(30, 30))
         self.searchBarBtn.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         icon7 = QIcon()
         icon7.addFile(u":/icon/icons/search.svg", QSize(), QIcon.Normal, QIcon.Off)
         self.searchBarBtn.setIcon(icon7)
         self.searchBarBtn.setIconSize(QSize(20, 20))
 
-        self.horizontalLayout_33.addWidget(self.searchBarBtn, 0, Qt.AlignRight)
+        self.horizontalLayout_30.addWidget(self.searchBarBtn)
+
+        self.frame_4 = QFrame(self.frame_26)
+        self.frame_4.setObjectName(u"frame_4")
+        self.frame_4.setStyleSheet(u"background-color: rgb(165, 165, 165);\n"
+"border-radius: 6px")
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_40 = QHBoxLayout(self.frame_4)
+        self.horizontalLayout_40.setSpacing(0)
+        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
+        self.horizontalLayout_40.setContentsMargins(0, 0, 0, 0)
+        self.lineEdit_5 = CQLineEdit(self.frame_4)
+        self.lineEdit_5.setObjectName(u"lineEdit_5")
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
+        self.lineEdit_5.setSizePolicy(sizePolicy2)
+        self.lineEdit_5.setMinimumSize(QSize(0, 30))
+        self.lineEdit_5.setMaximumSize(QSize(16777215, 30))
+        font3 = QFont()
+        font3.setPointSize(13)
+        self.lineEdit_5.setFont(font3)
+        self.lineEdit_5.setStyleSheet(u"")
+        self.lineEdit_5.setClearButtonEnabled(False)
+
+        self.horizontalLayout_40.addWidget(self.lineEdit_5)
+
+        self.backToStructureBtn = QPushButton(self.frame_4)
+        self.backToStructureBtn.setObjectName(u"backToStructureBtn")
+        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
+        sizePolicy3.setHorizontalStretch(0)
+        sizePolicy3.setVerticalStretch(0)
+        sizePolicy3.setHeightForWidth(self.backToStructureBtn.sizePolicy().hasHeightForWidth())
+        self.backToStructureBtn.setSizePolicy(sizePolicy3)
+        self.backToStructureBtn.setMinimumSize(QSize(20, 30))
+        self.backToStructureBtn.setMaximumSize(QSize(20, 30))
+        self.backToStructureBtn.setStyleSheet(u"#backToStructureBtn:pressed {\n"
+"	background-color: rgb(120, 120, 120);\n"
+"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
+"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
+        icon8 = QIcon()
+        icon8.addFile(u":/icon/icons/arrow-left.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.backToStructureBtn.setIcon(icon8)
+        self.backToStructureBtn.setIconSize(QSize(20, 20))
+
+        self.horizontalLayout_40.addWidget(self.backToStructureBtn)
+
+
+        self.horizontalLayout_30.addWidget(self.frame_4)
+
+
+        self.horizontalLayout_33.addWidget(self.frame_26, 0, Qt.AlignRight)
 
         self.editStructureBtn = QPushButton(self.page_12)
         self.editStructureBtn.setObjectName(u"editStructureBtn")
@@ -1389,7 +1450,7 @@ class Ui_MainWindow(object):
         self.editStructureBtn.setMaximumSize(QSize(30, 30))
         self.editStructureBtn.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         self.editStructureBtn.setIcon(icon3)
         self.editStructureBtn.setIconSize(QSize(20, 20))
 
@@ -1421,9 +1482,9 @@ class Ui_MainWindow(object):
         self.addSubContainerBtn.setObjectName(u"addSubContainerBtn")
         self.addSubContainerBtn.setMinimumSize(QSize(30, 30))
         self.addSubContainerBtn.setMaximumSize(QSize(30, 30))
-        icon8 = QIcon()
-        icon8.addFile(u":/icon/icons/folder-plus.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.addSubContainerBtn.setIcon(icon8)
+        icon9 = QIcon()
+        icon9.addFile(u":/icon/icons/folder-plus.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.addSubContainerBtn.setIcon(icon9)
         self.addSubContainerBtn.setIconSize(QSize(24, 24))
 
         self.horizontalLayout_4.addWidget(self.addSubContainerBtn)
@@ -1432,6 +1493,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_29.addWidget(self.stackedWidget_4, 0, Qt.AlignRight)
 
+        self.horizontalLayout_29.setStretch(0, 1)
 
         self.verticalLayout_73.addWidget(self.frame_28)
 
@@ -1445,79 +1507,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_77.setObjectName(u"verticalLayout_77")
         self.verticalLayout_77.setSizeConstraint(QLayout.SetNoConstraint)
         self.verticalLayout_77.setContentsMargins(0, 0, 0, 0)
-        self.widget_29 = QCustomSlideMenu(self.frame_5)
-        self.widget_29.setObjectName(u"widget_29")
-        sizePolicy.setHeightForWidth(self.widget_29.sizePolicy().hasHeightForWidth())
-        self.widget_29.setSizePolicy(sizePolicy)
-        self.widget_29.setMinimumSize(QSize(0, 30))
-        self.widget_29.setMaximumSize(QSize(16777215, 30))
-        self.widget_29.setStyleSheet(u"")
-        self.verticalLayout_80 = QVBoxLayout(self.widget_29)
-        self.verticalLayout_80.setSpacing(0)
-        self.verticalLayout_80.setObjectName(u"verticalLayout_80")
-        self.verticalLayout_80.setContentsMargins(0, 0, 0, 6)
-        self.frame_26 = QFrame(self.widget_29)
-        self.frame_26.setObjectName(u"frame_26")
-        self.frame_26.setStyleSheet(u"background-color: rgb(165, 165, 165);\n"
-"border-radius: 6px")
-        self.frame_26.setFrameShape(QFrame.StyledPanel)
-        self.frame_26.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_30 = QHBoxLayout(self.frame_26)
-        self.horizontalLayout_30.setSpacing(0)
-        self.horizontalLayout_30.setObjectName(u"horizontalLayout_30")
-        self.horizontalLayout_30.setContentsMargins(3, 0, 0, 0)
-        self.label_23 = QLabel(self.frame_26)
-        self.label_23.setObjectName(u"label_23")
-        self.label_23.setMinimumSize(QSize(20, 20))
-        self.label_23.setMaximumSize(QSize(20, 20))
-        self.label_23.setPixmap(QPixmap(u":/icon/icons/search.svg"))
-        self.label_23.setScaledContents(True)
-
-        self.horizontalLayout_30.addWidget(self.label_23)
-
-        self.lineEdit_5 = CQLineEdit(self.frame_26)
-        self.lineEdit_5.setObjectName(u"lineEdit_5")
-        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-        sizePolicy2.setHorizontalStretch(0)
-        sizePolicy2.setVerticalStretch(0)
-        sizePolicy2.setHeightForWidth(self.lineEdit_5.sizePolicy().hasHeightForWidth())
-        self.lineEdit_5.setSizePolicy(sizePolicy2)
-        self.lineEdit_5.setMinimumSize(QSize(0, 30))
-        self.lineEdit_5.setMaximumSize(QSize(16777215, 30))
-        font3 = QFont()
-        font3.setPointSize(13)
-        self.lineEdit_5.setFont(font3)
-        self.lineEdit_5.setStyleSheet(u"")
-        self.lineEdit_5.setClearButtonEnabled(False)
-
-        self.horizontalLayout_30.addWidget(self.lineEdit_5)
-
-        self.backToStructureBtn = QPushButton(self.frame_26)
-        self.backToStructureBtn.setObjectName(u"backToStructureBtn")
-        sizePolicy3 = QSizePolicy(QSizePolicy.Minimum, QSizePolicy.Preferred)
-        sizePolicy3.setHorizontalStretch(0)
-        sizePolicy3.setVerticalStretch(0)
-        sizePolicy3.setHeightForWidth(self.backToStructureBtn.sizePolicy().hasHeightForWidth())
-        self.backToStructureBtn.setSizePolicy(sizePolicy3)
-        self.backToStructureBtn.setMinimumSize(QSize(20, 30))
-        self.backToStructureBtn.setMaximumSize(QSize(20, 30))
-        self.backToStructureBtn.setStyleSheet(u"#backToStructureBtn:pressed {\n"
-"	background-color: rgb(120, 120, 120);\n"
-"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
-"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        icon9 = QIcon()
-        icon9.addFile(u":/icon/icons/arrow-left.svg", QSize(), QIcon.Normal, QIcon.Off)
-        self.backToStructureBtn.setIcon(icon9)
-        self.backToStructureBtn.setIconSize(QSize(20, 20))
-
-        self.horizontalLayout_30.addWidget(self.backToStructureBtn)
-
-
-        self.verticalLayout_80.addWidget(self.frame_26)
-
-
-        self.verticalLayout_77.addWidget(self.widget_29)
-
 
         self.verticalLayout_73.addWidget(self.frame_5)
 
@@ -1695,21 +1684,73 @@ class Ui_MainWindow(object):
 "	border-radius: 6px}")
         self.page_14 = QWidget()
         self.page_14.setObjectName(u"page_14")
-        self.horizontalLayout_36 = QHBoxLayout(self.page_14)
-        self.horizontalLayout_36.setSpacing(3)
+        self.horizontalLayout_54 = QHBoxLayout(self.page_14)
+        self.horizontalLayout_54.setSpacing(3)
+        self.horizontalLayout_54.setObjectName(u"horizontalLayout_54")
+        self.horizontalLayout_54.setContentsMargins(0, 0, 0, 0)
+        self.frame_32 = QCustomSlideFrame3(self.page_14)
+        self.frame_32.setObjectName(u"frame_32")
+        self.frame_32.setStyleSheet(u"")
+        self.frame_32.setFrameShape(QFrame.StyledPanel)
+        self.frame_32.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_36 = QHBoxLayout(self.frame_32)
+        self.horizontalLayout_36.setSpacing(0)
         self.horizontalLayout_36.setObjectName(u"horizontalLayout_36")
         self.horizontalLayout_36.setContentsMargins(0, 0, 0, 0)
-        self.searchBarBtn_2 = QPushButton(self.page_14)
+        self.searchBarBtn_2 = QPushButton(self.frame_32)
         self.searchBarBtn_2.setObjectName(u"searchBarBtn_2")
         self.searchBarBtn_2.setMinimumSize(QSize(30, 30))
         self.searchBarBtn_2.setMaximumSize(QSize(30, 30))
         self.searchBarBtn_2.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         self.searchBarBtn_2.setIcon(icon7)
         self.searchBarBtn_2.setIconSize(QSize(20, 20))
 
-        self.horizontalLayout_36.addWidget(self.searchBarBtn_2, 0, Qt.AlignRight)
+        self.horizontalLayout_36.addWidget(self.searchBarBtn_2)
+
+        self.frame_49 = QFrame(self.frame_32)
+        self.frame_49.setObjectName(u"frame_49")
+        self.frame_49.setStyleSheet(u"background-color: rgb(165, 165, 165);\n"
+"border-radius: 6px")
+        self.frame_49.setFrameShape(QFrame.StyledPanel)
+        self.frame_49.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_44 = QHBoxLayout(self.frame_49)
+        self.horizontalLayout_44.setSpacing(0)
+        self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
+        self.horizontalLayout_44.setContentsMargins(0, 0, 0, 0)
+        self.lineEdit_6 = CQLineEdit(self.frame_49)
+        self.lineEdit_6.setObjectName(u"lineEdit_6")
+        sizePolicy2.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
+        self.lineEdit_6.setSizePolicy(sizePolicy2)
+        self.lineEdit_6.setMinimumSize(QSize(0, 30))
+        self.lineEdit_6.setMaximumSize(QSize(16777215, 30))
+        self.lineEdit_6.setFont(font3)
+        self.lineEdit_6.setStyleSheet(u"")
+        self.lineEdit_6.setClearButtonEnabled(False)
+
+        self.horizontalLayout_44.addWidget(self.lineEdit_6)
+
+        self.backToStructureBtn_2 = QPushButton(self.frame_49)
+        self.backToStructureBtn_2.setObjectName(u"backToStructureBtn_2")
+        sizePolicy3.setHeightForWidth(self.backToStructureBtn_2.sizePolicy().hasHeightForWidth())
+        self.backToStructureBtn_2.setSizePolicy(sizePolicy3)
+        self.backToStructureBtn_2.setMinimumSize(QSize(20, 30))
+        self.backToStructureBtn_2.setMaximumSize(QSize(20, 30))
+        self.backToStructureBtn_2.setStyleSheet(u"#backToStructureBtn_2:pressed {\n"
+"	background-color: rgb(120, 120, 120);\n"
+"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
+"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
+        self.backToStructureBtn_2.setIcon(icon8)
+        self.backToStructureBtn_2.setIconSize(QSize(20, 20))
+
+        self.horizontalLayout_44.addWidget(self.backToStructureBtn_2)
+
+
+        self.horizontalLayout_36.addWidget(self.frame_49)
+
+
+        self.horizontalLayout_54.addWidget(self.frame_32, 0, Qt.AlignRight)
 
         self.editStructureBtn_2 = QPushButton(self.page_14)
         self.editStructureBtn_2.setObjectName(u"editStructureBtn_2")
@@ -1717,13 +1758,12 @@ class Ui_MainWindow(object):
         self.editStructureBtn_2.setMaximumSize(QSize(30, 30))
         self.editStructureBtn_2.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         self.editStructureBtn_2.setIcon(icon3)
         self.editStructureBtn_2.setIconSize(QSize(20, 20))
 
-        self.horizontalLayout_36.addWidget(self.editStructureBtn_2, 0, Qt.AlignRight)
+        self.horizontalLayout_54.addWidget(self.editStructureBtn_2)
 
-        self.horizontalLayout_36.setStretch(0, 1)
         self.stackedWidget_5.addWidget(self.page_14)
         self.page_15 = QWidget()
         self.page_15.setObjectName(u"page_15")
@@ -1749,7 +1789,7 @@ class Ui_MainWindow(object):
         self.addSubContainerBtn_2.setObjectName(u"addSubContainerBtn_2")
         self.addSubContainerBtn_2.setMinimumSize(QSize(30, 30))
         self.addSubContainerBtn_2.setMaximumSize(QSize(30, 30))
-        self.addSubContainerBtn_2.setIcon(icon8)
+        self.addSubContainerBtn_2.setIcon(icon9)
         self.addSubContainerBtn_2.setIconSize(QSize(24, 24))
 
         self.horizontalLayout_3.addWidget(self.addSubContainerBtn_2)
@@ -1758,6 +1798,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_35.addWidget(self.stackedWidget_5, 0, Qt.AlignRight)
 
+        self.horizontalLayout_35.setStretch(0, 1)
 
         self.verticalLayout_74.addWidget(self.frame_31)
 
@@ -1769,68 +1810,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_82.setSpacing(0)
         self.verticalLayout_82.setObjectName(u"verticalLayout_82")
         self.verticalLayout_82.setContentsMargins(0, 0, 0, 0)
-        self.widget_32 = QCustomSlideMenu(self.frame_29)
-        self.widget_32.setObjectName(u"widget_32")
-        sizePolicy5 = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
-        sizePolicy5.setHorizontalStretch(0)
-        sizePolicy5.setVerticalStretch(0)
-        sizePolicy5.setHeightForWidth(self.widget_32.sizePolicy().hasHeightForWidth())
-        self.widget_32.setSizePolicy(sizePolicy5)
-        self.widget_32.setMinimumSize(QSize(0, 30))
-        self.widget_32.setMaximumSize(QSize(16777215, 30))
-        self.widget_32.setStyleSheet(u"")
-        self.horizontalLayout_34 = QHBoxLayout(self.widget_32)
-        self.horizontalLayout_34.setSpacing(0)
-        self.horizontalLayout_34.setObjectName(u"horizontalLayout_34")
-        self.horizontalLayout_34.setContentsMargins(0, 0, 0, 6)
-        self.frame_32 = QFrame(self.widget_32)
-        self.frame_32.setObjectName(u"frame_32")
-        self.frame_32.setMinimumSize(QSize(0, 0))
-        self.frame_32.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
-"border-radius: 6px")
-        self.frame_32.setFrameShape(QFrame.StyledPanel)
-        self.frame_32.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_44 = QHBoxLayout(self.frame_32)
-        self.horizontalLayout_44.setSpacing(0)
-        self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
-        self.horizontalLayout_44.setContentsMargins(3, 0, 0, 0)
-        self.label_25 = QLabel(self.frame_32)
-        self.label_25.setObjectName(u"label_25")
-        self.label_25.setMinimumSize(QSize(20, 20))
-        self.label_25.setMaximumSize(QSize(20, 20))
-        self.label_25.setPixmap(QPixmap(u":/icon/icons/search.svg"))
-        self.label_25.setScaledContents(True)
-
-        self.horizontalLayout_44.addWidget(self.label_25)
-
-        self.lineEdit_6 = CQLineEdit(self.frame_32)
-        self.lineEdit_6.setObjectName(u"lineEdit_6")
-        self.lineEdit_6.setMinimumSize(QSize(0, 30))
-        self.lineEdit_6.setMaximumSize(QSize(16777215, 30))
-        self.lineEdit_6.setFont(font3)
-        self.lineEdit_6.setStyleSheet(u"")
-
-        self.horizontalLayout_44.addWidget(self.lineEdit_6)
-
-        self.backToStructureBtn_2 = QPushButton(self.frame_32)
-        self.backToStructureBtn_2.setObjectName(u"backToStructureBtn_2")
-        self.backToStructureBtn_2.setMinimumSize(QSize(20, 30))
-        self.backToStructureBtn_2.setMaximumSize(QSize(20, 30))
-        self.backToStructureBtn_2.setStyleSheet(u"#backToStructureBtn_2:pressed {\n"
-"	background-color: rgb(120, 120, 120);\n"
-"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
-"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        self.backToStructureBtn_2.setIcon(icon9)
-        self.backToStructureBtn_2.setIconSize(QSize(20, 20))
-
-        self.horizontalLayout_44.addWidget(self.backToStructureBtn_2)
-
-
-        self.horizontalLayout_34.addWidget(self.frame_32)
-
-
-        self.verticalLayout_82.addWidget(self.widget_32)
-
 
         self.verticalLayout_74.addWidget(self.frame_29)
 
@@ -1957,21 +1936,73 @@ class Ui_MainWindow(object):
 "	border-radius: 6px}")
         self.page_17 = QWidget()
         self.page_17.setObjectName(u"page_17")
-        self.horizontalLayout_40 = QHBoxLayout(self.page_17)
-        self.horizontalLayout_40.setSpacing(3)
-        self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
-        self.horizontalLayout_40.setContentsMargins(0, 0, 0, 0)
-        self.searchBarBtn_3 = QPushButton(self.page_17)
+        self.horizontalLayout_34 = QHBoxLayout(self.page_17)
+        self.horizontalLayout_34.setSpacing(3)
+        self.horizontalLayout_34.setObjectName(u"horizontalLayout_34")
+        self.horizontalLayout_34.setContentsMargins(0, 0, 0, 0)
+        self.frame_36 = QCustomSlideFrame3(self.page_17)
+        self.frame_36.setObjectName(u"frame_36")
+        self.frame_36.setStyleSheet(u"")
+        self.frame_36.setFrameShape(QFrame.StyledPanel)
+        self.frame_36.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_37 = QHBoxLayout(self.frame_36)
+        self.horizontalLayout_37.setSpacing(0)
+        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
+        self.horizontalLayout_37.setContentsMargins(0, 0, 0, 0)
+        self.searchBarBtn_3 = QPushButton(self.frame_36)
         self.searchBarBtn_3.setObjectName(u"searchBarBtn_3")
         self.searchBarBtn_3.setMinimumSize(QSize(30, 30))
         self.searchBarBtn_3.setMaximumSize(QSize(30, 30))
         self.searchBarBtn_3.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         self.searchBarBtn_3.setIcon(icon7)
         self.searchBarBtn_3.setIconSize(QSize(20, 20))
 
-        self.horizontalLayout_40.addWidget(self.searchBarBtn_3, 0, Qt.AlignRight)
+        self.horizontalLayout_37.addWidget(self.searchBarBtn_3, 0, Qt.AlignRight)
+
+        self.frame_50 = QFrame(self.frame_36)
+        self.frame_50.setObjectName(u"frame_50")
+        self.frame_50.setStyleSheet(u"background-color: rgb(165, 165, 165);\n"
+"border-radius: 6px")
+        self.frame_50.setFrameShape(QFrame.StyledPanel)
+        self.frame_50.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_55 = QHBoxLayout(self.frame_50)
+        self.horizontalLayout_55.setSpacing(0)
+        self.horizontalLayout_55.setObjectName(u"horizontalLayout_55")
+        self.horizontalLayout_55.setContentsMargins(0, 0, 0, 0)
+        self.lineEdit_7 = CQLineEdit(self.frame_50)
+        self.lineEdit_7.setObjectName(u"lineEdit_7")
+        sizePolicy2.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
+        self.lineEdit_7.setSizePolicy(sizePolicy2)
+        self.lineEdit_7.setMinimumSize(QSize(0, 30))
+        self.lineEdit_7.setMaximumSize(QSize(16777215, 30))
+        self.lineEdit_7.setFont(font3)
+        self.lineEdit_7.setStyleSheet(u"")
+        self.lineEdit_7.setClearButtonEnabled(False)
+
+        self.horizontalLayout_55.addWidget(self.lineEdit_7)
+
+        self.backToStructureBtn_3 = QPushButton(self.frame_50)
+        self.backToStructureBtn_3.setObjectName(u"backToStructureBtn_3")
+        sizePolicy3.setHeightForWidth(self.backToStructureBtn_3.sizePolicy().hasHeightForWidth())
+        self.backToStructureBtn_3.setSizePolicy(sizePolicy3)
+        self.backToStructureBtn_3.setMinimumSize(QSize(20, 30))
+        self.backToStructureBtn_3.setMaximumSize(QSize(20, 30))
+        self.backToStructureBtn_3.setStyleSheet(u"#backToStructureBtn_3:pressed {\n"
+"	background-color: rgb(120, 120, 120);\n"
+"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
+"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
+        self.backToStructureBtn_3.setIcon(icon8)
+        self.backToStructureBtn_3.setIconSize(QSize(20, 20))
+
+        self.horizontalLayout_55.addWidget(self.backToStructureBtn_3)
+
+
+        self.horizontalLayout_37.addWidget(self.frame_50)
+
+
+        self.horizontalLayout_34.addWidget(self.frame_36, 0, Qt.AlignRight)
 
         self.editStructureBtn_3 = QPushButton(self.page_17)
         self.editStructureBtn_3.setObjectName(u"editStructureBtn_3")
@@ -1979,13 +2010,13 @@ class Ui_MainWindow(object):
         self.editStructureBtn_3.setMaximumSize(QSize(30, 30))
         self.editStructureBtn_3.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 0px}")
+"	border-radius: 6px}")
         self.editStructureBtn_3.setIcon(icon3)
         self.editStructureBtn_3.setIconSize(QSize(20, 20))
 
-        self.horizontalLayout_40.addWidget(self.editStructureBtn_3, 0, Qt.AlignRight)
+        self.horizontalLayout_34.addWidget(self.editStructureBtn_3, 0, Qt.AlignRight)
 
-        self.horizontalLayout_40.setStretch(0, 1)
+        self.horizontalLayout_34.setStretch(0, 1)
         self.stackedWidget_6.addWidget(self.page_17)
         self.page_18 = QWidget()
         self.page_18.setObjectName(u"page_18")
@@ -2022,6 +2053,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_39.addWidget(self.stackedWidget_6, 0, Qt.AlignRight)
 
+        self.horizontalLayout_39.setStretch(0, 1)
 
         self.verticalLayout_75.addWidget(self.frame_34)
 
@@ -2033,64 +2065,6 @@ class Ui_MainWindow(object):
         self.verticalLayout_83.setSpacing(0)
         self.verticalLayout_83.setObjectName(u"verticalLayout_83")
         self.verticalLayout_83.setContentsMargins(0, 0, 0, 0)
-        self.widget_35 = QCustomSlideMenu(self.frame_35)
-        self.widget_35.setObjectName(u"widget_35")
-        sizePolicy5.setHeightForWidth(self.widget_35.sizePolicy().hasHeightForWidth())
-        self.widget_35.setSizePolicy(sizePolicy5)
-        self.widget_35.setMinimumSize(QSize(0, 30))
-        self.widget_35.setMaximumSize(QSize(16777215, 30))
-        self.widget_35.setStyleSheet(u"")
-        self.verticalLayout_84 = QVBoxLayout(self.widget_35)
-        self.verticalLayout_84.setSpacing(0)
-        self.verticalLayout_84.setObjectName(u"verticalLayout_84")
-        self.verticalLayout_84.setContentsMargins(0, 0, 0, 6)
-        self.frame_36 = QFrame(self.widget_35)
-        self.frame_36.setObjectName(u"frame_36")
-        self.frame_36.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
-"border-radius: 6px")
-        self.frame_36.setFrameShape(QFrame.StyledPanel)
-        self.frame_36.setFrameShadow(QFrame.Raised)
-        self.horizontalLayout_37 = QHBoxLayout(self.frame_36)
-        self.horizontalLayout_37.setSpacing(0)
-        self.horizontalLayout_37.setObjectName(u"horizontalLayout_37")
-        self.horizontalLayout_37.setContentsMargins(3, 0, 0, 0)
-        self.label_27 = QLabel(self.frame_36)
-        self.label_27.setObjectName(u"label_27")
-        self.label_27.setMinimumSize(QSize(20, 20))
-        self.label_27.setMaximumSize(QSize(20, 20))
-        self.label_27.setPixmap(QPixmap(u":/icon/icons/search.svg"))
-        self.label_27.setScaledContents(True)
-
-        self.horizontalLayout_37.addWidget(self.label_27)
-
-        self.lineEdit_7 = CQLineEdit(self.frame_36)
-        self.lineEdit_7.setObjectName(u"lineEdit_7")
-        self.lineEdit_7.setMinimumSize(QSize(0, 30))
-        self.lineEdit_7.setMaximumSize(QSize(16777215, 30))
-        self.lineEdit_7.setFont(font3)
-        self.lineEdit_7.setStyleSheet(u"")
-
-        self.horizontalLayout_37.addWidget(self.lineEdit_7)
-
-        self.backToStructureBtn_3 = QPushButton(self.frame_36)
-        self.backToStructureBtn_3.setObjectName(u"backToStructureBtn_3")
-        self.backToStructureBtn_3.setMinimumSize(QSize(20, 30))
-        self.backToStructureBtn_3.setMaximumSize(QSize(20, 30))
-        self.backToStructureBtn_3.setStyleSheet(u"#backToStructureBtn_3:pressed {\n"
-"	background-color: rgb(120, 120, 120);\n"
-"	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
-"	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        self.backToStructureBtn_3.setIcon(icon9)
-        self.backToStructureBtn_3.setIconSize(QSize(20, 20))
-
-        self.horizontalLayout_37.addWidget(self.backToStructureBtn_3)
-
-
-        self.verticalLayout_84.addWidget(self.frame_36)
-
-
-        self.verticalLayout_83.addWidget(self.widget_35)
-
 
         self.verticalLayout_75.addWidget(self.frame_35)
 
@@ -2266,11 +2240,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_49.setContentsMargins(0, 0, 0, 0)
         self.frame_6 = QFrame(self.widget_5)
         self.frame_6.setObjectName(u"frame_6")
-        sizePolicy6 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
-        sizePolicy6.setHorizontalStretch(0)
-        sizePolicy6.setVerticalStretch(0)
-        sizePolicy6.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
-        self.frame_6.setSizePolicy(sizePolicy6)
+        sizePolicy5 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        sizePolicy5.setHorizontalStretch(0)
+        sizePolicy5.setVerticalStretch(0)
+        sizePolicy5.setHeightForWidth(self.frame_6.sizePolicy().hasHeightForWidth())
+        self.frame_6.setSizePolicy(sizePolicy5)
         self.frame_6.setMinimumSize(QSize(0, 0))
         self.frame_6.setMaximumSize(QSize(16777215, 600))
         self.frame_6.setFrameShape(QFrame.StyledPanel)
@@ -2281,8 +2255,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_54.setContentsMargins(-1, 0, 0, 0)
         self.label_5 = QLabel(self.frame_6)
         self.label_5.setObjectName(u"label_5")
-        sizePolicy6.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
-        self.label_5.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.label_5.sizePolicy().hasHeightForWidth())
+        self.label_5.setSizePolicy(sizePolicy5)
         self.label_5.setMinimumSize(QSize(150, 40))
         self.label_5.setMaximumSize(QSize(150, 40))
         font4 = QFont()
@@ -2295,8 +2269,8 @@ class Ui_MainWindow(object):
 
         self.frame_7 = QFrame(self.frame_6)
         self.frame_7.setObjectName(u"frame_7")
-        sizePolicy6.setHeightForWidth(self.frame_7.sizePolicy().hasHeightForWidth())
-        self.frame_7.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_7.sizePolicy().hasHeightForWidth())
+        self.frame_7.setSizePolicy(sizePolicy5)
         self.frame_7.setMinimumSize(QSize(0, 400))
         self.frame_7.setMaximumSize(QSize(350, 400))
         self.frame_7.setFrameShape(QFrame.StyledPanel)
@@ -2497,8 +2471,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_71.setContentsMargins(0, 0, 0, 0)
         self.frame_25 = QFrame(self.widget_6)
         self.frame_25.setObjectName(u"frame_25")
-        sizePolicy6.setHeightForWidth(self.frame_25.sizePolicy().hasHeightForWidth())
-        self.frame_25.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_25.sizePolicy().hasHeightForWidth())
+        self.frame_25.setSizePolicy(sizePolicy5)
         self.frame_25.setMinimumSize(QSize(600, 400))
         self.frame_25.setMaximumSize(QSize(600, 400))
         self.frame_25.setFrameShape(QFrame.StyledPanel)
@@ -2509,8 +2483,8 @@ class Ui_MainWindow(object):
         self.horizontalLayout_27.setContentsMargins(0, 0, 0, 0)
         self.frame_15 = QFrame(self.frame_25)
         self.frame_15.setObjectName(u"frame_15")
-        sizePolicy6.setHeightForWidth(self.frame_15.sizePolicy().hasHeightForWidth())
-        self.frame_15.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_15.sizePolicy().hasHeightForWidth())
+        self.frame_15.setSizePolicy(sizePolicy5)
         self.frame_15.setMinimumSize(QSize(0, 350))
         self.frame_15.setMaximumSize(QSize(16777215, 400))
         self.frame_15.setFrameShape(QFrame.StyledPanel)
@@ -2521,8 +2495,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_61.setContentsMargins(0, 0, 0, 0)
         self.label_13 = QLabel(self.frame_15)
         self.label_13.setObjectName(u"label_13")
-        sizePolicy6.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
-        self.label_13.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
+        self.label_13.setSizePolicy(sizePolicy5)
         self.label_13.setMinimumSize(QSize(150, 40))
         self.label_13.setMaximumSize(QSize(150, 40))
         self.label_13.setFont(font4)
@@ -2533,8 +2507,8 @@ class Ui_MainWindow(object):
 
         self.frame_20 = QFrame(self.frame_15)
         self.frame_20.setObjectName(u"frame_20")
-        sizePolicy6.setHeightForWidth(self.frame_20.sizePolicy().hasHeightForWidth())
-        self.frame_20.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_20.sizePolicy().hasHeightForWidth())
+        self.frame_20.setSizePolicy(sizePolicy5)
         self.frame_20.setMinimumSize(QSize(300, 320))
         self.frame_20.setMaximumSize(QSize(350, 320))
         self.frame_20.setFrameShape(QFrame.StyledPanel)
@@ -2664,8 +2638,8 @@ class Ui_MainWindow(object):
 
         self.frame_13 = QFrame(self.frame_25)
         self.frame_13.setObjectName(u"frame_13")
-        sizePolicy6.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
-        self.frame_13.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_13.sizePolicy().hasHeightForWidth())
+        self.frame_13.setSizePolicy(sizePolicy5)
         self.frame_13.setMinimumSize(QSize(0, 350))
         self.frame_13.setMaximumSize(QSize(16777215, 400))
         self.frame_13.setFrameShape(QFrame.StyledPanel)
@@ -2676,8 +2650,8 @@ class Ui_MainWindow(object):
         self.verticalLayout_59.setContentsMargins(0, 0, 0, 0)
         self.label_12 = QLabel(self.frame_13)
         self.label_12.setObjectName(u"label_12")
-        sizePolicy6.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
-        self.label_12.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.label_12.sizePolicy().hasHeightForWidth())
+        self.label_12.setSizePolicy(sizePolicy5)
         self.label_12.setMinimumSize(QSize(150, 40))
         self.label_12.setMaximumSize(QSize(150, 40))
         self.label_12.setFont(font4)
@@ -2688,8 +2662,8 @@ class Ui_MainWindow(object):
 
         self.frame_14 = QFrame(self.frame_13)
         self.frame_14.setObjectName(u"frame_14")
-        sizePolicy6.setHeightForWidth(self.frame_14.sizePolicy().hasHeightForWidth())
-        self.frame_14.setSizePolicy(sizePolicy6)
+        sizePolicy5.setHeightForWidth(self.frame_14.sizePolicy().hasHeightForWidth())
+        self.frame_14.setSizePolicy(sizePolicy5)
         self.frame_14.setMinimumSize(QSize(300, 320))
         self.frame_14.setMaximumSize(QSize(350, 320))
         self.frame_14.setFrameShape(QFrame.StyledPanel)
@@ -2858,7 +2832,7 @@ class Ui_MainWindow(object):
         self.backToNewProjectMenuBtn.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
 "	border-radius: 0px}")
-        self.backToNewProjectMenuBtn.setIcon(icon9)
+        self.backToNewProjectMenuBtn.setIcon(icon8)
         self.backToNewProjectMenuBtn.setIconSize(QSize(24, 24))
 
         self.verticalLayout_71.addWidget(self.backToNewProjectMenuBtn, 0, Qt.AlignHCenter)
@@ -2882,7 +2856,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 612, 701))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 100, 110))
         sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents_2.setSizePolicy(sizePolicy)
         self.verticalLayout_46 = QVBoxLayout(self.scrollAreaWidgetContents_2)
@@ -3014,7 +2988,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(120, 120, 120);\n"
 "	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
 "	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        self.releaseBtn.setIcon(icon9)
+        self.releaseBtn.setIcon(icon8)
         self.releaseBtn.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_47.addWidget(self.releaseBtn)
@@ -3180,7 +3154,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(120, 120, 120);\n"
 "	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
 "	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        self.releaseBtn_2.setIcon(icon9)
+        self.releaseBtn_2.setIcon(icon8)
         self.releaseBtn_2.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_50.addWidget(self.releaseBtn_2)
@@ -3342,7 +3316,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(120, 120, 120);\n"
 "	border-top-right-radius: 6px; border-bottom-right-radius: 6px;\n"
 "	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}")
-        self.releaseBtn_3.setIcon(icon9)
+        self.releaseBtn_3.setIcon(icon8)
         self.releaseBtn_3.setIconSize(QSize(20, 20))
 
         self.horizontalLayout_53.addWidget(self.releaseBtn_3)
@@ -3636,30 +3610,27 @@ class Ui_MainWindow(object):
         self.logOutBtn.setText("")
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Folders", None))
         self.searchBarBtn.setText("")
+        self.backToStructureBtn.setText("")
         self.editStructureBtn.setText("")
         self.endEditBtn.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.cancelEditBtn.setText(QCoreApplication.translate("MainWindow", u"Cancel Edit", None))
         self.addSubContainerBtn.setText("")
-        self.label_23.setText("")
-        self.backToStructureBtn.setText("")
         self.designDocsSearchResultsLabel.setText(QCoreApplication.translate("MainWindow", u"Search results:", None))
         self.label_24.setText(QCoreApplication.translate("MainWindow", u"Folders", None))
         self.searchBarBtn_2.setText("")
+        self.backToStructureBtn_2.setText("")
         self.editStructureBtn_2.setText("")
         self.endEditBtn_2.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.cancelEditBtn_2.setText(QCoreApplication.translate("MainWindow", u"Cancel Edit", None))
         self.addSubContainerBtn_2.setText("")
-        self.label_25.setText("")
-        self.backToStructureBtn_2.setText("")
         self.constructionDocsSearchResultsLabel.setText(QCoreApplication.translate("MainWindow", u"Search results:", None))
         self.label_26.setText(QCoreApplication.translate("MainWindow", u"Folders", None))
         self.searchBarBtn_3.setText("")
+        self.backToStructureBtn_3.setText("")
         self.editStructureBtn_3.setText("")
         self.endEditBtn_3.setText(QCoreApplication.translate("MainWindow", u"Apply", None))
         self.cancelEditBtn_3.setText(QCoreApplication.translate("MainWindow", u"Cancel Edit", None))
         self.addSubContainerBtn_3.setText("")
-        self.label_27.setText("")
-        self.backToStructureBtn_3.setText("")
         self.initialPermitDocsSearchResultsLabel.setText(QCoreApplication.translate("MainWindow", u"Search results:", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"New Project", None))
         self.label_9.setText(QCoreApplication.translate("MainWindow", u"Picture file", None))

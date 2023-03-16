@@ -1330,6 +1330,75 @@ class MainWindow(QMainWindow):
         self.ui.backToStructureBtn_2.clicked.connect(lambda: self.ui.backToStructureBtn_2.hide())
         self.ui.backToStructureBtn_3.clicked.connect(lambda: self.ui.backToStructureBtn_3.hide())
 
+        self.ui.searchBarBtn.clicked.connect(lambda: self.ui.frame_26.hide_show_func())
+        self.ui.searchBarBtn_2.clicked.connect(lambda: self.ui.frame_32.hide_show_func())
+        self.ui.searchBarBtn_3.clicked.connect(lambda: self.ui.frame_36.hide_show_func())
+
+        self.ui.backToStructureBtn.hide()
+        self.ui.lineEdit_5.clearFocus()
+        self.ui.backToStructureBtn_2.hide()
+        self.ui.lineEdit_6.clearFocus()
+        self.ui.backToStructureBtn_3.hide()
+        self.ui.lineEdit_7.clearFocus()
+
+        def structure_search_line_hiding():
+            self.doc_search_line = None
+            if self.ui.stackedWidget_3.currentIndex() == 0:
+                self.doc_search_line = self.ui.lineEdit_5
+            if self.ui.stackedWidget_3.currentIndex() == 1:
+                self.doc_search_line = self.ui.lineEdit_6
+            if self.ui.stackedWidget_3.currentIndex() == 2:
+                self.doc_search_line = self.ui.lineEdit_7
+            if self.doc_search_line.isHidden():
+                self.doc_search_line.show()
+            else:
+                self.doc_search_line.hide()
+
+        def structure_release_btn_showing():
+            self.doc_search_line = None
+            self.release_button = None
+            if self.ui.stackedWidget_3.currentIndex() == 0:
+                self.doc_search_line = self.ui.lineEdit_5
+                self.release_button = self.ui.backToStructureBtn
+            if self.ui.tabWidget.currentIndex() == 1:
+                self.doc_search_line = self.ui.lineEdit_6
+                self.release_button = self.ui.backToStructureBtn_2
+            if self.ui.tabWidget.currentIndex() == 2:
+                self.doc_search_line = self.ui.lineEdit_7
+                self.release_button = self.ui.backToStructureBtn_3
+            if self.doc_search_line.text() == '':
+                self.release_button.hide()
+            else:
+                self.release_button.show()
+
+        self.ui.searchBarBtn.clicked.connect(lambda: structure_search_line_hiding())
+        self.ui.searchBarBtn_2.clicked.connect(lambda: structure_search_line_hiding())
+        self.ui.searchBarBtn_3.clicked.connect(lambda: structure_search_line_hiding())
+        self.ui.lineEdit_5.hide()
+        self.ui.lineEdit_6.hide()
+        self.ui.lineEdit_7.hide()
+
+        self.ui.lineEdit_5.textEdited.connect(lambda: structure_release_btn_showing())
+        self.ui.lineEdit_6.textEdited.connect(lambda: structure_release_btn_showing())
+        self.ui.lineEdit_7.textEdited.connect(lambda: structure_release_btn_showing())
+
+        self.ui.backToStructureBtn.clicked.connect(lambda: self.ui.lineEdit_5.setText(''))
+        self.ui.backToStructureBtn.clicked.connect(lambda: self.ui.backToStructureBtn.hide())
+        self.ui.backToStructureBtn_2.clicked.connect(lambda: self.ui.lineEdit_6.setText(''))
+        self.ui.backToStructureBtn_2.clicked.connect(lambda: self.ui.backToStructureBtn_2.hide())
+        self.ui.backToStructureBtn_3.clicked.connect(lambda: self.ui.lineEdit_7.setText(''))
+        self.ui.backToStructureBtn_3.clicked.connect(lambda: self.ui.backToStructureBtn_3.hide())
+        self.ui.searchBarBtn.clicked.connect(lambda: self.ui.backToStructureBtn.hide())
+        self.ui.searchBarBtn_2.clicked.connect(lambda: self.ui.backToStructureBtn_2.hide())
+        self.ui.searchBarBtn_3.clicked.connect(lambda: self.ui.backToStructureBtn_3.hide())
+
+        self.ui.frame_26.expanded_width = 200
+        self.ui.frame_32.expanded_width = 200
+        self.ui.frame_36.expanded_width = 200
+        self.ui.frame_26.setFixedWidth(30)
+        self.ui.frame_32.setFixedWidth(30)
+        self.ui.frame_36.setFixedWidth(30)
+
         # table view elements
 
         self.ui.searchDocsBtn.clicked.connect(lambda: self.ui.searchDocsFrame.hide_show_func())

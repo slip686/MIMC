@@ -3303,7 +3303,7 @@ Successfully!</string>
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_29">
+                          <layout class="QHBoxLayout" name="horizontalLayout_29" stretch="1,0">
                            <property name="spacing">
                             <number>0</number>
                            </property>
@@ -3360,37 +3360,172 @@ Successfully!</string>
                                 <number>0</number>
                                </property>
                                <item alignment="Qt::AlignRight">
-                                <widget class="QPushButton" name="searchBarBtn">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
+                                <widget class="QCustomSlideFrame3" name="frame_26">
                                  <property name="styleSheet">
-                                  <string notr="true">QPushButton:pressed {
+                                  <string notr="true"/>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_30">
+                                  <property name="spacing">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="bottomMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QPushButton" name="searchBarBtn">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
-                                 </property>
-                                 <property name="text">
-                                  <string/>
-                                 </property>
-                                 <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
-                                   <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
-                                 </property>
-                                 <property name="iconSize">
-                                  <size>
-                                   <width>20</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
+	border-radius: 6px}</string>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                    <property name="icon">
+                                     <iconset resource="resources_rc.qrc">
+                                      <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
+                                    </property>
+                                    <property name="iconSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QFrame" name="frame_4">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color: rgb(165, 165, 165);
+border-radius: 6px</string>
+                                    </property>
+                                    <property name="frameShape">
+                                     <enum>QFrame::StyledPanel</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                     <enum>QFrame::Raised</enum>
+                                    </property>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_40">
+                                     <property name="spacing">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="leftMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="topMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="rightMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="bottomMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <item>
+                                      <widget class="CQLineEdit" name="lineEdit_5">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>0</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>16777215</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="font">
+                                        <font>
+                                         <pointsize>13</pointsize>
+                                        </font>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true"/>
+                                       </property>
+                                       <property name="clearButtonEnabled">
+                                        <bool>false</bool>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item>
+                                      <widget class="QPushButton" name="backToStructureBtn">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true">#backToStructureBtn:pressed {
+	background-color: rgb(120, 120, 120);
+	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
+	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
+                                       </property>
+                                       <property name="text">
+                                        <string/>
+                                       </property>
+                                       <property name="icon">
+                                        <iconset resource="resources_rc.qrc">
+                                         <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
+                                       </property>
+                                       <property name="iconSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>20</height>
+                                        </size>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                    </layout>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
                                <item alignment="Qt::AlignRight">
@@ -3410,7 +3545,7 @@ Successfully!</string>
                                  <property name="styleSheet">
                                   <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
+	border-radius: 6px}</string>
                                  </property>
                                  <property name="text">
                                   <string/>
@@ -3550,178 +3685,6 @@ Successfully!</string>
                            <property name="bottomMargin">
                             <number>0</number>
                            </property>
-                           <item>
-                            <widget class="QCustomSlideMenu" name="widget_29" native="true">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>16777215</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="styleSheet">
-                              <string notr="true"/>
-                             </property>
-                             <layout class="QVBoxLayout" name="verticalLayout_80">
-                              <property name="spacing">
-                               <number>0</number>
-                              </property>
-                              <property name="leftMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="topMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="rightMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="bottomMargin">
-                               <number>6</number>
-                              </property>
-                              <item>
-                               <widget class="QFrame" name="frame_26">
-                                <property name="styleSheet">
-                                 <string notr="true">background-color: rgb(165, 165, 165);
-border-radius: 6px</string>
-                                </property>
-                                <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
-                                </property>
-                                <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
-                                </property>
-                                <layout class="QHBoxLayout" name="horizontalLayout_30">
-                                 <property name="spacing">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="leftMargin">
-                                  <number>3</number>
-                                 </property>
-                                 <property name="topMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="rightMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="bottomMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <item>
-                                  <widget class="QLabel" name="label_23">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="pixmap">
-                                    <pixmap resource="resources_rc.qrc">:/icon/icons/search.svg</pixmap>
-                                   </property>
-                                   <property name="scaledContents">
-                                    <bool>true</bool>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="CQLineEdit" name="lineEdit_5">
-                                   <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
-                                     <horstretch>0</horstretch>
-                                     <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                   </property>
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>0</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>16777215</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="font">
-                                    <font>
-                                     <pointsize>13</pointsize>
-                                    </font>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true"/>
-                                   </property>
-                                   <property name="clearButtonEnabled">
-                                    <bool>false</bool>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="QPushButton" name="backToStructureBtn">
-                                   <property name="sizePolicy">
-                                    <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
-                                     <horstretch>0</horstretch>
-                                     <verstretch>0</verstretch>
-                                    </sizepolicy>
-                                   </property>
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true">#backToStructureBtn:pressed {
-	background-color: rgb(120, 120, 120);
-	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
-	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="icon">
-                                    <iconset resource="resources_rc.qrc">
-                                     <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
-                                   </property>
-                                   <property name="iconSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                </layout>
-                               </widget>
-                              </item>
-                             </layout>
-                            </widget>
-                           </item>
                           </layout>
                          </widget>
                         </item>
@@ -4142,7 +4105,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_35">
+                          <layout class="QHBoxLayout" name="horizontalLayout_35" stretch="1,0">
                            <property name="spacing">
                             <number>0</number>
                            </property>
@@ -4179,7 +4142,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
 	border-radius: 6px}</string>
                              </property>
                              <widget class="QWidget" name="page_14">
-                              <layout class="QHBoxLayout" name="horizontalLayout_36" stretch="1,0">
+                              <layout class="QHBoxLayout" name="horizontalLayout_54">
                                <property name="spacing">
                                 <number>3</number>
                                </property>
@@ -4196,40 +4159,175 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                                 <number>0</number>
                                </property>
                                <item alignment="Qt::AlignRight">
-                                <widget class="QPushButton" name="searchBarBtn_2">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
+                                <widget class="QCustomSlideFrame3" name="frame_32">
                                  <property name="styleSheet">
-                                  <string notr="true">QPushButton:pressed {
+                                  <string notr="true"/>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_36">
+                                  <property name="spacing">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="bottomMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <item>
+                                   <widget class="QPushButton" name="searchBarBtn_2">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
-                                 </property>
-                                 <property name="text">
-                                  <string/>
-                                 </property>
-                                 <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
-                                   <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
-                                 </property>
-                                 <property name="iconSize">
-                                  <size>
-                                   <width>20</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
+	border-radius: 6px}</string>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                    <property name="icon">
+                                     <iconset resource="resources_rc.qrc">
+                                      <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
+                                    </property>
+                                    <property name="iconSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QFrame" name="frame_49">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color: rgb(165, 165, 165);
+border-radius: 6px</string>
+                                    </property>
+                                    <property name="frameShape">
+                                     <enum>QFrame::StyledPanel</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                     <enum>QFrame::Raised</enum>
+                                    </property>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_44">
+                                     <property name="spacing">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="leftMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="topMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="rightMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="bottomMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <item>
+                                      <widget class="CQLineEdit" name="lineEdit_6">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>0</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>16777215</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="font">
+                                        <font>
+                                         <pointsize>13</pointsize>
+                                        </font>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true"/>
+                                       </property>
+                                       <property name="clearButtonEnabled">
+                                        <bool>false</bool>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item>
+                                      <widget class="QPushButton" name="backToStructureBtn_2">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true">#backToStructureBtn_2:pressed {
+	background-color: rgb(120, 120, 120);
+	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
+	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
+                                       </property>
+                                       <property name="text">
+                                        <string/>
+                                       </property>
+                                       <property name="icon">
+                                        <iconset resource="resources_rc.qrc">
+                                         <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
+                                       </property>
+                                       <property name="iconSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>20</height>
+                                        </size>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                    </layout>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
-                               <item alignment="Qt::AlignRight">
+                               <item>
                                 <widget class="QPushButton" name="editStructureBtn_2">
                                  <property name="minimumSize">
                                   <size>
@@ -4246,7 +4344,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                                  <property name="styleSheet">
                                   <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
+	border-radius: 6px}</string>
                                  </property>
                                  <property name="text">
                                   <string/>
@@ -4380,169 +4478,6 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                            <property name="bottomMargin">
                             <number>0</number>
                            </property>
-                           <item>
-                            <widget class="QCustomSlideMenu" name="widget_32" native="true">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>16777215</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="styleSheet">
-                              <string notr="true"/>
-                             </property>
-                             <layout class="QHBoxLayout" name="horizontalLayout_34">
-                              <property name="spacing">
-                               <number>0</number>
-                              </property>
-                              <property name="leftMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="topMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="rightMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="bottomMargin">
-                               <number>6</number>
-                              </property>
-                              <item>
-                               <widget class="QFrame" name="frame_32">
-                                <property name="minimumSize">
-                                 <size>
-                                  <width>0</width>
-                                  <height>0</height>
-                                 </size>
-                                </property>
-                                <property name="styleSheet">
-                                 <string notr="true">background-color: rgb(166, 166, 166);
-border-radius: 6px</string>
-                                </property>
-                                <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
-                                </property>
-                                <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
-                                </property>
-                                <layout class="QHBoxLayout" name="horizontalLayout_44">
-                                 <property name="spacing">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="leftMargin">
-                                  <number>3</number>
-                                 </property>
-                                 <property name="topMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="rightMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="bottomMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <item>
-                                  <widget class="QLabel" name="label_25">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="pixmap">
-                                    <pixmap resource="resources_rc.qrc">:/icon/icons/search.svg</pixmap>
-                                   </property>
-                                   <property name="scaledContents">
-                                    <bool>true</bool>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="CQLineEdit" name="lineEdit_6">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>0</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>16777215</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="font">
-                                    <font>
-                                     <pointsize>13</pointsize>
-                                    </font>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true"/>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="QPushButton" name="backToStructureBtn_2">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true">#backToStructureBtn_2:pressed {
-	background-color: rgb(120, 120, 120);
-	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
-	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="icon">
-                                    <iconset resource="resources_rc.qrc">
-                                     <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
-                                   </property>
-                                   <property name="iconSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                </layout>
-                               </widget>
-                              </item>
-                             </layout>
-                            </widget>
-                           </item>
                           </layout>
                          </widget>
                         </item>
@@ -4796,7 +4731,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                           <property name="frameShadow">
                            <enum>QFrame::Raised</enum>
                           </property>
-                          <layout class="QHBoxLayout" name="horizontalLayout_39">
+                          <layout class="QHBoxLayout" name="horizontalLayout_39" stretch="1,0">
                            <property name="spacing">
                             <number>0</number>
                            </property>
@@ -4833,7 +4768,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
 	border-radius: 6px}</string>
                              </property>
                              <widget class="QWidget" name="page_17">
-                              <layout class="QHBoxLayout" name="horizontalLayout_40" stretch="1,0">
+                              <layout class="QHBoxLayout" name="horizontalLayout_34" stretch="1,0">
                                <property name="spacing">
                                 <number>3</number>
                                </property>
@@ -4850,37 +4785,172 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                 <number>0</number>
                                </property>
                                <item alignment="Qt::AlignRight">
-                                <widget class="QPushButton" name="searchBarBtn_3">
-                                 <property name="minimumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
-                                 <property name="maximumSize">
-                                  <size>
-                                   <width>30</width>
-                                   <height>30</height>
-                                  </size>
-                                 </property>
+                                <widget class="QCustomSlideFrame3" name="frame_36">
                                  <property name="styleSheet">
-                                  <string notr="true">QPushButton:pressed {
+                                  <string notr="true"/>
+                                 </property>
+                                 <property name="frameShape">
+                                  <enum>QFrame::StyledPanel</enum>
+                                 </property>
+                                 <property name="frameShadow">
+                                  <enum>QFrame::Raised</enum>
+                                 </property>
+                                 <layout class="QHBoxLayout" name="horizontalLayout_37">
+                                  <property name="spacing">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="leftMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="topMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="rightMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <property name="bottomMargin">
+                                   <number>0</number>
+                                  </property>
+                                  <item alignment="Qt::AlignRight">
+                                   <widget class="QPushButton" name="searchBarBtn_3">
+                                    <property name="minimumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="maximumSize">
+                                     <size>
+                                      <width>30</width>
+                                      <height>30</height>
+                                     </size>
+                                    </property>
+                                    <property name="styleSheet">
+                                     <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
-                                 </property>
-                                 <property name="text">
-                                  <string/>
-                                 </property>
-                                 <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
-                                   <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
-                                 </property>
-                                 <property name="iconSize">
-                                  <size>
-                                   <width>20</width>
-                                   <height>20</height>
-                                  </size>
-                                 </property>
+	border-radius: 6px}</string>
+                                    </property>
+                                    <property name="text">
+                                     <string/>
+                                    </property>
+                                    <property name="icon">
+                                     <iconset resource="resources_rc.qrc">
+                                      <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
+                                    </property>
+                                    <property name="iconSize">
+                                     <size>
+                                      <width>20</width>
+                                      <height>20</height>
+                                     </size>
+                                    </property>
+                                   </widget>
+                                  </item>
+                                  <item>
+                                   <widget class="QFrame" name="frame_50">
+                                    <property name="styleSheet">
+                                     <string notr="true">background-color: rgb(165, 165, 165);
+border-radius: 6px</string>
+                                    </property>
+                                    <property name="frameShape">
+                                     <enum>QFrame::StyledPanel</enum>
+                                    </property>
+                                    <property name="frameShadow">
+                                     <enum>QFrame::Raised</enum>
+                                    </property>
+                                    <layout class="QHBoxLayout" name="horizontalLayout_55">
+                                     <property name="spacing">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="leftMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="topMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="rightMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <property name="bottomMargin">
+                                      <number>0</number>
+                                     </property>
+                                     <item>
+                                      <widget class="CQLineEdit" name="lineEdit_7">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>0</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>16777215</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="font">
+                                        <font>
+                                         <pointsize>13</pointsize>
+                                        </font>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true"/>
+                                       </property>
+                                       <property name="clearButtonEnabled">
+                                        <bool>false</bool>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                     <item>
+                                      <widget class="QPushButton" name="backToStructureBtn_3">
+                                       <property name="sizePolicy">
+                                        <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+                                         <horstretch>0</horstretch>
+                                         <verstretch>0</verstretch>
+                                        </sizepolicy>
+                                       </property>
+                                       <property name="minimumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="maximumSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>30</height>
+                                        </size>
+                                       </property>
+                                       <property name="styleSheet">
+                                        <string notr="true">#backToStructureBtn_3:pressed {
+	background-color: rgb(120, 120, 120);
+	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
+	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
+                                       </property>
+                                       <property name="text">
+                                        <string/>
+                                       </property>
+                                       <property name="icon">
+                                        <iconset resource="resources_rc.qrc">
+                                         <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
+                                       </property>
+                                       <property name="iconSize">
+                                        <size>
+                                         <width>20</width>
+                                         <height>20</height>
+                                        </size>
+                                       </property>
+                                      </widget>
+                                     </item>
+                                    </layout>
+                                   </widget>
+                                  </item>
+                                 </layout>
                                 </widget>
                                </item>
                                <item alignment="Qt::AlignRight">
@@ -4900,7 +4970,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                  <property name="styleSheet">
                                   <string notr="true">QPushButton:pressed {
 	background-color: rgb(120, 120, 120);
-	border-radius: 0px}</string>
+	border-radius: 6px}</string>
                                  </property>
                                  <property name="text">
                                   <string/>
@@ -5034,163 +5104,6 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                            <property name="bottomMargin">
                             <number>0</number>
                            </property>
-                           <item>
-                            <widget class="QCustomSlideMenu" name="widget_35" native="true">
-                             <property name="sizePolicy">
-                              <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                               <horstretch>0</horstretch>
-                               <verstretch>0</verstretch>
-                              </sizepolicy>
-                             </property>
-                             <property name="minimumSize">
-                              <size>
-                               <width>0</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="maximumSize">
-                              <size>
-                               <width>16777215</width>
-                               <height>30</height>
-                              </size>
-                             </property>
-                             <property name="styleSheet">
-                              <string notr="true"/>
-                             </property>
-                             <layout class="QVBoxLayout" name="verticalLayout_84">
-                              <property name="spacing">
-                               <number>0</number>
-                              </property>
-                              <property name="leftMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="topMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="rightMargin">
-                               <number>0</number>
-                              </property>
-                              <property name="bottomMargin">
-                               <number>6</number>
-                              </property>
-                              <item>
-                               <widget class="QFrame" name="frame_36">
-                                <property name="styleSheet">
-                                 <string notr="true">background-color: rgb(166, 166, 166);
-border-radius: 6px</string>
-                                </property>
-                                <property name="frameShape">
-                                 <enum>QFrame::StyledPanel</enum>
-                                </property>
-                                <property name="frameShadow">
-                                 <enum>QFrame::Raised</enum>
-                                </property>
-                                <layout class="QHBoxLayout" name="horizontalLayout_37">
-                                 <property name="spacing">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="leftMargin">
-                                  <number>3</number>
-                                 </property>
-                                 <property name="topMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="rightMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <property name="bottomMargin">
-                                  <number>0</number>
-                                 </property>
-                                 <item>
-                                  <widget class="QLabel" name="label_27">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="pixmap">
-                                    <pixmap resource="resources_rc.qrc">:/icon/icons/search.svg</pixmap>
-                                   </property>
-                                   <property name="scaledContents">
-                                    <bool>true</bool>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="CQLineEdit" name="lineEdit_7">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>0</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>16777215</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="font">
-                                    <font>
-                                     <pointsize>13</pointsize>
-                                    </font>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true"/>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                 <item>
-                                  <widget class="QPushButton" name="backToStructureBtn_3">
-                                   <property name="minimumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="maximumSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>30</height>
-                                    </size>
-                                   </property>
-                                   <property name="styleSheet">
-                                    <string notr="true">#backToStructureBtn_3:pressed {
-	background-color: rgb(120, 120, 120);
-	border-top-right-radius: 6px; border-bottom-right-radius: 6px;
-	border-top-left-radius: 0px; border-bottom-left-radius: 0px;}</string>
-                                   </property>
-                                   <property name="text">
-                                    <string/>
-                                   </property>
-                                   <property name="icon">
-                                    <iconset resource="resources_rc.qrc">
-                                     <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
-                                   </property>
-                                   <property name="iconSize">
-                                    <size>
-                                     <width>20</width>
-                                     <height>20</height>
-                                    </size>
-                                   </property>
-                                  </widget>
-                                 </item>
-                                </layout>
-                               </widget>
-                              </item>
-                             </layout>
-                            </widget>
-                           </item>
                           </layout>
                          </widget>
                         </item>
@@ -7290,8 +7203,8 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>612</width>
-                          <height>701</height>
+                          <width>100</width>
+                          <height>110</height>
                          </rect>
                         </property>
                         <property name="sizePolicy">
@@ -8726,12 +8639,6 @@ border-radius: 6px</string>
    <class>QCustomStackedWidget</class>
    <extends>QStackedWidget</extends>
    <header location="global">CustomWidgets.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>QCustomSlideMenu</class>
-   <extends>QWidget</extends>
-   <header location="global">Custom_Widgets.Widgets.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
