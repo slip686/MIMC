@@ -1229,6 +1229,7 @@ class DraggableCell(QWidget):
 
     def __init__(self, main_window, text=None, doc_id=None, row=None):
         super(DraggableCell, self).__init__()
+        self.main_window = main_window
         self.cursor_pos = None
         self.setStyleSheet(u'border-top: 0.5px solid rgb(136, 136, 136)')
         self.doc_id = doc_id
@@ -1245,7 +1246,7 @@ class DraggableCell(QWidget):
         self.layout.addWidget(self.textLabel)
         self.setLayout(self.layout)
         self.textLabel.clicked.connect(lambda: self.parent().parent().row_select(self.row_num, self.doc_id))
-        self.textLabel.clicked.connect(lambda: main_window.document_view_dialog())
+        self.textLabel.clicked.connect(lambda: self.main_window.document_view_dialog())
 
     def translate_cursor_pos(self, position: QPoint):
         self.cursor_pos = self.mapToParent(position)
@@ -2459,7 +2460,8 @@ def iterate_row(parent_table: QCustomTableWidget, parent_column_logical_index: i
         item = parent_table.cellWidget(row_num, parent_column_logical_index)
         if item:
             child_table.setCellWidget(row_num, child_column_logical_index,
-                                      DraggableCell(item.text, doc_id=item.doc_id, row=item.row_num))
+                                      DraggableCell(main_window=item.main_window, text=item.text,
+                                                    doc_id=item.doc_id, row=item.row_num))
 
 
 class QFrameWithResizeSignal(QFrame):
