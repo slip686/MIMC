@@ -99,7 +99,7 @@ QPushButton:pressed {
     <item>
      <widget class="QCustomStackedWidget" name="mainMenuStack">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="loginMenu">
        <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -227,7 +227,7 @@ QPushButton:pressed {
                  <string notr="true"/>
                 </property>
                 <property name="currentIndex">
-                 <number>0</number>
+                 <number>4</number>
                 </property>
                 <widget class="QWidget" name="loginPage">
                  <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -1518,7 +1518,7 @@ MIMC Projects</string>
                          </widget>
                         </item>
                         <item>
-                         <widget class="QLineEdit" name="companyNameEntering">
+                         <widget class="ExtendedComboBox" name="companyNameComboBox">
                           <property name="minimumSize">
                            <size>
                             <width>270</width>
@@ -1537,34 +1537,12 @@ MIMC Projects</string>
                            </font>
                           </property>
                           <property name="styleSheet">
-                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                           <string notr="true">QComboBox::drop-down {width: 0px}
+QComboBox {background-color: rgb(184, 184, 184); color : black;}
+</string>
                           </property>
-                          <property name="placeholderText">
-                           <string>*Company Name</string>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
-                         <widget class="QComboBox" name="jobTitleComboBox">
-                          <property name="minimumSize">
-                           <size>
-                            <width>270</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>270</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>15</pointsize>
-                           </font>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                          <property name="editable">
+                           <bool>true</bool>
                           </property>
                           <property name="currentText">
                            <string/>
@@ -1576,7 +1554,7 @@ MIMC Projects</string>
                            </size>
                           </property>
                           <property name="placeholderText">
-                           <string>*Job Title</string>
+                           <string>*Company Name</string>
                           </property>
                           <property name="frame">
                            <bool>false</bool>
@@ -1584,26 +1562,36 @@ MIMC Projects</string>
                           <property name="modelColumn">
                            <number>0</number>
                           </property>
-                          <item>
-                           <property name="text">
-                            <string>Chief Project Engineer</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Contractor</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Designer</string>
-                           </property>
-                          </item>
-                          <item>
-                           <property name="text">
-                            <string>Technical Client</string>
-                           </property>
-                          </item>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLineEdit" name="companyTIN">
+                          <property name="minimumSize">
+                           <size>
+                            <width>270</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="maximumSize">
+                           <size>
+                            <width>270</width>
+                            <height>30</height>
+                           </size>
+                          </property>
+                          <property name="font">
+                           <font>
+                            <pointsize>15</pointsize>
+                           </font>
+                          </property>
+                          <property name="styleSheet">
+                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                          </property>
+                          <property name="readOnly">
+                           <bool>true</bool>
+                          </property>
+                          <property name="placeholderText">
+                           <string>*TIN</string>
+                          </property>
                          </widget>
                         </item>
                         <item alignment="Qt::AlignHCenter">
@@ -8668,6 +8656,11 @@ border-radius: 6px</string>
    <extends>QFrame</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>ExtendedComboBox</class>
+   <extends>QComboBox</extends>
+   <header location="global">CustomWidgets.h</header>
   </customwidget>
  </customwidgets>
  <resources>

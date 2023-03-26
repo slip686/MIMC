@@ -23,8 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QWidget)
 
 from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget,
-    QCustomTitleBar, QFrameWithResizeSignal)
+    ExtendedComboBox, QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget,
+    QCustomTableWidget, QCustomTitleBar, QFrameWithResizeSignal)
 import resources_rc_rc
 import resources_rc_rc
 import resources_rc_rc
@@ -665,30 +665,30 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_20.addWidget(self.lastNameEntering)
 
-        self.companyNameEntering = QLineEdit(self.regSubContainer_4)
-        self.companyNameEntering.setObjectName(u"companyNameEntering")
-        self.companyNameEntering.setMinimumSize(QSize(270, 30))
-        self.companyNameEntering.setMaximumSize(QSize(270, 30))
-        self.companyNameEntering.setFont(font1)
-        self.companyNameEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.companyNameComboBox = ExtendedComboBox(self.regSubContainer_4)
+        self.companyNameComboBox.setObjectName(u"companyNameComboBox")
+        self.companyNameComboBox.setMinimumSize(QSize(270, 30))
+        self.companyNameComboBox.setMaximumSize(QSize(270, 30))
+        self.companyNameComboBox.setFont(font1)
+        self.companyNameComboBox.setStyleSheet(u"QComboBox::drop-down {width: 0px}\n"
+"QComboBox {background-color: rgb(184, 184, 184); color : black;}\n"
+"")
+        self.companyNameComboBox.setEditable(True)
+        self.companyNameComboBox.setIconSize(QSize(16, 16))
+        self.companyNameComboBox.setFrame(False)
+        self.companyNameComboBox.setModelColumn(0)
 
-        self.verticalLayout_20.addWidget(self.companyNameEntering)
+        self.verticalLayout_20.addWidget(self.companyNameComboBox)
 
-        self.jobTitleComboBox = QComboBox(self.regSubContainer_4)
-        self.jobTitleComboBox.addItem("")
-        self.jobTitleComboBox.addItem("")
-        self.jobTitleComboBox.addItem("")
-        self.jobTitleComboBox.addItem("")
-        self.jobTitleComboBox.setObjectName(u"jobTitleComboBox")
-        self.jobTitleComboBox.setMinimumSize(QSize(270, 30))
-        self.jobTitleComboBox.setMaximumSize(QSize(270, 30))
-        self.jobTitleComboBox.setFont(font1)
-        self.jobTitleComboBox.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
-        self.jobTitleComboBox.setIconSize(QSize(16, 16))
-        self.jobTitleComboBox.setFrame(False)
-        self.jobTitleComboBox.setModelColumn(0)
+        self.companyTIN = QLineEdit(self.regSubContainer_4)
+        self.companyTIN.setObjectName(u"companyTIN")
+        self.companyTIN.setMinimumSize(QSize(270, 30))
+        self.companyTIN.setMaximumSize(QSize(270, 30))
+        self.companyTIN.setFont(font1)
+        self.companyTIN.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.companyTIN.setReadOnly(True)
 
-        self.verticalLayout_20.addWidget(self.jobTitleComboBox)
+        self.verticalLayout_20.addWidget(self.companyTIN)
 
         self.proceedBtn_3 = QPushButton(self.regSubContainer_4)
         self.proceedBtn_3.setObjectName(u"proceedBtn_3")
@@ -3449,8 +3449,8 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.mainMenuStack.setCurrentIndex(1)
-        self.regStackedWidget.setCurrentIndex(0)
+        self.mainMenuStack.setCurrentIndex(0)
+        self.regStackedWidget.setCurrentIndex(4)
         self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_3.setCurrentIndex(1)
         self.interfaceBodyStackedWidget.setCurrentIndex(2)
@@ -3517,14 +3517,9 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(whatsthis)
         self.nameEntering.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Name", None))
         self.lastNameEntering.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Last Name", None))
-        self.companyNameEntering.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Company Name", None))
-        self.jobTitleComboBox.setItemText(0, QCoreApplication.translate("MainWindow", u"Chief Project Engineer", None))
-        self.jobTitleComboBox.setItemText(1, QCoreApplication.translate("MainWindow", u"Contractor", None))
-        self.jobTitleComboBox.setItemText(2, QCoreApplication.translate("MainWindow", u"Designer", None))
-        self.jobTitleComboBox.setItemText(3, QCoreApplication.translate("MainWindow", u"Technical Client", None))
-
-        self.jobTitleComboBox.setCurrentText("")
-        self.jobTitleComboBox.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Job Title", None))
+        self.companyNameComboBox.setCurrentText("")
+        self.companyNameComboBox.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Company Name", None))
+        self.companyTIN.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*TIN", None))
         self.proceedBtn_3.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
 #if QT_CONFIG(shortcut)
         self.proceedBtn_3.setShortcut(QCoreApplication.translate("MainWindow", u"Return, Space", None))

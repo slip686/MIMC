@@ -2,8 +2,9 @@ from psycopg2.extensions import AsIs
 
 
 def user_data():
-    query = """SELECT user_id, email, first_name, last_name, company_name, job_title, notification_table  
-                FROM users WHERE email = %s"""
+    # query = """SELECT user_id, email, first_name, last_name, company_name, notification_table, ITN
+    #             FROM users WHERE email = %s"""
+    query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM users WHERE email = %s) row)'''
     return query
 
 

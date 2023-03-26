@@ -134,14 +134,15 @@ class MainWindow(QMainWindow):
                 self.ui.stackedWidget_3.slideInIdx(2)
 
         def get_current_user_data():
-            self.logged_user_data = self.session.select_query_fetchone(user_data(), self.session.email)
-            self.logged_user.user_id = self.logged_user_data[0]
-            self.logged_user.user_email = self.logged_user_data[1]
-            self.logged_user.first_name = self.logged_user_data[2]
-            self.logged_user.last_name = self.logged_user_data[3]
-            self.logged_user.company_name = self.logged_user_data[4]
-            self.logged_user.job_title = self.logged_user_data[5]
-            self.logged_user.notification_table = self.logged_user_data[6]
+            self.logged_user_data = self.session.select_query_fetchone(user_data(), self.session.email)[0][0]
+            print(self.logged_user_data)
+            self.logged_user.user_id = self.logged_user_data['user_id']
+            self.logged_user.user_email = self.logged_user_data['email']
+            self.logged_user.first_name = self.logged_user_data['first_name']
+            self.logged_user.last_name = self.logged_user_data['last_name']
+            self.logged_user.company_name = self.logged_user_data['company_name']
+            self.logged_user.TIN = self.logged_user_data['TIN']
+            self.logged_user.notification_table = self.logged_user_data['notification_table']
 
         def clear_widgets():
             for i in reversed(range(self.ui.flowlayout.count())):
@@ -246,7 +247,8 @@ class MainWindow(QMainWindow):
             key = get_key(self.new_user.Email)
             self.new_user.Hash_key = hash(key)
             sending_process = Email_reg_sending(self.new_user.Email, key)
-            if self.ui.termsAcception.checkState():
+            print(self.ui.termsAcception.checkState().value)
+            if self.ui.termsAcception.checkState().value:
                 sending_process.start()
                 if not sending_process.correct_email:
                     self.ui.infoLabel_3.setText('Incorrect e-mail address')
@@ -255,7 +257,7 @@ class MainWindow(QMainWindow):
                 elif sending_process.duplicate_email:
                     self.ui.infoLabel_3.setText('Email already exists')
                 else:
-                    self.ui.infoLabel_3.setText('Message sent successfully')
+                    self.ui.infoLabel_3.setText('')
                     self.ui.regStackedWidget.slideInIdx(2)
             else:
                 self.ui.infoLabel_3.setText('You should accept terms')
@@ -325,8 +327,9 @@ class MainWindow(QMainWindow):
             self.ui.keyEntering.setText('')
             self.ui.nameEntering.setText('')
             self.ui.lastNameEntering.setText('')
-            self.ui.companyNameEntering.setText('')
-            self.ui.jobTitleComboBox.setCurrentIndex(0)
+            self.ui.companyTIN.setText('')
+            self.ui.companyNameComboBox.setCurrentIndex(0)
+            self.ui.companyNameComboBox.setCurrentText('')
             self.ui.infoLabel_3.setText('')
             self.ui.termsAcception.setChecked(False)
 
@@ -363,15 +366,18 @@ class MainWindow(QMainWindow):
         def create_user():
             self.new_user.name = self.ui.nameEntering.text(),
             self.new_user.last_name = self.ui.lastNameEntering.text()
-            self.new_user.company_name = self.ui.companyNameEntering.text()
-            self.new_user.job_title = self.ui.jobTitleComboBox.currentText()
+            self.new_user.company_name = self.ui.companyNameComboBox.currentText()
+            if self.ui.companyTIN.text():
+                self.new_user.TIN = self.ui.companyTIN.text()
+            else:
+                self.new_user.TIN = 'null'
             self.insertion_process = push_user_data(
                 self.new_user.Email,
                 self.new_user.password,
                 self.new_user.name,
                 self.new_user.last_name,
                 self.new_user.company_name,
-                self.new_user.job_title)
+                self.new_user.TIN)
             self.insertion_process.start()
             if self.insertion_process.successful_insertion == 1:
                 new_user_data_clear()

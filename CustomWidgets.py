@@ -1,10 +1,10 @@
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData, QEasingCurve
+    QMimeData, QEasingCurve, QSortFilterProxyModel
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
-    QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator
+    QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter
 from core import *
 
 
@@ -2546,6 +2546,50 @@ class QCustomSlideFrame3(QFrame):
         self.animation.setStartValue(self.width())
         self.animation.setEndValue(self.expanded_width)
         self.animation.start()
+
+
+class ExtendedComboBox(QComboBox):
+    def __init__(self, parent=None):
+        super(ExtendedComboBox, self).__init__(parent)
+
+        self.setFocusPolicy(Qt.StrongFocus)
+        self.setEditable(True)
+
+        # add a filter model to filter matching items
+        self.pFilterModel = QSortFilterProxyModel(self)
+        self.pFilterModel.setFilterCaseSensitivity(Qt.CaseInsensitive)
+        self.pFilterModel.setSourceModel(self.model())
+
+        # add a completer, which uses the filter model
+        self.completer = QCompleter(self.pFilterModel, self)
+        # always show all (filtered) completions
+        self.completer.setCompletionMode(QCompleter.UnfilteredPopupCompletion)
+        self.setCompleter(self.completer)
+
+        # connect signals
+        self.lineEdit().textEdited[str].connect(self.pFilterModel.setFilterFixedString)
+        self.completer.activated.connect(self.on_completer_activated)
+
+    # on selection of an item from the completer, select the corresponding item from combobox
+    def on_completer_activated(self, text):
+        if text:
+            index = self.findText(text)
+            self.setCurrentIndex(index)
+            self.activated[str].emit(self.itemText(index))
+
+    # on model change, update the models of the filter and completer as well
+    def setModel(self, model):
+        super(ExtendedComboBox, self).setModel(model)
+        self.pFilterModel.setSourceModel(model)
+        self.completer.setModel(self.pFilterModel)
+
+    # on model column change, update the model column of the filter and completer as well
+    def setModelColumn(self, column):
+        self.completer.setCompletionColumn(column)
+        self.pFilterModel.setFilterKeyColumn(column)
+        super(ExtendedComboBox, self).setModelColumn(column)
+
+
 
 
 

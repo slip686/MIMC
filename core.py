@@ -123,6 +123,7 @@ class Email_reg_sending:
                     msg = MIMEMultipart()
 
                     message = self.key
+                    print(message)
 
                     # setup the parameters of the message
                     password = "lboxuldvmrxzorna"
@@ -345,13 +346,13 @@ class user_connection:
 
 
 class push_user_data:
-    def __init__(self, email, password, name, last_name, company_name, job_title):
-        self.job_title = job_title
+    def __init__(self, email, password, name, last_name, company_name, TIN):
         self.company_name = company_name
         self.last_name = last_name
         self.name = name
         self.password = password
         self.email = email
+        self.TIN = TIN
         self.successful_insertion = 0
         self.stash_url = None
 
@@ -372,27 +373,31 @@ class push_user_data:
                                     port=template["port"],
                                     database=template["database"])
             cur = conn.cursor()
-            cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, job_title, 
-                            notification_table) VALUES (%s, %s, %s, %s, %s, %s)""",
-                        (self.email, self.name, self.last_name, self.company_name, self.job_title, self.email +
-                         '_notification'))
+            print('poop')
+            cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
+                            notification_table, tin) VALUES (%s, %s, %s, %s, %s, %s)""",
+                        (self.email, self.name, self.last_name, self.company_name, self.email +
+                         '_notification', self.TIN))
 
-            if self.job_title == 'Chief Project Engineer':
-                cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP chief_engineer").format(
-                    sql.Identifier(self.email),
-                    sql.Literal(self.password)))
-            elif self.job_title == 'Contractor':
-                cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP contractor").format(
-                    sql.Identifier(self.email),
-                    sql.Literal(self.password)))
-            elif self.job_title == 'Technical Client':
-                cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP technical_client").format(
-                    sql.Identifier(self.email),
-                    sql.Literal(self.password)))
-            elif self.job_title == 'Designer':
-                cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP designer").format(
-                    sql.Identifier(self.email),
-                    sql.Literal(self.password)))
+            cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1}").format(sql.Identifier(self.email),
+                                                                             sql.Literal(self.password)))
+
+            # if self.job_title == 'Chief Project Engineer':
+            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP chief_engineer").format(
+            #         sql.Identifier(self.email),
+            #         sql.Literal(self.password)))
+            # elif self.job_title == 'Contractor':
+            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP contractor").format(
+            #         sql.Identifier(self.email),
+            #         sql.Literal(self.password)))
+            # elif self.job_title == 'Technical Client':
+            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP technical_client").format(
+            #         sql.Identifier(self.email),
+            #         sql.Literal(self.password)))
+            # elif self.job_title == 'Designer':
+            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP designer").format(
+            #         sql.Identifier(self.email),
+            #         sql.Literal(self.password)))
 
             cur.execute(create_notification_table(), (AsIs(self.email),))
             conn.commit()
@@ -456,7 +461,7 @@ class User:
         self.first_name = None
         self.last_name = None
         self.company_name = None
-        self.job_title = None
+        self.TIN = None
         self.notification_table = None
         self.user_projects_table = None
 
@@ -729,7 +734,7 @@ class Reg_data:
         self.name = None
         self.last_name = None
         self.company_name = None
-        self.job_title = None
+        self.TIN = None
 
 
 
