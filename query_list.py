@@ -45,12 +45,14 @@ def grant_privs_to_user():
     query = 'GRANT SELECT ON TABLE public.users TO "%s"'
     return query
 
+
 def grant_select_privs_to_user_on_project():
     query = 'GRANT SELECT ON TABLE %s TO "%s"'
     return query
 
-def grant_select_update_insert_privs_to_user_on_project():
-    query = 'GRANT SELECT, UPDATE, INSERT ON TABLE %s TO "%s"'
+
+def grant_select_update_insert_privs_to_user_on_project(table_name, user_email):
+    query = ['GRANT SELECT, UPDATE, INSERT ON TABLE %s TO "%s"', (table_name, user_email)]
     return query
 
 
@@ -65,13 +67,21 @@ def grant_seq_privs_to_project_engineer():
 
 
 def reg_new_project(picture, name, owner_id, address, time_limits, status, repo_id):
-    query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status,  
-                                            users_access_table, repo_id, docs_table, main_files_table,
-                                            support_files_table, doc_structure_table) 
-                    VALUES (%s, %s, %s, %s, %s, %s, '%s users', %s, '%s docs', '%s main_files', 
+    # query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status,
+    #                                         users_access_table, repo_id, docs_table, main_files_table,
+    #                                         support_files_table, doc_structure_table)
+    #                 VALUES (%s, %s, %s, %s, %s, %s, '%s users', %s, '%s docs', '%s main_files',
+    #                         '%s support_files', '%s docs_structure')""",
+    #               (picture, name, owner_id, address, time_limits, status, AsIs(name),
+    #                repo_id, AsIs(name), AsIs(name), AsIs(name), AsIs(name))]
+    # return query_list
+
+    query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status, 
+                                    repo_id, docs_table, main_files_table, support_files_table, doc_structure_table) 
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, '%s docs', '%s main_files', 
                             '%s support_files', '%s docs_structure')""",
-                  (picture, name, owner_id, address, time_limits, status, AsIs(name),
-                   repo_id, AsIs(name), AsIs(name), AsIs(name), AsIs(name))]
+                  (picture, name, owner_id, address, time_limits, status, repo_id, AsIs(name)
+                   , AsIs(name), AsIs(name), AsIs(name))]
     return query_list
 
 
@@ -80,9 +90,9 @@ def get_new_project_id():
     return query
 
 
-def insert_into_users_projects_party(user_id, project_id):
-    query = ["""INSERT INTO users_projects_party (user_id, project_id) VALUES (%s, %s)""",
-             (user_id, project_id)]
+def insert_into_users_projects_party(user_id, project_id, job_title):
+    query = ["""INSERT INTO users_projects_party (user_id, project_id, job_title) VALUES (%s, %s, %s)""",
+             (user_id, project_id, job_title)]
     return query
 
 
@@ -101,6 +111,11 @@ def reg_new_docs_table(name):
             document_folder varchar
             )""", (AsIs(name),)]
     return query_list
+
+
+def grant_usage_on_sequence(seq_name, user_email):
+    query = 'GRANT USAGE ON SEQUENCE "{}" TO "{}"'.format(seq_name, user_email)
+    return query
 
 
 def reg_new_design_project_docs_structure(name):
@@ -189,13 +204,22 @@ def retrieve_company_list():
     return query
 
 
+# def retrieve_company_users_list():
+#     query = """SELECT user_id, first_name, last_name FROM users WHERE company_name = %s AND job_title = %s"""
+#     return query
+
+# def retrieve_company_users_list():
+#     query = """SELECT json_agg(user_id, first_name, last_name) FROM users WHERE company_name = %s"""
+#     return query
+
 def retrieve_company_users_list():
-    query = """SELECT user_id, first_name, last_name FROM users WHERE company_name = %s AND job_title = %s"""
+    # SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)
+    query = """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)"""
     return query
 
 
 def get_user_data():
-    query = """SELECT email, first_name, last_name, company_name, job_title FROM users WHERE user_id = %s"""
+    query = """SELECT email, first_name, last_name, company_name FROM users WHERE user_id = %s"""
     return query
 
 

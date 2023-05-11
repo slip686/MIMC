@@ -47,10 +47,6 @@ class MainWindow(QMainWindow):
         self.ui.initialPermitDocsStructureTreeWidget.patterns_list = []
         self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
         self.ui.homeBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(1))
-        self.ui.comboBox_10.hide()
-        self.ui.comboBox_11.hide()
-        self.ui.comboBox_12.hide()
-        self.ui.comboBox_13.hide()
         self.ui.flowlayout = FlowLayout(self.ui.widget_4)
         self.ui.flowlayout.setSpacing(40)
         self.ui.flowlayout.setContentsMargins(QMargins(50, 50, 50, 50))
@@ -67,6 +63,7 @@ class MainWindow(QMainWindow):
         self.current_construction_docs_folder_path = 'All Documents'
         self.current_init_permission_docs_folder = None
         self.current_init_permission_docs_folder_path = 'All Documents'
+        self.users_data_from_db = None
 
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
@@ -141,7 +138,7 @@ class MainWindow(QMainWindow):
             self.logged_user.first_name = self.logged_user_data['first_name']
             self.logged_user.last_name = self.logged_user_data['last_name']
             self.logged_user.company_name = self.logged_user_data['company_name']
-            self.logged_user.TIN = self.logged_user_data['TIN']
+            self.logged_user.TIN = self.logged_user_data['tin']
             self.logged_user.notification_table = self.logged_user_data['notification_table']
 
         def clear_widgets():
@@ -164,22 +161,6 @@ class MainWindow(QMainWindow):
                     self.project_widget.Time.setText(project_data_dict['time_limits'])
                     self.project_widget.project_picture = project_data_dict['picture']
                     self.project_widget_list.append(self.project_widget)
-                    # self.project_widget.clicked.connect(lambda: self.get_project_structure())
-
-                    # def get_current_project_docs_dicts_list():
-                    #     self.current_project_docs_dicts_list = self.session.select_query_fetchall(get_docs(),
-                    #                                                                               AsIs(
-                    #                                                                                   self.project_widget.project_data_dict[
-                    #                                                                                       'project_name']))[
-                    #         0][0]
-
-                    # self.project_widget.clicked.connect(lambda: get_current_project_docs_dicts_list())
-
-                    # def fill_table_at_start():
-                    #     for i in ['design', 'construction', 'init_permit']:
-                    #         self.fill_table(doc_type=i)
-
-                    # self.project_widget.clicked.connect(lambda: fill_table_at_start())
 
                 for i in self.project_widget_list:
                     self.ui.flowlayout.addWidget(i)
@@ -328,8 +309,6 @@ class MainWindow(QMainWindow):
             self.ui.nameEntering.setText('')
             self.ui.lastNameEntering.setText('')
             self.ui.companyTIN.setText('')
-            self.ui.companyNameComboBox.setCurrentIndex(0)
-            self.ui.companyNameComboBox.setCurrentText('')
             self.ui.infoLabel_3.setText('')
             self.ui.termsAcception.setChecked(False)
 
@@ -348,10 +327,6 @@ class MainWindow(QMainWindow):
             self.ui.comboBox_8.clear()
             self.ui.comboBox_9.clear()
             self.ui.comboBox_2.clear()
-            self.ui.comboBox_10.clear()
-            self.ui.comboBox_11.clear()
-            self.ui.comboBox_12.clear()
-            self.ui.comboBox_13.clear()
 
         def exist_user_data_clear():
             self.exist_user = Reg_data(None, None)
@@ -364,26 +339,44 @@ class MainWindow(QMainWindow):
             self.ui.infoLabel_9.setText('')
 
         def create_user():
-            self.new_user.name = self.ui.nameEntering.text(),
+            self.ui.infoLabel_6.setText('')
+            self.new_user.name = self.ui.nameEntering.text()
             self.new_user.last_name = self.ui.lastNameEntering.text()
-            self.new_user.company_name = self.ui.companyNameComboBox.currentText()
-            if self.ui.companyTIN.text():
-                self.new_user.TIN = self.ui.companyTIN.text()
+            self.new_user.TIN = self.ui.companyTIN.text()
+            if self.new_user.name and self.new_user.last_name and self.new_user.TIN:
+                if len(self.new_user.TIN) == 10:
+                    company = get_company(self.new_user.TIN)
+                    if company.get('status') == 'OK':
+                        self.new_user.company_name = company.get('name')
+                        self.insertion_process = push_user_data(
+                            self.new_user.Email,
+                            self.new_user.password,
+                            self.new_user.name,
+                            self.new_user.last_name,
+                            self.new_user.company_name,
+                            self.new_user.TIN)
+                        self.insertion_process.start()
+                        if self.insertion_process.successful_insertion == 1:
+                            new_user_data_clear()
+                            self.ui.regStackedWidget.slideInIdx(5)
+                        else:
+                            self.ui.infoLabel_6.setText('Fault while writing to database')
+                    else:
+                        self.ui.infoLabel_6.setText('Fault while getting company data')
+                else:
+                    self.ui.infoLabel_6.setText('Wrong format TIN')
+                    self.ui.companyTIN.setStyleSheet(u'background-color: rgb(184, 184, 184); color : black;'
+                                                     u'border: 2px solid rgb(93, 0, 23)')
             else:
-                self.new_user.TIN = 'null'
-            self.insertion_process = push_user_data(
-                self.new_user.Email,
-                self.new_user.password,
-                self.new_user.name,
-                self.new_user.last_name,
-                self.new_user.company_name,
-                self.new_user.TIN)
-            self.insertion_process.start()
-            if self.insertion_process.successful_insertion == 1:
-                new_user_data_clear()
-                self.ui.regStackedWidget.slideInIdx(5)
-            else:
-                self.ui.infoLabel_6.setText('Something went wrong')
+                if not self.new_user.name:
+                    self.ui.nameEntering.setStyleSheet(u'background-color: rgb(184, 184, 184); color : black;'
+                                                       u'border: 2px solid rgb(93, 0, 23)')
+                if not self.new_user.last_name:
+                    self.ui.lastNameEntering.setStyleSheet(u'background-color: rgb(184, 184, 184); color : black;'
+                                                           u'border: 2px solid rgb(93, 0, 23)')
+                if not self.new_user.TIN:
+                    self.ui.companyTIN.setStyleSheet(u'background-color: rgb(184, 184, 184); color : black;'
+                                                     u'border: 2px solid rgb(93, 0, 23)')
 
         def login_with_saving_option():
             if self.ui.rememberCheckBox.isChecked():
@@ -397,185 +390,132 @@ class MainWindow(QMainWindow):
                 start_session(self.ui.emailEntering.text(),
                               self.ui.passEntering.text())
 
-        def set_users_list_comboBox_7(company_name):
-            self.ui.comboBox_7.clear()
-            for _ in (
-                    self.session.select_query_fetchall(retrieve_company_users_list(), company_name,
-                                                       'Chief Project Engineer')):
-                self.ui.comboBox_10.addItem(str(_[0]))
-                self.ui.comboBox_7.addItem(_[1] + ' ' + _[2])
+        def highlight_unfilled(field, info_label=None, text=None):
+            if isinstance(field, QComboBox):
+                if not field.currentText():
+                    field.setStyleSheet(
+                        u"background-color: rgb(184, 184, 184); color : black; border-style: "
+                        u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
+                    if info_label:
+                        info_label.setText(text)
+                    return False
+                else:
+                    return True
+            if isinstance(field, (QLineEdit, CQLineEdit)):
+                if not field.text():
+                    field.setStyleSheet(
+                        u"background-color: rgb(184, 184, 184); color : black; border-style: "
+                        u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
+                    if info_label:
+                        info_label.setText(text)
+                    return False
+                else:
+                    return True
 
-        def set_users_list_comboBox_8(company_name):
-            self.ui.comboBox_8.clear()
-            for _ in (self.session.select_query_fetchall(retrieve_company_users_list(), company_name, 'Contractor')):
-                self.ui.comboBox_11.addItem(str(_[0]))
-                self.ui.comboBox_8.addItem(_[1] + ' ' + _[2])
+        def new_project_adding_process_page1():
+            lineEdit_list = [self.ui.lineEdit_4, self.ui.lineEdit_3, self.ui.lineEdit_2, self.ui.lineEdit]
+            lines_check_successful = False
+            for line in lineEdit_list:
+                lines_check_successful = highlight_unfilled(line, info_label=self.ui.label_10,
+                                                            text='Unfilled parameter')
+            if lines_check_successful:
+                if self.ui.lineEdit_3.text() not in self.session.select_query_fetchall(exist_project_check()):
+                    self.ui.newProjectStackedWidget.slideInIdx(1)
+                    self.ui.label_10.setText('')
+                    self.users_data_from_db = self.session.select_query_fetchall(retrieve_company_users_list())[0][0]
+                    company_set = {item['company_name'] for item in self.users_data_from_db}
+                    for i in company_set:
+                        self.ui.comboBox_4.addItem(i)
+                        self.ui.comboBox_5.addItem(i)
+                        self.ui.comboBox_6.addItem(i)
+                        self.ui.comboBox_3.addItem(i)
+                    for num in range(self.ui.comboBox_4.count()):
+                        if self.ui.comboBox_4.itemText(num) == self.logged_user.company_name:
+                            self.ui.comboBox_4.setCurrentIndex(num)
+                            for num_ in range(self.ui.comboBox_7.count()):
+                                if self.ui.comboBox_7.itemText(num_) == f'{self.logged_user.last_name} ' \
+                                                                        f'{self.logged_user.last_name}':
+                                    self.ui.comboBox_7.setCurrentIndex(num_)
+                else:
+                    self.ui.label_10.setText('*Project name already exists')
 
-        def set_users_list_comboBox_9(company_name):
-            self.ui.comboBox_9.clear()
-            for _ in (
-                    self.session.select_query_fetchall(retrieve_company_users_list(), company_name,
-                                                       'Technical Client')):
-                self.ui.comboBox_12.addItem(str(_[0]))
-                self.ui.comboBox_9.addItem(_[1] + ' ' + _[2])
+        def set_company_users_list(company_name, combo_box):
+            combo_box.clear()
+            for item in self.users_data_from_db:
+                if item['company_name'] == company_name:
+                    combo_box.addItem(f'{item["last_name"]} {item["first_name"]}', userData={'id': item['user_id'],
+                                      'email': item['email']})
 
-        def set_users_list_comboBox_2(company_name):
-            self.ui.comboBox_2.clear()
-            for _ in (self.session.select_query_fetchall(retrieve_company_users_list(), company_name, 'Designer')):
-                self.ui.comboBox_13.addItem(str(_[0]))
-                self.ui.comboBox_2.addItem(_[1] + ' ' + _[2])
-
-        def new_project_adding_process_begin():
-            if not self.ui.lineEdit_4.text():
-                self.ui.lineEdit_4.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                                                 u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-                self.ui.label_10.setText('*Choose picture')
-            elif not self.ui.lineEdit_3.text():
-                self.ui.lineEdit_3.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                                                 u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-                self.ui.label_10.setText('*Specify project name')
-            elif not self.ui.lineEdit_2.text():
-                self.ui.lineEdit_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                                                 u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-                self.ui.label_10.setText('*Specify address')
-            elif not self.ui.lineEdit.text():
-                self.ui.lineEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                                               u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-                self.ui.label_10.setText('*Specify time limits')
-            elif not self.session.select_query_fetchone(exist_project_check()) \
-                    or self.ui.lineEdit_3.text() not in self.session.select_query_fetchone(exist_project_check()):
-                self.ui.newProjectStackedWidget.slideInIdx(1)
-                self.ui.label_10.setText('')
-                for i in (self.session.select_query_fetchall(retrieve_company_list())):
-                    self.ui.comboBox_4.addItem(i[0])
-                    self.ui.comboBox_5.addItem(i[0])
-                    self.ui.comboBox_6.addItem(i[0])
-                    self.ui.comboBox_3.addItem(i[0])
-            else:
-                self.ui.label_10.setText('*Project name already exists')
-
-        def new_project_adding_process_end():
-            if not self.ui.comboBox_4.currentText():
-                self.ui.comboBox_4.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_5.currentText():
-                self.ui.comboBox_5.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_6.currentText():
-                self.ui.comboBox_6.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_3.currentText():
-                self.ui.comboBox_3.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_7.currentText():
-                self.ui.comboBox_7.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_8.currentText():
-                self.ui.comboBox_8.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_9.currentText():
-                self.ui.comboBox_9.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            elif not self.ui.comboBox_2.currentText():
-                self.ui.comboBox_2.setStyleSheet(
-                    u"background-color: rgb(184, 184, 184); color : black; border-style: "
-                    u"solid; border-width: 2px; border-color: rgb(93, 0, 23)")
-            else:
+        def new_project_adding_process_page2():
+            sequences = {}
+            combo_boxes = [self.ui.comboBox_2, self.ui.comboBox_3, self.ui.comboBox_4, self.ui.comboBox_5,
+                           self.ui.comboBox_6, self.ui.comboBox_7, self.ui.comboBox_8, self.ui.comboBox_9]
+            combo_box_check_successful = False
+            for box in combo_boxes:
+                combo_box_check_successful = highlight_unfilled(box)
+            if combo_box_check_successful:
                 new_project_adding = Project(self.ui.lineEdit_4.text(), self.ui.lineEdit_3.text(),
                                              self.logged_user.user_id, self.ui.lineEdit_2.text(),
                                              self.ui.lineEdit.text(), self.ui.comboBox.currentText(), self.session)
-
                 self.session.insert_query(new_project_adding.push_project_table_insert())
                 self.session.create_table_query(new_project_adding.create_docs_table)
                 self.session.create_table_query(new_project_adding.create_main_files_table)
                 self.session.create_table_query(new_project_adding.create_support_files_table)
-                self.session.create_table_query(new_project_adding.create_project_users_table)
                 self.session.create_table_query(new_project_adding.create_docs_structure_table)
+                sequences['docs_table_seq'] = f'{new_project_adding.name} docs_doc_id_seq'
+                sequences['main_files_table_seq'] = f'{new_project_adding.name} main_files_file_id_seq'
+                sequences['support_files_table_seq'] = f'{new_project_adding.name} support_files_id_seq'
+                sequences['docs_structure_table_seq'] = f'{new_project_adding.name} docs_structure_place_id_seq'
 
-                new_project_adding.chief_engineer.user_email = (self.session.select_query_fetchone(get_user_data(),
-                                                                                                   self.ui.comboBox_10.
-                                                                                                   currentText()))[0]
-                new_project_adding.chief_engineer.first_name = str(self.ui.comboBox_7.currentText()).split()[0]
-                new_project_adding.chief_engineer.last_name = str(self.ui.comboBox_7.currentText()).split()[1]
-                new_project_adding.chief_engineer.company_name = self.ui.comboBox_4.currentText()
-                new_project_adding.chief_engineer.job_title = (self.session.select_query_fetchone(get_user_data(),
-                                                                                                  self.ui.comboBox_10.
-                                                                                                  currentText()))[4]
-
-                new_project_adding.contractor.user_email = (self.session.select_query_fetchone(get_user_data(),
-                                                                                               self.ui.comboBox_11.
-                                                                                               currentText()))[0]
-                new_project_adding.contractor.first_name = (self.ui.comboBox_8.currentText()).split()[0]
-                new_project_adding.contractor.last_name = (self.ui.comboBox_8.currentText()).split()[1]
-                new_project_adding.contractor.company_name = self.ui.comboBox_5.currentText()
-                new_project_adding.contractor.job_title = (self.session.select_query_fetchone(get_user_data(),
-                                                                                              self.ui.comboBox_11.
-                                                                                              currentText()))[4]
-
-                new_project_adding.technical_client.user_email = (self.session.select_query_fetchone(get_user_data(),
-                                                                                                     self.ui.comboBox_12
-                                                                                                     .currentText()))[0]
-                new_project_adding.technical_client.first_name = (self.ui.comboBox_9.currentText()).split()[0]
-                new_project_adding.technical_client.last_name = (self.ui.comboBox_9.currentText()).split()[1]
-                new_project_adding.technical_client.company_name = self.ui.comboBox_6.currentText()
-                new_project_adding.technical_client.job_title = (self.session.select_query_fetchone(get_user_data(),
-                                                                                                    self.ui.comboBox_12.
-                                                                                                    currentText()))[4]
-
-                new_project_adding.designer.user_email = (self.session.select_query_fetchone(get_user_data(),
-                                                                                             self.ui.comboBox_13.
-                                                                                             currentText()))[0]
-                new_project_adding.designer.first_name = (self.ui.comboBox_2.currentText()).split()[0]
-                new_project_adding.designer.last_name = (self.ui.comboBox_2.currentText()).split()[1]
-                new_project_adding.designer.company_name = self.ui.comboBox_3.currentText()
-                new_project_adding.designer.job_title = (self.session.select_query_fetchone(get_user_data(),
-                                                                                            self.ui.comboBox_13.
-                                                                                            currentText()))[4]
+                new_project_adding.chief_engineer.user_email = self.ui.comboBox_7.itemData(
+                    self.ui.comboBox_7.currentIndex())['email']
+                new_project_adding.contractor.user_email = self.ui.comboBox_8.itemData(
+                    self.ui.comboBox_8.currentIndex())['email']
+                new_project_adding.technical_client.user_email = self.ui.comboBox_9.itemData(
+                    self.ui.comboBox_9.currentIndex())['email']
+                new_project_adding.designer.user_email = self.ui.comboBox_2.itemData(
+                    self.ui.comboBox_2.currentIndex())['email']
 
                 new_project_adding.project_id = self.session.select_query_fetchone(get_new_project_id(),
                                                                                    new_project_adding.name)[0]
 
-                self.session.insert_query(new_project_adding.push_project_chief_engineer_data())
-                self.session.insert_query(new_project_adding.push_project_contractor_data()[0])
-                self.session.insert_query(new_project_adding.push_project_technical_client_data()[0])
-                self.session.insert_query(new_project_adding.push_project_designer_data()[0])
+                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_7.itemData
+                                                                           (self.ui.comboBox_7.currentIndex())['id'],
+                                                                           new_project_adding.project_id,
+                                                                           'chief engineer'))
+                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_8.itemData
+                                                                           (self.ui.comboBox_8.currentIndex())['id'],
+                                                                           new_project_adding.project_id,
+                                                                           'contractor'))
+                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_9.itemData
+                                                                           (self.ui.comboBox_9.currentIndex())['id'],
+                                                                           new_project_adding.project_id,
+                                                                           'technical client'))
+                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_2.itemData
+                                                                           (self.ui.comboBox_2.currentIndex())['id'],
+                                                                           new_project_adding.project_id,
+                                                                           'designer'))
 
                 #######################################################################################
                 # GRANT USERS ACCESS TO PROJECT TABLES
                 #######################################################################################
-
-                self.session.insert_query(new_project_adding.push_project_contractor_data()[1])
-                for i in new_project_adding.push_project_contractor_data()[2]:
-                    self.session.insert_query(i)
-
-                self.session.insert_query(new_project_adding.push_project_technical_client_data()[1])
-                for i in new_project_adding.push_project_technical_client_data()[2]:
-                    self.session.insert_query(i)
-
-                self.session.insert_query(new_project_adding.push_project_designer_data()[1])
-                for i in new_project_adding.push_project_designer_data()[2]:
-                    self.session.insert_query(i)
+                project_tables = [new_project_adding.docs_table_name,
+                                  new_project_adding.main_files_table_name,
+                                  new_project_adding.support_files_table_name,
+                                  new_project_adding.docs_structure_table_name]
+                emails_list = [new_project_adding.chief_engineer.user_email,
+                               new_project_adding.contractor.user_email,
+                               new_project_adding.technical_client.user_email,
+                               new_project_adding.designer.user_email]
+                list_of_queries = [new_project_adding.grant_privs_on_tables_and_add_to_stash_group(
+                    project_tables, emails_list)]
+                for email in emails_list:
+                    for k, v in sequences.items():
+                        list_of_queries.append(grant_usage_on_sequence(v, email))
+                big_query = ';\n'.join(list_of_queries)
+                self.session.multiple_insert(big_query)
 
                 #######################################################################################
-
-                new_project_adding.project_id = self.session.select_query_fetchone(get_new_project_id(),
-                                                                                   new_project_adding.name)[0]
-
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_10.currentText(),
-                                                                           new_project_adding.project_id))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_11.currentText(),
-                                                                           new_project_adding.project_id))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_12.currentText(),
-                                                                           new_project_adding.project_id))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_13.currentText(),
-                                                                           new_project_adding.project_id))
 
                 self.ui.interfaceBodyStackedWidget.slideInIdx(1)
                 new_project_data_begin_clear()
@@ -1208,6 +1148,12 @@ class MainWindow(QMainWindow):
         self.ui.cancelRegBtn_3.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
 
         # regPage4 buttons
+        self.ui.nameEntering.textChanged.connect(lambda: self.ui.nameEntering.setStyleSheet(
+            u'background-color: rgb(184, 184, 184); color : black;'))
+        self.ui.lastNameEntering.textChanged.connect(lambda: self.ui.lastNameEntering.setStyleSheet(
+            u'background-color: rgb(184, 184, 184); color : black;'))
+        self.ui.companyTIN.textChanged.connect(lambda: self.ui.companyTIN.setStyleSheet(
+            u'background-color: rgb(184, 184, 184); color : black;'))
         self.ui.proceedBtn_3.clicked.connect(lambda: create_user())
         self.ui.cancelRegBtn_4.clicked.connect(lambda: new_user_data_clear())
         self.ui.cancelRegBtn_4.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
@@ -1247,7 +1193,7 @@ class MainWindow(QMainWindow):
         self.ui.newProjectBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(0))
         self.ui.newProjectBtn.clicked.connect(lambda: self.ui.newProjectStackedWidget.slideInIdx(0))
         self.ui.lineEdit_4.clicked.connect(lambda: get_picture_filepath())
-        self.ui.proceedNewProject.clicked.connect(lambda: new_project_adding_process_begin())
+        self.ui.proceedNewProject.clicked.connect(lambda: new_project_adding_process_page1())
         self.ui.backToNewProjectMenuBtn.clicked.connect(
             lambda: self.ui.newProjectStackedWidget.slideInIdx(0))
         self.ui.backToNewProjectMenuBtn.clicked.connect(lambda: new_project_data_end_clear())
@@ -1269,20 +1215,16 @@ class MainWindow(QMainWindow):
         self.ui.lineEdit_3.textChanged[str].connect(lambda: self.ui.label_10.setText(''))
         self.ui.lineEdit_2.textChanged[str].connect(lambda: self.ui.label_10.setText(''))
         self.ui.lineEdit.textChanged[str].connect(lambda: self.ui.label_10.setText(''))
-        self.ui.comboBox_4.currentIndexChanged.connect(lambda: set_users_list_comboBox_7(
-            self.ui.comboBox_4.currentText()))
-        self.ui.comboBox_5.currentIndexChanged.connect(lambda: set_users_list_comboBox_8(
-            self.ui.comboBox_5.currentText()))
-        self.ui.comboBox_6.currentIndexChanged.connect(lambda: set_users_list_comboBox_9(
-            self.ui.comboBox_6.currentText()))
-        self.ui.comboBox_3.currentIndexChanged.connect(lambda: set_users_list_comboBox_2(
-            self.ui.comboBox_3.currentText()))
-        self.ui.comboBox_10.setCurrentIndex(self.ui.comboBox_7.currentIndex())
-        self.ui.comboBox_11.setCurrentIndex(self.ui.comboBox_8.currentIndex())
-        self.ui.comboBox_12.setCurrentIndex(self.ui.comboBox_9.currentIndex())
-        self.ui.comboBox_13.setCurrentIndex(self.ui.comboBox_2.currentIndex())
-        self.ui.createNewProject.clicked.connect(lambda: new_project_adding_process_end())
+        self.ui.createNewProject.clicked.connect(lambda: new_project_adding_process_page2())
         self.ui.cancelNewProjectBtn.clicked.connect(lambda: new_project_data_begin_clear())
+        self.ui.comboBox_4.currentIndexChanged.connect(lambda: set_company_users_list(self.ui.comboBox_4.currentText(),
+                                                                                      self.ui.comboBox_7))
+        self.ui.comboBox_5.currentIndexChanged.connect(lambda: set_company_users_list(self.ui.comboBox_5.currentText(),
+                                                                                      self.ui.comboBox_8))
+        self.ui.comboBox_6.currentIndexChanged.connect(lambda: set_company_users_list(self.ui.comboBox_6.currentText(),
+                                                                                      self.ui.comboBox_9))
+        self.ui.comboBox_3.currentIndexChanged.connect(lambda: set_company_users_list(self.ui.comboBox_3.currentText(),
+                                                                                      self.ui.comboBox_2))
 
         # tree view elements
 
@@ -1780,16 +1722,24 @@ class MainWindow(QMainWindow):
                         table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
 
                     else:
-                        table.setCellWidget(row, 0, DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1, DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2, DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0,
+                                            DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 1,
+                                        DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 2,
+                                        DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8, DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 6,
+                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 7,
+                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 8,
+                                        DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'],
+                                                      row=row))
+                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'],
+                                                              row=row))
                     row += 1
 
                 if table == self.ui.constructionDocsTableWidget:
@@ -1797,16 +1747,24 @@ class MainWindow(QMainWindow):
                         place = ast.literal_eval(doc['place_id'])[-1]
                         table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
                     else:
-                        table.setCellWidget(row, 0, DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1, DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2, DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
+                        table.setCellWidget(row, 0,
+                                            DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 1,
+                                        DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 2,
+                                        DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
                     table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7, DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8, DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 6,
+                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 7,
+                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
+                    table.setCellWidget(row, 8,
+                                        DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'],
+                                                      row=row))
+                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'],
+                                                              row=row))
                     row += 1
 
                 if table == self.ui.initDocsTableWidget:

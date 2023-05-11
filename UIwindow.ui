@@ -99,7 +99,7 @@ QPushButton:pressed {
     <item>
      <widget class="QCustomStackedWidget" name="mainMenuStack">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="loginMenu">
        <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -1483,6 +1483,7 @@ MIMC Projects</string>
                           </property>
                           <property name="styleSheet">
                            <string notr="true">background-color: rgb(184, 184, 184); color : black;
+
 </string>
                           </property>
                           <property name="placeholderText">
@@ -1518,53 +1519,6 @@ MIMC Projects</string>
                          </widget>
                         </item>
                         <item>
-                         <widget class="ExtendedComboBox" name="companyNameComboBox">
-                          <property name="minimumSize">
-                           <size>
-                            <width>270</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                          <property name="maximumSize">
-                           <size>
-                            <width>270</width>
-                            <height>30</height>
-                           </size>
-                          </property>
-                          <property name="font">
-                           <font>
-                            <pointsize>15</pointsize>
-                           </font>
-                          </property>
-                          <property name="styleSheet">
-                           <string notr="true">QComboBox::drop-down {width: 0px}
-QComboBox {background-color: rgb(184, 184, 184); color : black;}
-</string>
-                          </property>
-                          <property name="editable">
-                           <bool>true</bool>
-                          </property>
-                          <property name="currentText">
-                           <string/>
-                          </property>
-                          <property name="iconSize">
-                           <size>
-                            <width>16</width>
-                            <height>16</height>
-                           </size>
-                          </property>
-                          <property name="placeholderText">
-                           <string>*Company Name</string>
-                          </property>
-                          <property name="frame">
-                           <bool>false</bool>
-                          </property>
-                          <property name="modelColumn">
-                           <number>0</number>
-                          </property>
-                         </widget>
-                        </item>
-                        <item>
                          <widget class="QLineEdit" name="companyTIN">
                           <property name="minimumSize">
                            <size>
@@ -1587,10 +1541,10 @@ QComboBox {background-color: rgb(184, 184, 184); color : black;}
                            <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
                           </property>
                           <property name="readOnly">
-                           <bool>true</bool>
+                           <bool>false</bool>
                           </property>
                           <property name="placeholderText">
-                           <string>*TIN</string>
+                           <string>*Company TIN</string>
                           </property>
                          </widget>
                         </item>
@@ -5486,7 +5440,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                     <string notr="true">background-color: rgb(136, 136, 136);</string>
                    </property>
                    <property name="currentIndex">
-                    <number>2</number>
+                    <number>0</number>
                    </property>
                    <widget class="QWidget" name="page">
                     <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -5508,7 +5462,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                      <item>
                       <widget class="QCustomStackedWidget" name="newProjectStackedWidget">
                        <property name="currentIndex">
-                        <number>1</number>
+                        <number>0</number>
                        </property>
                        <widget class="QWidget" name="page_9">
                         <layout class="QVBoxLayout" name="verticalLayout_57">
@@ -6148,9 +6102,15 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                          <item>
                           <widget class="QWidget" name="widget_6" native="true">
                            <property name="styleSheet">
-                            <string notr="true">background-color: rgb(135, 136, 135);</string>
+                            <string notr="true">QComboBox::drop-down:button{background-color: transparent}
+QComboBox::down-arrow{image: url(:/icon/icons/chevron-down.svg); width: 22; height: 22; margin-right: 6px}
+QComboBox::down-arrow:on{image: url(:/icon/icons/chevron-up.svg); width: 22; height: 22; margin-right: 6px}
+QComboBox {background-color: rgb(184, 184, 184); color : black}
+
+
+</string>
                            </property>
-                           <layout class="QVBoxLayout" name="verticalLayout_71">
+                           <layout class="QVBoxLayout" name="verticalLayout_39">
                             <property name="leftMargin">
                              <number>0</number>
                             </property>
@@ -6163,7 +6123,43 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                             <property name="bottomMargin">
                              <number>0</number>
                             </property>
-                            <item alignment="Qt::AlignHCenter|Qt::AlignVCenter">
+                            <item alignment="Qt::AlignHCenter">
+                             <widget class="QLabel" name="label_23">
+                              <property name="sizePolicy">
+                               <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+                                <horstretch>0</horstretch>
+                                <verstretch>0</verstretch>
+                               </sizepolicy>
+                              </property>
+                              <property name="minimumSize">
+                               <size>
+                                <width>150</width>
+                                <height>40</height>
+                               </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>150</width>
+                                <height>40</height>
+                               </size>
+                              </property>
+                              <property name="font">
+                               <font>
+                                <pointsize>20</pointsize>
+                               </font>
+                              </property>
+                              <property name="styleSheet">
+                               <string notr="true">background-color : transparent ; color : black;</string>
+                              </property>
+                              <property name="text">
+                               <string>Workgroup</string>
+                              </property>
+                              <property name="alignment">
+                               <set>Qt::AlignCenter</set>
+                              </property>
+                             </widget>
+                            </item>
+                            <item alignment="Qt::AlignHCenter">
                              <widget class="QFrame" name="frame_25">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
@@ -6269,7 +6265,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                     </property>
                                     <property name="font">
                                      <font>
-                                      <pointsize>20</pointsize>
+                                      <pointsize>16</pointsize>
                                      </font>
                                     </property>
                                     <property name="styleSheet">
@@ -6388,7 +6384,11 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true">
+</string>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                           <item>
                                            <property name="text">
@@ -6463,7 +6463,10 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                           <item>
                                            <property name="text">
@@ -6540,6 +6543,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                           <property name="styleSheet">
                                            <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
                                           </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
+                                          </property>
                                           <item>
                                            <property name="text">
                                             <string/>
@@ -6613,10 +6619,13 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                           <property name="placeholderText">
-                                           <string>Status</string>
+                                           <string/>
                                           </property>
                                           <property name="modelColumn">
                                            <number>0</number>
@@ -6701,7 +6710,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                     </property>
                                     <property name="font">
                                      <font>
-                                      <pointsize>20</pointsize>
+                                      <pointsize>16</pointsize>
                                      </font>
                                     </property>
                                     <property name="styleSheet">
@@ -6805,16 +6814,6 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                           </property>
                                          </widget>
                                         </item>
-                                        <item>
-                                         <widget class="QComboBox" name="comboBox_10">
-                                          <property name="maximumSize">
-                                           <size>
-                                            <width>0</width>
-                                            <height>0</height>
-                                           </size>
-                                          </property>
-                                         </widget>
-                                        </item>
                                         <item alignment="Qt::AlignHCenter">
                                          <widget class="QComboBox" name="comboBox_7">
                                           <property name="minimumSize">
@@ -6830,7 +6829,10 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                          </widget>
                                         </item>
@@ -6885,16 +6887,6 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                           </property>
                                          </widget>
                                         </item>
-                                        <item>
-                                         <widget class="QComboBox" name="comboBox_11">
-                                          <property name="maximumSize">
-                                           <size>
-                                            <width>0</width>
-                                            <height>0</height>
-                                           </size>
-                                          </property>
-                                         </widget>
-                                        </item>
                                         <item alignment="Qt::AlignHCenter">
                                          <widget class="QComboBox" name="comboBox_8">
                                           <property name="minimumSize">
@@ -6910,7 +6902,10 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                          </widget>
                                         </item>
@@ -6965,16 +6960,6 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                           </property>
                                          </widget>
                                         </item>
-                                        <item>
-                                         <widget class="QComboBox" name="comboBox_12">
-                                          <property name="maximumSize">
-                                           <size>
-                                            <width>0</width>
-                                            <height>0</height>
-                                           </size>
-                                          </property>
-                                         </widget>
-                                        </item>
                                         <item alignment="Qt::AlignHCenter">
                                          <widget class="QComboBox" name="comboBox_9">
                                           <property name="minimumSize">
@@ -6990,7 +6975,10 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                          </widget>
                                         </item>
@@ -7045,16 +7033,6 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                           </property>
                                          </widget>
                                         </item>
-                                        <item>
-                                         <widget class="QComboBox" name="comboBox_13">
-                                          <property name="maximumSize">
-                                           <size>
-                                            <width>0</width>
-                                            <height>0</height>
-                                           </size>
-                                          </property>
-                                         </widget>
-                                        </item>
                                         <item alignment="Qt::AlignHCenter">
                                          <widget class="QComboBox" name="comboBox_2">
                                           <property name="minimumSize">
@@ -7070,10 +7048,13 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">background-color: rgb(184, 184, 184); color : black;</string>
+                                           <string notr="true"/>
+                                          </property>
+                                          <property name="editable">
+                                           <bool>true</bool>
                                           </property>
                                           <property name="placeholderText">
-                                           <string>Status</string>
+                                           <string/>
                                           </property>
                                           <property name="modelColumn">
                                            <number>0</number>
@@ -8656,11 +8637,6 @@ border-radius: 6px</string>
    <extends>QFrame</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>ExtendedComboBox</class>
-   <extends>QComboBox</extends>
-   <header location="global">CustomWidgets.h</header>
   </customwidget>
  </customwidgets>
  <resources>

@@ -8,12 +8,10 @@ from email.mime.text import MIMEText
 import smtplib
 from smtplib import SMTPConnectError
 import psycopg2
-
 from psycopg2 import Error, sql
 from email_validate import validate
 import json
 from cryptography.fernet import Fernet
-
 from query_list import *
 from psycopg2.extensions import AsIs
 from PIL import Image
@@ -22,6 +20,13 @@ import os
 import platform
 import requests
 from threading import Thread
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+from selenium.common.exceptions import TimeoutException
+
 
 def get_platform():
     ops = platform.platform()[:3].lower()
@@ -292,6 +297,10 @@ class user_connection:
         self.cur.execute(query, args)
         return self.conn.commit()
 
+    def multiple_insert(self, query):
+        self.cur.execute(query)
+        return self.conn.commit()
+
     def close_session(self):
         self.connection_success = 0
         self.cur.close()
@@ -353,7 +362,7 @@ class push_user_data:
         self.password = password
         self.email = email
         self.TIN = TIN
-        self.successful_insertion = 0
+        self.successful_insertion = False
         self.stash_url = None
 
     def start(self):
@@ -373,14 +382,13 @@ class push_user_data:
                                     port=template["port"],
                                     database=template["database"])
             cur = conn.cursor()
-            print('poop')
             cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
                             notification_table, tin) VALUES (%s, %s, %s, %s, %s, %s)""",
                         (self.email, self.name, self.last_name, self.company_name, self.email +
                          '_notification', self.TIN))
 
-            cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1}").format(sql.Identifier(self.email),
-                                                                             sql.Literal(self.password)))
+            cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
+                sql.Identifier(self.email), sql.Literal(self.password)))
 
             # if self.job_title == 'Chief Project Engineer':
             #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP chief_engineer").format(
@@ -415,7 +423,7 @@ class push_user_data:
             data = f'email={self.email}&password={self.password}'
             requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
 
-            self.successful_insertion = 1
+            self.successful_insertion = True
         except (Exception, Error) as error:
             print("Error while working with PostgreSQL", error)
         finally:
@@ -495,9 +503,13 @@ class Project(User):
         self.cdocs_path = None
         self.ipdocs_path = None
         self.create_docs_table = reg_new_docs_table(self.name)
+        self.docs_table_name = f'{self.name} docs'
         self.create_main_files_table = reg_new_main_files_table(self.name)
+        self.main_files_table_name = f'{self.name} main_files'
         self.create_support_files_table = reg_new_support_files_table(self.name)
+        self.support_files_table_name = f'{self.name} support_files'
         self.create_docs_structure_table = reg_new_docs_structure(self.name)
+        self.docs_structure_table_name = f'{self.name} docs_structure'
         self.create_project_users_table = reg_new_users_access_table(self.name)
 
         self.get_stash_url()
@@ -621,66 +633,76 @@ class Project(User):
                                 self.time, self.owner_id, self.status, self.repo_id)
         return query
 
-    def push_project_chief_engineer_data(self):
-        query = push_users_data_to_users_access_table(
-            self.name, self.chief_engineer.user_email, self.chief_engineer.first_name, self.chief_engineer.last_name,
-            self.chief_engineer.company_name, self.chief_engineer.job_title)
-        self.add_user_to_stash_group(self.chief_engineer.user_email)
-        return query
+    def grant_privs_on_tables_and_add_to_stash_group(self, tables_list: list, emails_list: list):
+        queries_list = []
+        for table in tables_list:
+            for email in emails_list:
+                queries_list.append(f'GRANT SELECT, INSERT, UPDATE ON "{table}" TO "{email}"')
+        result_query = ';\n'.join(queries_list)
+        for email in emails_list:
+            self.add_user_to_stash_group(email)
+        return result_query
 
-    def push_project_contractor_data(self):
-        add_user_query = push_users_data_to_users_access_table(
-            self.name, self.contractor.user_email, self.contractor.first_name, self.contractor.last_name,
-            self.contractor.company_name, self.contractor.job_title)
-        grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-                                                                              AsIs(self.contractor.user_email))]
-        grant_select_update_insert_privs = [
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} docs"'), AsIs(self.contractor.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} main_files"'), AsIs(self.contractor.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} support_files"'), AsIs(self.contractor.user_email))]]
+    # def push_project_chief_engineer_data(self):
+    #     query = push_users_data_to_users_access_table(
+    #         self.name, self.chief_engineer.user_email, self.chief_engineer.first_name, self.chief_engineer.last_name,
+    #         self.chief_engineer.company_name, self.chief_engineer.job_title)
+    #     self.add_user_to_stash_group(self.chief_engineer.user_email)
+    #     return query
 
-        self.add_user_to_stash_group(self.contractor.user_email)
-        return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
+    # def push_project_contractor_data(self):
+    #     # add_user_query = push_users_data_to_users_access_table(
+    #     #     self.name, self.contractor.user_email, self.contractor.first_name, self.contractor.last_name,
+    #     #     self.contractor.company_name, self.contractor.job_title)
+    #     # grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
+    #     #                                                                       AsIs(self.contractor.user_email))]
+    #     grant_select_update_insert_privs = [
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} docs"'), AsIs(self.contractor.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.contractor.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.contractor.user_email))]]
+    #
+    #     self.add_user_to_stash_group(self.contractor.user_email)
+    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
 
-    def push_project_technical_client_data(self):
-        add_user_query = push_users_data_to_users_access_table(
-            self.name, self.technical_client.user_email, self.technical_client.first_name,
-            self.technical_client.last_name, self.technical_client.company_name, self.technical_client.job_title)
+    # def push_project_technical_client_data(self):
+    #     add_user_query = push_users_data_to_users_access_table(
+    #         self.name, self.technical_client.user_email, self.technical_client.first_name,
+    #         self.technical_client.last_name, self.technical_client.company_name, self.technical_client.job_title)
+    #
+    #     grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
+    #                                                                           AsIs(self.technical_client.user_email))]
+    #     grant_select_update_insert_privs = [
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} docs"'), AsIs(self.technical_client.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.technical_client.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.technical_client.user_email))]]
+    #
+    #     self.add_user_to_stash_group(self.technical_client.user_email)
+    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
 
-        grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-                                                                              AsIs(self.technical_client.user_email))]
-        grant_select_update_insert_privs = [
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} docs"'), AsIs(self.technical_client.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} main_files"'), AsIs(self.technical_client.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} support_files"'), AsIs(self.technical_client.user_email))]]
-
-        self.add_user_to_stash_group(self.technical_client.user_email)
-        return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
-
-    def push_project_designer_data(self):
-        add_user_query = push_users_data_to_users_access_table(
-            self.name, self.designer.user_email, self.designer.first_name, self.designer.last_name,
-            self.designer.company_name, self.designer.job_title)
-
-        grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-                                                                              AsIs(self.designer.user_email))]
-
-        grant_select_update_insert_privs = [
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} docs"'), AsIs(self.designer.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} main_files"'), AsIs(self.designer.user_email))],
-            [grant_select_update_insert_privs_to_user_on_project(),
-             (AsIs(f'"{self.name} support_files"'), AsIs(self.designer.user_email))]]
-
-        self.add_user_to_stash_group(self.designer.user_email)
-        return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
+    # def push_project_designer_data(self):
+    #     add_user_query = push_users_data_to_users_access_table(
+    #         self.name, self.designer.user_email, self.designer.first_name, self.designer.last_name,
+    #         self.designer.company_name, self.designer.job_title)
+    #
+    #     grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
+    #                                                                           AsIs(self.designer.user_email))]
+    #
+    #     grant_select_update_insert_privs = [
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} docs"'), AsIs(self.designer.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.designer.user_email))],
+    #         [grant_select_update_insert_privs_to_user_on_project(),
+    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.designer.user_email))]]
+    #
+    #     self.add_user_to_stash_group(self.designer.user_email)
+    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
 
 
 class ProjectDocument:
@@ -735,6 +757,26 @@ class Reg_data:
         self.last_name = None
         self.company_name = None
         self.TIN = None
+
+
+def get_company(TIN):
+    try:
+        options = Options()
+        options.add_argument('--headless')
+        options.add_argument('--disable-gpu')
+        driver = webdriver.Chrome(options=options)
+        driver.create_options().add_argument('--headless')
+        driver.get('https://egrul.nalog.ru/index.html')
+        search_field = driver.find_element(By.ID, 'query')
+        search_field.send_keys(TIN)
+        search_btn = driver.find_element(By.ID, 'btnSearch')
+        search_btn.click()
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.CLASS_NAME, 'op-excerpt')))
+        search_result = driver.find_element(By.CLASS_NAME, 'op-excerpt')
+        result = search_result.get_attribute('title')
+        return {'status': 'OK', 'name': result, 'TIN': TIN}
+    except TimeoutException as err:
+        return {'status': 'NOT OK', 'err': err}
 
 
 

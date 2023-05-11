@@ -23,8 +23,8 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QWidget)
 
 from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    ExtendedComboBox, QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget,
-    QCustomTableWidget, QCustomTitleBar, QFrameWithResizeSignal)
+    QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget,
+    QCustomTitleBar, QFrameWithResizeSignal)
 import resources_rc_rc
 import resources_rc_rc
 import resources_rc_rc
@@ -652,6 +652,7 @@ class Ui_MainWindow(object):
         self.nameEntering.setMaximumSize(QSize(270, 30))
         self.nameEntering.setFont(font1)
         self.nameEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+"\n"
 "")
 
         self.verticalLayout_20.addWidget(self.nameEntering, 0, Qt.AlignHCenter)
@@ -665,28 +666,13 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_20.addWidget(self.lastNameEntering)
 
-        self.companyNameComboBox = ExtendedComboBox(self.regSubContainer_4)
-        self.companyNameComboBox.setObjectName(u"companyNameComboBox")
-        self.companyNameComboBox.setMinimumSize(QSize(270, 30))
-        self.companyNameComboBox.setMaximumSize(QSize(270, 30))
-        self.companyNameComboBox.setFont(font1)
-        self.companyNameComboBox.setStyleSheet(u"QComboBox::drop-down {width: 0px}\n"
-"QComboBox {background-color: rgb(184, 184, 184); color : black;}\n"
-"")
-        self.companyNameComboBox.setEditable(True)
-        self.companyNameComboBox.setIconSize(QSize(16, 16))
-        self.companyNameComboBox.setFrame(False)
-        self.companyNameComboBox.setModelColumn(0)
-
-        self.verticalLayout_20.addWidget(self.companyNameComboBox)
-
         self.companyTIN = QLineEdit(self.regSubContainer_4)
         self.companyTIN.setObjectName(u"companyTIN")
         self.companyTIN.setMinimumSize(QSize(270, 30))
         self.companyTIN.setMaximumSize(QSize(270, 30))
         self.companyTIN.setFont(font1)
         self.companyTIN.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
-        self.companyTIN.setReadOnly(True)
+        self.companyTIN.setReadOnly(False)
 
         self.verticalLayout_20.addWidget(self.companyTIN)
 
@@ -2465,10 +2451,28 @@ class Ui_MainWindow(object):
         self.verticalLayout_58.setContentsMargins(0, 0, 0, 0)
         self.widget_6 = QWidget(self.page_10)
         self.widget_6.setObjectName(u"widget_6")
-        self.widget_6.setStyleSheet(u"background-color: rgb(135, 136, 135);")
-        self.verticalLayout_71 = QVBoxLayout(self.widget_6)
-        self.verticalLayout_71.setObjectName(u"verticalLayout_71")
-        self.verticalLayout_71.setContentsMargins(0, 0, 0, 0)
+        self.widget_6.setStyleSheet(u"QComboBox::drop-down:button{background-color: transparent}\n"
+"QComboBox::down-arrow{image: url(:/icon/icons/chevron-down.svg); width: 22; height: 22; margin-right: 6px}\n"
+"QComboBox::down-arrow:on{image: url(:/icon/icons/chevron-up.svg); width: 22; height: 22; margin-right: 6px}\n"
+"QComboBox {background-color: rgb(184, 184, 184); color : black}\n"
+"\n"
+"\n"
+"")
+        self.verticalLayout_39 = QVBoxLayout(self.widget_6)
+        self.verticalLayout_39.setObjectName(u"verticalLayout_39")
+        self.verticalLayout_39.setContentsMargins(0, 0, 0, 0)
+        self.label_23 = QLabel(self.widget_6)
+        self.label_23.setObjectName(u"label_23")
+        sizePolicy5.setHeightForWidth(self.label_23.sizePolicy().hasHeightForWidth())
+        self.label_23.setSizePolicy(sizePolicy5)
+        self.label_23.setMinimumSize(QSize(150, 40))
+        self.label_23.setMaximumSize(QSize(150, 40))
+        self.label_23.setFont(font4)
+        self.label_23.setStyleSheet(u"background-color : transparent ; color : black;")
+        self.label_23.setAlignment(Qt.AlignCenter)
+
+        self.verticalLayout_39.addWidget(self.label_23, 0, Qt.AlignHCenter)
+
         self.frame_25 = QFrame(self.widget_6)
         self.frame_25.setObjectName(u"frame_25")
         sizePolicy5.setHeightForWidth(self.frame_25.sizePolicy().hasHeightForWidth())
@@ -2499,7 +2503,9 @@ class Ui_MainWindow(object):
         self.label_13.setSizePolicy(sizePolicy5)
         self.label_13.setMinimumSize(QSize(150, 40))
         self.label_13.setMaximumSize(QSize(150, 40))
-        self.label_13.setFont(font4)
+        font5 = QFont()
+        font5.setPointSize(16)
+        self.label_13.setFont(font5)
         self.label_13.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_13.setAlignment(Qt.AlignCenter)
 
@@ -2538,7 +2544,8 @@ class Ui_MainWindow(object):
         self.comboBox_4.setObjectName(u"comboBox_4")
         self.comboBox_4.setMinimumSize(QSize(270, 30))
         self.comboBox_4.setMaximumSize(QSize(270, 30))
-        self.comboBox_4.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_4.setStyleSheet(u"")
+        self.comboBox_4.setEditable(True)
 
         self.verticalLayout_67.addWidget(self.comboBox_4, 0, Qt.AlignHCenter)
 
@@ -2566,7 +2573,8 @@ class Ui_MainWindow(object):
         self.comboBox_5.setObjectName(u"comboBox_5")
         self.comboBox_5.setMinimumSize(QSize(270, 30))
         self.comboBox_5.setMaximumSize(QSize(270, 30))
-        self.comboBox_5.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_5.setStyleSheet(u"")
+        self.comboBox_5.setEditable(True)
 
         self.verticalLayout_68.addWidget(self.comboBox_5, 0, Qt.AlignHCenter)
 
@@ -2595,6 +2603,7 @@ class Ui_MainWindow(object):
         self.comboBox_6.setMinimumSize(QSize(270, 30))
         self.comboBox_6.setMaximumSize(QSize(270, 30))
         self.comboBox_6.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_6.setEditable(True)
 
         self.verticalLayout_69.addWidget(self.comboBox_6, 0, Qt.AlignHCenter)
 
@@ -2622,7 +2631,8 @@ class Ui_MainWindow(object):
         self.comboBox_3.setObjectName(u"comboBox_3")
         self.comboBox_3.setMinimumSize(QSize(270, 30))
         self.comboBox_3.setMaximumSize(QSize(270, 30))
-        self.comboBox_3.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_3.setStyleSheet(u"")
+        self.comboBox_3.setEditable(True)
         self.comboBox_3.setModelColumn(0)
 
         self.verticalLayout_70.addWidget(self.comboBox_3, 0, Qt.AlignHCenter)
@@ -2654,7 +2664,7 @@ class Ui_MainWindow(object):
         self.label_12.setSizePolicy(sizePolicy5)
         self.label_12.setMinimumSize(QSize(150, 40))
         self.label_12.setMaximumSize(QSize(150, 40))
-        self.label_12.setFont(font4)
+        self.label_12.setFont(font5)
         self.label_12.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_12.setAlignment(Qt.AlignCenter)
 
@@ -2688,17 +2698,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_62.addWidget(self.label_14)
 
-        self.comboBox_10 = QComboBox(self.frame_16)
-        self.comboBox_10.setObjectName(u"comboBox_10")
-        self.comboBox_10.setMaximumSize(QSize(0, 0))
-
-        self.verticalLayout_62.addWidget(self.comboBox_10)
-
         self.comboBox_7 = QComboBox(self.frame_16)
         self.comboBox_7.setObjectName(u"comboBox_7")
         self.comboBox_7.setMinimumSize(QSize(270, 30))
         self.comboBox_7.setMaximumSize(QSize(270, 30))
-        self.comboBox_7.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_7.setStyleSheet(u"")
+        self.comboBox_7.setEditable(True)
 
         self.verticalLayout_62.addWidget(self.comboBox_7, 0, Qt.AlignHCenter)
 
@@ -2721,17 +2726,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_63.addWidget(self.label_15)
 
-        self.comboBox_11 = QComboBox(self.frame_17)
-        self.comboBox_11.setObjectName(u"comboBox_11")
-        self.comboBox_11.setMaximumSize(QSize(0, 0))
-
-        self.verticalLayout_63.addWidget(self.comboBox_11)
-
         self.comboBox_8 = QComboBox(self.frame_17)
         self.comboBox_8.setObjectName(u"comboBox_8")
         self.comboBox_8.setMinimumSize(QSize(270, 30))
         self.comboBox_8.setMaximumSize(QSize(270, 30))
-        self.comboBox_8.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_8.setStyleSheet(u"")
+        self.comboBox_8.setEditable(True)
 
         self.verticalLayout_63.addWidget(self.comboBox_8, 0, Qt.AlignHCenter)
 
@@ -2754,17 +2754,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_64.addWidget(self.label_16)
 
-        self.comboBox_12 = QComboBox(self.frame_18)
-        self.comboBox_12.setObjectName(u"comboBox_12")
-        self.comboBox_12.setMaximumSize(QSize(0, 0))
-
-        self.verticalLayout_64.addWidget(self.comboBox_12)
-
         self.comboBox_9 = QComboBox(self.frame_18)
         self.comboBox_9.setObjectName(u"comboBox_9")
         self.comboBox_9.setMinimumSize(QSize(270, 30))
         self.comboBox_9.setMaximumSize(QSize(270, 30))
-        self.comboBox_9.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_9.setStyleSheet(u"")
+        self.comboBox_9.setEditable(True)
 
         self.verticalLayout_64.addWidget(self.comboBox_9, 0, Qt.AlignHCenter)
 
@@ -2787,17 +2782,12 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_65.addWidget(self.label_17)
 
-        self.comboBox_13 = QComboBox(self.frame_19)
-        self.comboBox_13.setObjectName(u"comboBox_13")
-        self.comboBox_13.setMaximumSize(QSize(0, 0))
-
-        self.verticalLayout_65.addWidget(self.comboBox_13)
-
         self.comboBox_2 = QComboBox(self.frame_19)
         self.comboBox_2.setObjectName(u"comboBox_2")
         self.comboBox_2.setMinimumSize(QSize(270, 30))
         self.comboBox_2.setMaximumSize(QSize(270, 30))
-        self.comboBox_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
+        self.comboBox_2.setStyleSheet(u"")
+        self.comboBox_2.setEditable(True)
         self.comboBox_2.setModelColumn(0)
 
         self.verticalLayout_65.addWidget(self.comboBox_2, 0, Qt.AlignHCenter)
@@ -2812,7 +2802,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_27.addWidget(self.frame_13)
 
 
-        self.verticalLayout_71.addWidget(self.frame_25, 0, Qt.AlignHCenter|Qt.AlignVCenter)
+        self.verticalLayout_39.addWidget(self.frame_25, 0, Qt.AlignHCenter)
 
         self.createNewProject = QPushButton(self.widget_6)
         self.createNewProject.setObjectName(u"createNewProject")
@@ -2823,7 +2813,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(120, 120, 120);\n"
 "	border-radius: 0px}")
 
-        self.verticalLayout_71.addWidget(self.createNewProject, 0, Qt.AlignHCenter)
+        self.verticalLayout_39.addWidget(self.createNewProject, 0, Qt.AlignHCenter)
 
         self.backToNewProjectMenuBtn = QPushButton(self.widget_6)
         self.backToNewProjectMenuBtn.setObjectName(u"backToNewProjectMenuBtn")
@@ -2835,7 +2825,7 @@ class Ui_MainWindow(object):
         self.backToNewProjectMenuBtn.setIcon(icon8)
         self.backToNewProjectMenuBtn.setIconSize(QSize(24, 24))
 
-        self.verticalLayout_71.addWidget(self.backToNewProjectMenuBtn, 0, Qt.AlignHCenter)
+        self.verticalLayout_39.addWidget(self.backToNewProjectMenuBtn, 0, Qt.AlignHCenter)
 
 
         self.verticalLayout_58.addWidget(self.widget_6)
@@ -2903,9 +2893,9 @@ class Ui_MainWindow(object):
         self.designDocsTableFrame = QFrame(self.designDocsTab)
         self.designDocsTableFrame.setObjectName(u"designDocsTableFrame")
         self.designDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        font5 = QFont()
-        font5.setPointSize(1)
-        self.designDocsTableFrame.setFont(font5)
+        font6 = QFont()
+        font6.setPointSize(1)
+        self.designDocsTableFrame.setFont(font6)
         self.designDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.designDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_85 = QVBoxLayout(self.designDocsTableFrame)
@@ -3071,7 +3061,7 @@ class Ui_MainWindow(object):
         self.constructionDocsTableFrame = QFrame(self.constructionDocsTab)
         self.constructionDocsTableFrame.setObjectName(u"constructionDocsTableFrame")
         self.constructionDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        self.constructionDocsTableFrame.setFont(font5)
+        self.constructionDocsTableFrame.setFont(font6)
         self.constructionDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.constructionDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_86 = QVBoxLayout(self.constructionDocsTableFrame)
@@ -3233,7 +3223,7 @@ class Ui_MainWindow(object):
         self.initDocsTableFrame = QFrame(self.initDocsTab)
         self.initDocsTableFrame.setObjectName(u"initDocsTableFrame")
         self.initDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        self.initDocsTableFrame.setFont(font5)
+        self.initDocsTableFrame.setFont(font6)
         self.initDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.initDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_87 = QVBoxLayout(self.initDocsTableFrame)
@@ -3449,11 +3439,11 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.mainMenuStack.setCurrentIndex(0)
+        self.mainMenuStack.setCurrentIndex(1)
         self.regStackedWidget.setCurrentIndex(4)
         self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_3.setCurrentIndex(1)
-        self.interfaceBodyStackedWidget.setCurrentIndex(2)
+        self.interfaceBodyStackedWidget.setCurrentIndex(0)
         self.newProjectStackedWidget.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
 
@@ -3517,9 +3507,7 @@ class Ui_MainWindow(object):
 #endif // QT_CONFIG(whatsthis)
         self.nameEntering.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Name", None))
         self.lastNameEntering.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Last Name", None))
-        self.companyNameComboBox.setCurrentText("")
-        self.companyNameComboBox.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Company Name", None))
-        self.companyTIN.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*TIN", None))
+        self.companyTIN.setPlaceholderText(QCoreApplication.translate("MainWindow", u"*Company TIN", None))
         self.proceedBtn_3.setText(QCoreApplication.translate("MainWindow", u"Proceed", None))
 #if QT_CONFIG(shortcut)
         self.proceedBtn_3.setShortcut(QCoreApplication.translate("MainWindow", u"Return, Space", None))
@@ -3646,6 +3634,7 @@ class Ui_MainWindow(object):
         self.label_10.setText("")
         self.proceedNewProject.setText(QCoreApplication.translate("MainWindow", u"PROCEED", None))
         self.cancelNewProjectBtn.setText(QCoreApplication.translate("MainWindow", u"CANCEL", None))
+        self.label_23.setText(QCoreApplication.translate("MainWindow", u"Workgroup", None))
         self.label_13.setText(QCoreApplication.translate("MainWindow", u"Assign Company", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Chief Project Engineer", None))
         self.comboBox_4.setItemText(0, "")
@@ -3659,13 +3648,13 @@ class Ui_MainWindow(object):
         self.label_22.setText(QCoreApplication.translate("MainWindow", u"Designer", None))
         self.comboBox_3.setItemText(0, "")
 
-        self.comboBox_3.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Status", None))
+        self.comboBox_3.setPlaceholderText("")
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Assign User", None))
         self.label_14.setText("")
         self.label_15.setText("")
         self.label_16.setText("")
         self.label_17.setText("")
-        self.comboBox_2.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Status", None))
+        self.comboBox_2.setPlaceholderText("")
         self.createNewProject.setText(QCoreApplication.translate("MainWindow", u"CREATE", None))
         self.backToNewProjectMenuBtn.setText(QCoreApplication.translate("MainWindow", u"BACK", None))
         self.folderNameLabel.setText("")
