@@ -1,7 +1,10 @@
+import mimetypes
 import sys
 from random import randint as rand
 from searchRow import Ui_Form as Row
 from ProjectWidget import Ui_Form
+from tqdm import tqdm
+from tqdm.utils import CallbackIOWrapper
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -19,13 +22,32 @@ import seafileapi
 import os
 import platform
 import requests
+from requests.exceptions import ConnectionError, Timeout
+from requests_toolbelt import MultipartEncoder
 from threading import Thread
+import pathlib
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
+from functools import wraps
+import time
+
+
+def timeit(func):
+    @wraps(func)
+    def timeit_wrapper(*args, **kwargs):
+        start_time = time.perf_counter()
+        result = func(*args, **kwargs)
+        end_time = time.perf_counter()
+        total_time = end_time - start_time
+        # first item in the args, ie `args[0]` is `self`
+        print(f'Function {func.__name__}{args} {kwargs} Took {total_time:.4f} seconds')
+        return result
+
+    return timeit_wrapper
 
 
 def get_platform():
@@ -47,6 +69,7 @@ def get_paths():
         connection_config_json = r'data\connection_config.json'
         os_login = os.getlogin()
     return {'keep_pass_json': keep_pass_json, 'connection_config_json': connection_config_json, 'os_login': os_login}
+
 
 def get_advice():
     response = requests.get('http://fucking-great-advice.ru/api/random').json()
@@ -229,6 +252,9 @@ class user_connection:
         self.token = None
         self.stash_url = None
         self.os_login = get_paths()['os_login']
+        self.uploaded_bytes_counter = 0
+        self.total_uploading_bytes = 0
+        self.finish_upload_flag = False
 
     def session(self):
 
@@ -281,6 +307,10 @@ class user_connection:
         self.cur.execute(query, args)
         return self.cur.fetchone()
 
+    def select_query_fetchone_with_list(self, query):
+        self.cur.execute(*query)
+        return self.cur.fetchone()
+
     def select_query_fetchall(self, query, *args):
         self.cur.execute(query, args)
         return self.cur.fetchall()
@@ -330,18 +360,91 @@ class user_connection:
         thread = Thread(target=self.download_process, args=(repo_id, file_address, file_type, bytes_format))
         thread.start()
 
-    def upload_file(self, repo_id, local_address, stash_address):
-
+    # @timeit
+    def upload_file(self, repo_id, local_address, path_in_repo, uploaded_file_name, info_object=None):
         #################################################################
         # UPLOAD
         #################################################################
+        file_size = os.stat(local_address).st_size
+        self.total_uploading_bytes += file_size / (1024*1024)
+        ext = mimetypes.guess_extension(mimetypes.guess_type(local_address)[0])
+        headers = {'Authorization': f'Token {self.token}'}
+        request = requests.get(f'{self.stash_url}/api2/repos/{repo_id}/upload-link/?p={path_in_repo}', headers=headers)
+        upload_link = request.text.strip('"')
+        params = {'ret-json': '1'}
+        headers = {'Content-Disposition': f'attachment; filename="{uploaded_file_name}{ext}"'}
+        index = 0
+        with requests.Session() as session:
+            with open(local_address, 'rb') as f:
+                for chunk in self.read_in_chunks(file=f, chunk_size=1024 * 1024):
+                    offset = index + len(chunk)
+                    headers['Content-Range'] = f'bytes {index}-{offset - 1}/{file_size}'
+                    index = offset
+                    files = {'file': chunk, 'parent_dir': (None, path_in_repo)}
+                    try:
+                        response = session.post(upload_link, headers=headers, files=files, params=params)
+                        if info_object and response.status_code == 200:
+                            info_object.setText('Uploading {0}: {1:>10} out of {2} MB'.format(
+                                uploaded_file_name, round((offset - 1) / 1000000, 2), round(file_size / 1000000, 2)))
+                        else:
+                            self.uploaded_bytes_counter += len(chunk) / (1024*1024)
+                    except (ConnectionError, Timeout):
+                        info_object.setText('Uploading failed, check connection')
+                if info_object:
+                    info_object.setText(f'Uploading {uploaded_file_name}: Done!')
+                    time.sleep(5)
+                    info_object.setText('')
 
-        headers = {'Authorization': f'Token {self.token}'}
-        raw_link = requests.get(f'{self.stash_url}/api2/repos/{repo_id}/upload-link/', headers=headers)
-        link = raw_link.text.strip('"')
-        headers = {'Authorization': f'Token {self.token}'}
-        files = {'file': open(local_address, 'rb'), 'parent_dir': (None, stash_address)}
-        requests.post(link, headers=headers, files=files)
+    def start_upload(self, repo_id, local_address, path_in_repo, uploaded_file_name, info_object):
+        if len(local_address) == 1 and len(uploaded_file_name) == 1:
+            thread = Thread(target=self.upload_file,
+                            args=(repo_id, local_address[0], path_in_repo, uploaded_file_name[0], info_object))
+            thread.start()
+        elif 1 < len(local_address) == len(uploaded_file_name) > 1:
+            threads = []
+            for thread_num in range(len(local_address)):
+                thread = Thread(target=self.upload_file,
+                                args=(repo_id, local_address[thread_num], path_in_repo, uploaded_file_name[thread_num]))
+                threads.append(thread)
+
+            show_status_thread = Thread(target=self.show_uploading_status,
+                                        args=(lambda: (self.uploaded_bytes_counter,),
+                                              lambda: (self.total_uploading_bytes,),
+                                              lambda: (self.finish_upload_flag,), info_object))
+
+            def wait_for_threads(threads_list, status_thread):
+                status_thread.start()
+                for single_upload_thread in threads_list:
+                    single_upload_thread.start()
+                for single_upload_thread in threads_list:
+                    single_upload_thread.join()
+
+                self.finish_upload_flag = True
+
+            waiting_threads = Thread(target=wait_for_threads, args=(threads, show_status_thread))
+            waiting_threads.start()
+
+    def show_uploading_status(self, uploaded_bytes, total_bytes, stop_flag, info_object=None):
+        if info_object:
+            while True:
+                uploaded = uploaded_bytes()[0]
+                total = total_bytes()[0]
+                info_object.setText('Uploading files: {0:>10} out of {1} MB'.format(round(uploaded, 2), round(total, 2)))
+                if stop_flag()[0]:
+                    info_object.setText('Uploading files: done!')
+                    time.sleep(5)
+                    info_object.setText('')
+                    break
+
+    def stop(self):
+        self.finish_upload_flag = True
+
+    def read_in_chunks(self, file, chunk_size=1024):
+        while True:
+            data = file.read(chunk_size)
+            if not data:
+                break
+            yield data
 
     def create_folder(self, repo_id, folder):
 
@@ -351,7 +454,7 @@ class user_connection:
 
         headers = {'Authorization': f'Token {self.token}', 'Accept': 'application/json; charset=utf-8; indent=4'}
         data = {'operation': 'mkdir'}
-        requests.post(f'{self.stash_url}/api2/repos/{repo_id}/dir/?p=/{folder}', headers=headers, data=data,)
+        requests.post(f'{self.stash_url}/api2/repos/{repo_id}/dir/?p=/{folder}', headers=headers, data=data, )
 
 
 class push_user_data:
@@ -643,75 +746,10 @@ class Project(User):
             self.add_user_to_stash_group(email)
         return result_query
 
-    # def push_project_chief_engineer_data(self):
-    #     query = push_users_data_to_users_access_table(
-    #         self.name, self.chief_engineer.user_email, self.chief_engineer.first_name, self.chief_engineer.last_name,
-    #         self.chief_engineer.company_name, self.chief_engineer.job_title)
-    #     self.add_user_to_stash_group(self.chief_engineer.user_email)
-    #     return query
-
-    # def push_project_contractor_data(self):
-    #     # add_user_query = push_users_data_to_users_access_table(
-    #     #     self.name, self.contractor.user_email, self.contractor.first_name, self.contractor.last_name,
-    #     #     self.contractor.company_name, self.contractor.job_title)
-    #     # grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-    #     #                                                                       AsIs(self.contractor.user_email))]
-    #     grant_select_update_insert_privs = [
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} docs"'), AsIs(self.contractor.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.contractor.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.contractor.user_email))]]
-    #
-    #     self.add_user_to_stash_group(self.contractor.user_email)
-    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
-
-    # def push_project_technical_client_data(self):
-    #     add_user_query = push_users_data_to_users_access_table(
-    #         self.name, self.technical_client.user_email, self.technical_client.first_name,
-    #         self.technical_client.last_name, self.technical_client.company_name, self.technical_client.job_title)
-    #
-    #     grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-    #                                                                           AsIs(self.technical_client.user_email))]
-    #     grant_select_update_insert_privs = [
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} docs"'), AsIs(self.technical_client.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.technical_client.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.technical_client.user_email))]]
-    #
-    #     self.add_user_to_stash_group(self.technical_client.user_email)
-    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
-
-    # def push_project_designer_data(self):
-    #     add_user_query = push_users_data_to_users_access_table(
-    #         self.name, self.designer.user_email, self.designer.first_name, self.designer.last_name,
-    #         self.designer.company_name, self.designer.job_title)
-    #
-    #     grant_select_privs_query = [grant_select_privs_to_user_on_project(), (AsIs(f'"{self.name} docs_structure"'),
-    #                                                                           AsIs(self.designer.user_email))]
-    #
-    #     grant_select_update_insert_privs = [
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} docs"'), AsIs(self.designer.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} main_files"'), AsIs(self.designer.user_email))],
-    #         [grant_select_update_insert_privs_to_user_on_project(),
-    #          (AsIs(f'"{self.name} support_files"'), AsIs(self.designer.user_email))]]
-    #
-    #     self.add_user_to_stash_group(self.designer.user_email)
-    #     return [add_user_query, grant_select_privs_query, grant_select_update_insert_privs]
-
 
 class ProjectDocument:
-    status_list = [
-        'just_loaded', 'pushed_for_approving', 'waiting_for_action', 'returned_with_notices',
-        'deleted', 'approved', 'approved_for_work']
 
     def __init__(self):
-        super().__init__()
         self.type = None
         self.document_name = None
         self.document_cypher = None
@@ -739,6 +777,70 @@ class ProjectDocument:
         self.status_time_delta = str(
             datetime.strptime(datetime.now().strftime("%Y-%m-%d %H:%M:%S"), "%Y-%m-%d %H:%M:%S")
             - datetime.strptime(self.status_time_set, "%Y-%m-%d %H:%M:%S"))
+
+
+class ProjectMainFile:
+    STATUS = ['just_loaded', 'pushed_for_approving', 'waiting_for_action', 'returned_with_notices',
+              'rejected_with_notices', 'approved', 'approved_for_work', 'accepted']
+    JL = STATUS[0]
+    PUSHED = STATUS[1]
+    WAIT = STATUS[2]
+    RET = STATUS[3]
+    REJ = STATUS[4]
+    APPR = STATUS[5]
+    APPRW = STATUS[6]
+    ACC = [7]
+
+    def __init__(self, doc_id, cypher, project_name, revision='0', version='1', status=JL,
+                 status_set_time=str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))):
+        self.doc_id = doc_id
+        self.cypher = cypher
+        self.revision = revision
+        self.version = version
+        self.status = status
+        self.status_set_time = status_set_time
+        self.loading_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.name = f'{self.cypher}-{self.revision}-{self.version}'
+        self.project_name = project_name
+        self.id = None
+
+    def insert_data_to_db(self, session_object):
+        session_object.insert_query(insert_main_file_info(
+            project_name=self.project_name,
+            doc_id=self.doc_id,
+            name=self.name,
+            revision=self.revision,
+            version=self.version,
+            status=self.status,
+            status_set_time=self.status_set_time,
+            loading_time=self.loading_time))
+
+        self.get_id(session_object)
+
+    def get_id(self, session_object):
+        file_id = session_object.select_query_fetchone_with_list(
+            get_main_file_id(project_name=self.project_name, name=self.name))
+        self.id = file_id[0]
+
+
+class Support_File:
+    ARCHIVE = 'sup_archive'
+    DOC = 'sup_doc'
+
+    def __init__(self, file_type, main_file_object: ProjectMainFile):
+        self.main_file_id = main_file_object.id
+        self.file_type = file_type
+        self.name = f'{main_file_object.cypher}-rev{main_file_object.revision}-' \
+                    f'ver{main_file_object.version}-{main_file_object.id}-{file_type}'
+        self.project_name = main_file_object.project_name
+
+    def insert_data_to_db(self, session_object):
+        session_object.insert_query(insert_support_file_info(
+            project_name=self.project_name,
+            file_name=self.name,
+            file_type=self.file_type,
+            main_file_id=self.main_file_id))
+
 
 
 class Action(User):
@@ -777,6 +879,3 @@ def get_company(TIN):
         return {'status': 'OK', 'name': result, 'TIN': TIN}
     except TimeoutException as err:
         return {'status': 'NOT OK', 'err': err}
-
-
-

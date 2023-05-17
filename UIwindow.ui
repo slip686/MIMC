@@ -5462,7 +5462,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                      <item>
                       <widget class="QCustomStackedWidget" name="newProjectStackedWidget">
                        <property name="currentIndex">
-                        <number>0</number>
+                        <number>1</number>
                        </property>
                        <widget class="QWidget" name="page_9">
                         <layout class="QVBoxLayout" name="verticalLayout_57">
@@ -6384,8 +6384,7 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                            </size>
                                           </property>
                                           <property name="styleSheet">
-                                           <string notr="true">
-</string>
+                                           <string notr="true"/>
                                           </property>
                                           <property name="editable">
                                            <bool>true</bool>
@@ -8552,6 +8551,16 @@ border-radius: 6px</string>
            <widget class="QLabel" name="statusLabel">
             <property name="text">
              <string/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="statusLabel2">
+            <property name="text">
+             <string/>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
             </property>
            </widget>
           </item>

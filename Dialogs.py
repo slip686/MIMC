@@ -1,13 +1,17 @@
+import pathlib
+from threading import Thread
+
 from PySide6.QtCore import Qt
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtWidgets import QDialog
 from AddDocDialog import Ui_Dialog as AddingDialog
 from DocViewDialog import Ui_Dialog as ViewingDialog
-from core import ProjectDocument
+from core import ProjectDocument, ProjectMainFile, Support_File
 from random import randint as rand
 
 from query_list import add_doc
+
 
 class AddDocDialog(QDialog):
     def __init__(self, parent=None, multiple_loading_dict: dict = None, window_object=None):
@@ -124,7 +128,6 @@ class AddDocDialog(QDialog):
         else:
             for item in self.multiple_documents:
                 item.file_folder = self.create_folder_name()
-                print(item.file_folder)
 
     def set_folder_in_structure(self, window_object):
         if self.multiple_documents:
@@ -145,20 +148,17 @@ class AddDocDialog(QDialog):
                 self.dialog.folderLineEdit.setText(self.parent_window.current_design_docs_folder_path)
                 self.place_id = self.parent_window.current_design_docs_folder
                 self.document.type = "design"
-                # self.set_doc_sub_folder_name()
             elif self.parent_window.ui.stackedWidget_3.currentIndex() == 1:
                 self.dialog.folderLineEdit.setText(self.parent_window.current_construction_docs_folder_path)
                 self.place_id = self.parent_window.current_construction_docs_folder
                 self.document.type = "construction"
-                # self.set_doc_sub_folder_name()
             elif self.parent_window.ui.stackedWidget_3.currentIndex() == 2:
                 self.dialog.folderLineEdit.setText(self.parent_window.current_init_permission_docs_folder_path)
                 self.place_id = self.parent_window.current_init_permission_docs_folder
                 self.document.type = "init_permit"
-                # self.set_doc_sub_folder_name()
 
-                self.set_doc_sub_folder_name()
-                self.document.place_id = self.place_id
+            self.set_doc_sub_folder_name()
+            self.document.place_id = self.place_id
 
     def set_doc_name(self):
         self.document.document_name = self.dialog.docNameLineEdit.text()
@@ -214,33 +214,79 @@ class AddDocDialog(QDialog):
         def add_process(window_object):
             repo_id = window_object.current_project_data_dict['repo_id']
             table = window_object.current_project_data_dict['docs_table']
-
-            if document.type == "design":
-                window_object.session.create_folder(repo_id, f'ddocs/{document.file_folder}')
-            if document.type == "construction":
-                window_object.session.create_folder(repo_id, f'cdocs/{document.file_folder}')
-            if document.type == "init_permit":
-                window_object.session.create_folder(repo_id, f'ipdocs/{document.file_folder}')
-            window_object.session.insert_query(add_doc(table, document.type, document.document_name,
-                                                       document.document_cypher, document.release_to_work_date,
-                                                       document.start_develop_date, document.end_develop_date,
-                                                       document.document_status, document.status_time_set,
-                                                       str(document.place_id), document.file_folder))
+            unique = True
+            done = True
+            for item in window_object.current_project_docs_dicts_list:
+                if item['document_type'] == document.type and item['document_cypher'] == document.document_cypher:
+                    unique = False
+            if unique:
+                if document.type == "design":
+                    window_object.session.create_folder(repo_id, f'ddocs/{document.file_folder}')
+                if document.type == "construction":
+                    window_object.session.create_folder(repo_id, f'cdocs/{document.file_folder}')
+                if document.type == "init_permit":
+                    window_object.session.create_folder(repo_id, f'ipdocs/{document.file_folder}')
+                window_object.session.insert_query(add_doc(table, document.type, document.document_name,
+                                                           document.document_cypher, document.release_to_work_date,
+                                                           document.start_develop_date, document.end_develop_date,
+                                                           document.document_status, document.status_time_set,
+                                                           str(document.place_id), document.file_folder))
+            else:
+                done = False
+            return done
 
         if self.multiple_documents:
-            add_process(self.window_object)
+            process = add_process(self.window_object)
+            if not process:
+                return print('Cypher already exists')
         else:
-            add_process(self.parent())
+            process = add_process(self.parent())
+            if process:
+                if self.parent().isVisible():
+                    self.parent().get_current_project_docs_dicts_list()
 
-            if self.parent().isVisible():
-                self.parent().get_current_project_docs_dicts_list()
-                if document.type == 'design':
-                    self.parent().fill_table(doc_type='design')
-                if document.type == 'construction':
-                    self.parent().fill_table(doc_type='construction')
-                if document.type == 'init_permit':
-                    self.parent().fill_table(doc_type='init_permit')
-            self.close()
+                    if document.main_doc_file_path:
+                        repo_id = self.window_object.current_project_data_dict['repo_id']
+                        doc_id = None
+                        for item in self.window_object.current_project_docs_dicts_list:
+                            if document.type == item['document_type'] \
+                                    and document.document_cypher == item['document_cypher']:
+                                doc_id = item['doc_id']
+
+                        local_addresses_list = []
+                        uploading_file_names_list = []
+
+                        doc_types_and_folders = {'design': 'ddocs', 'construction': 'cdocs', 'init_permit': 'ipdocs'}
+                        main_file = ProjectMainFile(doc_id=doc_id, cypher=document.document_cypher,
+                                                    project_name=self.window_object.current_project_data_dict['project_name'])
+                        main_file.insert_data_to_db(self.window_object.session)
+                        local_addresses_list.append(document.main_doc_file_path)
+                        uploading_file_names_list.append(f'{main_file.cypher}-rev{main_file.revision}-ver{main_file.version}')
+                        if document.zipped_archive_file_path:
+                            local_addresses_list.append(document.zipped_archive_file_path)
+                            support_file = Support_File(file_type=Support_File.ARCHIVE, main_file_object=main_file)
+                            uploading_file_names_list.append(support_file.name)
+                            support_file.insert_data_to_db(self.window_object.session)
+                        if document.support_doc_file_path:
+                            local_addresses_list.append(document.support_doc_file_path)
+                            support_file = Support_File(file_type=Support_File.DOC, main_file_object=main_file)
+                            uploading_file_names_list.append(support_file.name)
+                            support_file.insert_data_to_db(self.window_object.session)
+
+                        self.window_object.session.start_upload(repo_id, local_addresses_list,
+                                                                f'/{doc_types_and_folders[document.type]}/'
+                                                                f'{document.file_folder}',
+                                                                uploading_file_names_list,
+                                                                self.window_object.ui.statusLabel2)
+                    if document.type == 'design':
+                        self.parent().fill_table(doc_type='design')
+                    if document.type == 'construction':
+                        self.parent().fill_table(doc_type='construction')
+                    if document.type == 'init_permit':
+                        self.parent().fill_table(doc_type='init_permit')
+                self.close()
+            else:
+                print('Cypher already exists')
 
     def add_document(self):
         if not self.multiple_loading_dict:
@@ -282,4 +328,3 @@ class DocViewDialog(QDialog):
 
         else:
             self.dialog.label_18.setText('Wrong file format')
-

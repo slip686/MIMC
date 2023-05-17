@@ -298,3 +298,23 @@ def get_docs():
     query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM "%s docs") row)'''
     # query = """SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM projects WHERE project_id = %s) row)
     return query
+
+
+def insert_main_file_info(project_name, doc_id, name, revision, version, status, status_set_time, loading_time):
+    query_list = ["""INSERT INTO "%s main_files" (file_name, rev_num, ver_num, document_status, 
+    status_time_set, loading_time, doc_id) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+                  (AsIs(project_name), name, revision, version, status, status_set_time, loading_time,
+                   doc_id)]
+    return query_list
+
+
+def get_main_file_id(project_name, name):
+    query_list = ["""SELECT file_id FROM "%s main_files" WHERE file_name=%s """,
+                  (AsIs(project_name), name)]
+    return query_list
+
+
+def insert_support_file_info(project_name, file_name, file_type, main_file_id):
+    query_list = ["""INSERT INTO "%s support_files" (file_name, file_type, main_file_id) VALUES (%s, %s, %s)""",
+                  (AsIs(project_name), file_name, file_type, main_file_id)]
+    return query_list

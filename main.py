@@ -1,5 +1,5 @@
 import ast
-from Custom_Widgets.Widgets import QMainWindow, loadJsonStyle
+from Custom_Widgets.Widgets import QMainWindow
 from PySide6.QtCore import QMargins
 from PySide6.QtWidgets import QApplication, QFileDialog, QGridLayout, QSpacerItem
 from PySide6.examples.widgets.layouts.flowlayout.flowlayout import FlowLayout
@@ -14,6 +14,7 @@ from Dialogs import *
 import schedule
 import time
 from threading import Thread
+
 
 
 # this shit is just for correct SQL strings
@@ -132,7 +133,7 @@ class MainWindow(QMainWindow):
 
         def get_current_user_data():
             self.logged_user_data = self.session.select_query_fetchone(user_data(), self.session.email)[0][0]
-            print(self.logged_user_data)
+            # print(self.logged_user_data)
             self.logged_user.user_id = self.logged_user_data['user_id']
             self.logged_user.user_email = self.logged_user_data['email']
             self.logged_user.first_name = self.logged_user_data['first_name']
@@ -140,6 +141,7 @@ class MainWindow(QMainWindow):
             self.logged_user.company_name = self.logged_user_data['company_name']
             self.logged_user.TIN = self.logged_user_data['tin']
             self.logged_user.notification_table = self.logged_user_data['notification_table']
+            self.ui.companyInfoBtn.setText(self.logged_user.company_name)
 
         def clear_widgets():
             for i in reversed(range(self.ui.flowlayout.count())):
@@ -200,6 +202,7 @@ class MainWindow(QMainWindow):
 
                 get_current_user_data()
                 get_project_cards()
+
 
             else:
                 self.ui.label_3.setText('Invalid login data')
@@ -1707,7 +1710,7 @@ class MainWindow(QMainWindow):
                         row_num += 1
                         docs_to_show.append(doc_dict)
                     else:
-                        if doc_dict['place_id']:
+                        if doc_dict['place_id'] != 'None':
                             if set(ast.literal_eval(doc_dict['place_id'])[0]).issubset(set(current_folder[0])):
                                 row_num += 1
                                 docs_to_show.append(doc_dict)
@@ -1717,7 +1720,7 @@ class MainWindow(QMainWindow):
             row = 0
             for doc in docs_to_show:
                 if table == self.ui.designDocsTableWidget:
-                    if doc['place_id']:
+                    if doc['place_id'] != 'None':
                         place = ast.literal_eval(doc['place_id'])[-1]
                         table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
 
@@ -1778,20 +1781,14 @@ class MainWindow(QMainWindow):
 
             #######################################################################
             # FILL ROWS IN SIDE TABLES IF SUCH TABLES EXISTS
-            if table.has_left_pinned:
-                for i in table.horizontalHeader().children():
-                    if isinstance(i, (HeaderCell,)):
-                        for j in table.left_pinned_table.horizontalHeader().children():
-                            if isinstance(j, (HeaderCell,)):
-                                if i.label.text() == j.label.text():
-                                    iterate_row(table, i.logical_index, table.left_pinned_table, j.true_logical_index)
-            if table.has_right_pinned:
-                for i in table.horizontalHeader().children():
-                    if isinstance(i, (HeaderCell,)):
-                        for j in table.right_pinned_table.horizontalHeader().children():
-                            if isinstance(j, (HeaderCell,)):
-                                if i.label.text() == j.label.text():
-                                    iterate_row(table, i.logical_index, table.right_pinned_table, j.true_logical_index)
+            for pinned_table in (table.left_pinned_table, table.right_pinned_table):
+                if pinned_table:
+                    for i in table.horizontalHeader().children():
+                        if isinstance(i, (HeaderCell,)):
+                            for j in pinned_table.horizontalHeader().children():
+                                if isinstance(j, (HeaderCell,)):
+                                    if i.label.text() == j.label.text():
+                                        iterate_row(table, i.logical_index, pinned_table, j.true_logical_index)
             #######################################################################
 
     def add_document_dialog(self):

@@ -3422,6 +3422,12 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_14.addWidget(self.statusLabel)
 
+        self.statusLabel2 = QLabel(self.statusSubContainer)
+        self.statusLabel2.setObjectName(u"statusLabel2")
+        self.statusLabel2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.horizontalLayout_14.addWidget(self.statusLabel2)
+
         self.sizeGrip = CQSizeGrip2(self.statusSubContainer)
         self.sizeGrip.setObjectName(u"sizeGrip")
         self.sizeGrip.setMinimumSize(QSize(20, 20))
@@ -3677,5 +3683,6 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.initDocsTab), QCoreApplication.translate("MainWindow", u"INITIAL PERMIT DOCS", None))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.Gantt), QCoreApplication.translate("MainWindow", u"PROJECT GANTT", None))
         self.statusLabel.setText("")
+        self.statusLabel2.setText("")
     # retranslateUi
 
