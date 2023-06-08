@@ -35,10 +35,10 @@ def create_user_projects_access_table():
     return query
 
 
-def insert_to_user_projects_access_table():
-    query = """INSERT INTO "%s_projects"
-            (project_id)"""
-    return query
+# def insert_to_user_projects_access_table():
+#     query = """INSERT INTO "%s_projects"
+#             (project_id)"""
+#     return query
 
 
 def grant_privs_to_user():
@@ -136,8 +136,10 @@ def reg_new_main_files_table(name):
             status_time_set varchar,
             status_time_delta varchar,
             loading_time varchar,
+            user_id integer,
             doc_id integer,
-            FOREIGN KEY (doc_id) REFERENCES "%s docs" (doc_id)
+            FOREIGN KEY (doc_id) REFERENCES "%s docs" (doc_id),
+            FOREIGN KEY (user_id) REFERENCES users (user_id)
             )""", (AsIs(name), AsIs(name))]
     return query_list
 
@@ -152,7 +154,7 @@ def reg_new_construction_project_docs_structure(name):
 def reg_new_support_files_table(name):
     query_list = ["""CREATE TABLE "%s support_files" (
             id serial PRIMARY KEY,
-            file_path varchar,
+            file_name varchar,
             file_type varchar,
             loading_time varchar,
             main_file_id integer,
@@ -300,11 +302,11 @@ def get_docs():
     return query
 
 
-def insert_main_file_info(project_name, doc_id, name, revision, version, status, status_set_time, loading_time):
+def insert_main_file_info(project_name, user_id, doc_id, name, revision, version, status, status_set_time,
+                          loading_time):
     query_list = ["""INSERT INTO "%s main_files" (file_name, rev_num, ver_num, document_status, 
-    status_time_set, loading_time, doc_id) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-                  (AsIs(project_name), name, revision, version, status, status_set_time, loading_time,
-                   doc_id)]
+    status_time_set, loading_time, user_id, doc_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+                  (AsIs(project_name), name, revision, version, status, status_set_time, loading_time, user_id, doc_id)]
     return query_list
 
 
@@ -317,4 +319,28 @@ def get_main_file_id(project_name, name):
 def insert_support_file_info(project_name, file_name, file_type, main_file_id):
     query_list = ["""INSERT INTO "%s support_files" (file_name, file_type, main_file_id) VALUES (%s, %s, %s)""",
                   (AsIs(project_name), file_name, file_type, main_file_id)]
+    return query_list
+
+
+def get_doc_and_file_info(project_name, doc_id):
+    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" INNER JOIN "%s main_files" ON "%s docs".doc_id = "%s main_files".doc_id
+    WHERE "%s docs".doc_id=%s) row)""",
+                  (AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name),
+                   doc_id)]
+    return query_list
+
+def get_support_files_info(project_name):
+    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s support_files") row)""",
+                  (AsIs(project_name),)]
+    return query_list
+
+
+def get_user_data_by_user_id(user_id):
+    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM users WHERE user_id=%s) row)""",
+                  (user_id, )]
+    return query_list
+
+def get_doc_info(project_name, doc_id):
+    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" WHERE doc_id=%s) row)""",
+                  (AsIs(project_name), doc_id)]
     return query_list

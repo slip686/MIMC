@@ -1,8 +1,6 @@
 import ast
 from Custom_Widgets.Widgets import QMainWindow
-from PySide6.QtCore import QMargins
-from PySide6.QtWidgets import QApplication, QFileDialog, QGridLayout, QSpacerItem
-from PySide6.examples.widgets.layouts.flowlayout.flowlayout import FlowLayout
+from PySide6.QtWidgets import QApplication, QFileDialog, QGridLayout
 from CustomWidgets import *
 from UIwindow import Ui_MainWindow
 from core import *
@@ -16,14 +14,39 @@ import time
 from threading import Thread
 
 
-
 # this shit is just for correct SQL strings
 class str2(str):
     def __repr__(self):
         return ''.join(('"', super().__repr__()[1:-1], '"'))
 
 
+# class TableUpdater(QThread):
+#     def __init__(self, window_object, document: ProjectDocument, parent_object):
+#         super(TableUpdater, self).__init__()
+#         self.window_object = window_object
+#         self.document = document
+#         self.parent_object = parent_object
+#
+#     def get_flag(self):
+#         flag = self.parent_object.uploading_finished
+#         print(flag)
+#         return flag
+#
+#     def update_table(self):
+#         while True:
+#             if self.get_flag():
+#                 if self.document.type == 'design':
+#                     self.window_object.fill_table(doc_type='design')
+#                 if self.document.type == 'construction':
+#                     self.window_object.fill_table(doc_type='construction')
+#                 if self.document.type == 'init_permit':
+#                     self.window_object.fill_table(doc_type='init_permit')
+#             else:
+#                 time.sleep(1)
+
+
 class MainWindow(QMainWindow):
+
     def __init__(self):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
@@ -33,7 +56,7 @@ class MainWindow(QMainWindow):
         self.show()
         self.ui.mainMenuStack.setCurrentIndex(0)
         self.ui.regStackedWidget.setCurrentWidget(self.ui.loginPage)
-        self.session = user_connection(None, None)
+        self.session = user_connection(None, None, self.ui.statusLabel2)
         self.logged_user_data = None
         self.logged_user = User()
         self.projects_list = []
@@ -48,9 +71,8 @@ class MainWindow(QMainWindow):
         self.ui.initialPermitDocsStructureTreeWidget.patterns_list = []
         self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
         self.ui.homeBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(1))
-        self.ui.flowlayout = FlowLayout(self.ui.widget_4)
-        self.ui.flowlayout.setSpacing(40)
-        self.ui.flowlayout.setContentsMargins(QMargins(50, 50, 50, 50))
+        self.ui.flowlayout = FlowLayout(parent=self.ui.widget_4, margin=40, spacing=25)
+        self.ui.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.homeBtn.hide()
         self.ui.leftSideMenuBtn.hide()
         self.ui.leftSidePopUpMenu.hide()
@@ -65,6 +87,7 @@ class MainWindow(QMainWindow):
         self.current_init_permission_docs_folder = None
         self.current_init_permission_docs_folder_path = 'All Documents'
         self.users_data_from_db = None
+        self.table_updater = None
 
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
@@ -97,6 +120,7 @@ class MainWindow(QMainWindow):
             self.stop = True
 
         self.ui.mainHeader.closeBtn.clicked.connect(lambda: stop())
+        self.ui.mainHeader.closeBtn.clicked.connect(lambda: self.session.set_stop_checking())
 
         def run(stop_thread):
             schedule.every(10).seconds.do(show_advice)
@@ -132,8 +156,7 @@ class MainWindow(QMainWindow):
                 self.ui.stackedWidget_3.slideInIdx(2)
 
         def get_current_user_data():
-            self.logged_user_data = self.session.select_query_fetchone(user_data(), self.session.email)[0][0]
-            # print(self.logged_user_data)
+            self.logged_user_data = self.session.select_query([user_data(), (self.session.email,)])[0][0]
             self.logged_user.user_id = self.logged_user_data['user_id']
             self.logged_user.user_email = self.logged_user_data['email']
             self.logged_user.first_name = self.logged_user_data['first_name']
@@ -145,16 +168,19 @@ class MainWindow(QMainWindow):
 
         def clear_widgets():
             for i in reversed(range(self.ui.flowlayout.count())):
-                self.ui.flowlayout.itemAt(i).widget().setParent(None)
+                self.ui.flowlayout.itemAt(i).widget().deleteLater()
 
         def get_project_cards():
             clear_widgets()
-            self.projects_list = [_[0] for _ in self.session.select_query_fetchall(get_projects_ids(),
-                                                                                   self.logged_user.user_id)]
+            self.project_widget_list.clear()
+            self.projects_list = [_[0] for _ in
+                                  self.session.select_query([get_projects_ids(), (self.logged_user.user_id,)],
+                                                            fetchall=True)]
             if self.projects_list:
                 for _ in self.projects_list:
-                    project_data_dict = self.session.select_query_fetchall(get_project(), _)[0][0][0]
-                    project_owner = self.session.select_query_fetchall(get_user_data(), project_data_dict['owner_id'])
+                    project_data_dict = self.session.select_query([get_project(), (_,)], fetchall=True)[0][0][0]
+                    project_owner = self.session.select_query([get_user_data(), (project_data_dict['owner_id'],)],
+                                                              fetchall=True)
                     self.project_widget = ProjectCard(project_data_dict, self)
                     self.project_widget.project_id = project_data_dict['project_id']
                     self.project_widget.projectName.setText(project_data_dict['project_name'])
@@ -167,24 +193,35 @@ class MainWindow(QMainWindow):
                 for i in self.project_widget_list:
                     self.ui.flowlayout.addWidget(i)
 
-                    def set_picture(label):
-                        picture_bytes = self.session.download_process(repo_id=i.project_data_dict['repo_id'],
-                                                                      file_address=f'/{i.project_data_dict["picture"]}',
-                                                                      bytes_format=True)
-                        picture = QPixmap()
-                        picture.loadFromData(picture_bytes)
-                        rounded = QPixmap(picture.size())
-                        rounded.fill(QColor("transparent"))
-                        painter = QPainter(rounded)
-                        painter.setRenderHint(QPainter.Antialiasing)
-                        painter.setBrush(QBrush(picture))
-                        painter.setPen(Qt.NoPen)
-                        painter.drawRoundedRect(picture.rect(), 15, 15)
-                        painter.end()
-                        label.setPixmap(rounded)
+                    def set_picture(label, stop):
+                        while True:
+                            time.sleep(1)
+                            if stop():
+                                break
+                            if self.session.connection_success:
+                                picture_bytes = self.session.download_process(
+                                                                              repo_id=i.project_data_dict['repo_id'],
+                                                                              file_address=f'/{i.project_data_dict["picture"]}',
+                                                                              bytes_format=True)
+                                if picture_bytes:
+                                    picture = QPixmap()
+                                    picture.loadFromData(picture_bytes)
+                                    rounded = QPixmap(picture.size())
+                                    rounded.fill(QColor("transparent"))
+                                    painter = QPainter(rounded)
+                                    painter.setRenderHint(QPainter.Antialiasing)
+                                    painter.setBrush(QBrush(picture))
+                                    painter.setPen(Qt.NoPen)
+                                    painter.drawRoundedRect(picture.rect(), 15, 15)
+                                    painter.end()
+                                    label.setPixmap(rounded)
+                                    break
 
-                    new_thread = Thread(target=set_picture, args=[i.label])
+                    new_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop), name=f'picture thread {i}')
                     new_thread.start()
+                    # self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
+                # self.ui.flowlayout.contentsMargins().top()
+                self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
 
             else:
                 self.ui.statusLabel.setText('No projects yet')
@@ -192,9 +229,8 @@ class MainWindow(QMainWindow):
         def start_session(email, password):
             self.session.email = email
             self.session.password = password
-            self.session.session()
-
-            if self.session.connection_success:
+            connection = self.session.session()
+            if connection == 'connected':
                 self.ui.mainMenuStack.slideInIdx(1)
                 self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
                 self.ui.emailEntering.setText('')
@@ -202,17 +238,19 @@ class MainWindow(QMainWindow):
 
                 get_current_user_data()
                 get_project_cards()
-
-
+                return 'connected'
             else:
-                self.ui.label_3.setText('Invalid login data')
+                self.ui.label_3.setText(connection.capitalize())
+                return connection
 
         def connection_with_saved_data():
             with open(get_paths()['keep_pass_json']) as f:
                 saved_data = f.read()
                 data = json.loads(saved_data)
                 if data['email'][0] and data['password'][0]:
-                    start_session(data['email'][0], data['password'][0])
+                    connection = start_session(data['email'][0], data['password'][0])
+                    if connection == 'check connection':
+                        self.ui.label_3.setText(connection.capitalize())
                 else:
                     pass
 
@@ -422,10 +460,11 @@ class MainWindow(QMainWindow):
                 lines_check_successful = highlight_unfilled(line, info_label=self.ui.label_10,
                                                             text='Unfilled parameter')
             if lines_check_successful:
-                if self.ui.lineEdit_3.text() not in self.session.select_query_fetchall(exist_project_check()):
+                if self.ui.lineEdit_3.text() not in self.session.select_query([exist_project_check()], fetchall=True):
                     self.ui.newProjectStackedWidget.slideInIdx(1)
                     self.ui.label_10.setText('')
-                    self.users_data_from_db = self.session.select_query_fetchall(retrieve_company_users_list())[0][0]
+                    self.users_data_from_db = \
+                        self.session.select_query([retrieve_company_users_list()], fetchall=True)[0][0]
                     company_set = {item['company_name'] for item in self.users_data_from_db}
                     for i in company_set:
                         self.ui.comboBox_4.addItem(i)
@@ -447,7 +486,7 @@ class MainWindow(QMainWindow):
             for item in self.users_data_from_db:
                 if item['company_name'] == company_name:
                     combo_box.addItem(f'{item["last_name"]} {item["first_name"]}', userData={'id': item['user_id'],
-                                      'email': item['email']})
+                                                                                             'email': item['email']})
 
         def new_project_adding_process_page2():
             sequences = {}
@@ -457,66 +496,70 @@ class MainWindow(QMainWindow):
             for box in combo_boxes:
                 combo_box_check_successful = highlight_unfilled(box)
             if combo_box_check_successful:
-                new_project_adding = Project(self.ui.lineEdit_4.text(), self.ui.lineEdit_3.text(),
-                                             self.logged_user.user_id, self.ui.lineEdit_2.text(),
-                                             self.ui.lineEdit.text(), self.ui.comboBox.currentText(), self.session)
-                self.session.insert_query(new_project_adding.push_project_table_insert())
-                self.session.create_table_query(new_project_adding.create_docs_table)
-                self.session.create_table_query(new_project_adding.create_main_files_table)
-                self.session.create_table_query(new_project_adding.create_support_files_table)
-                self.session.create_table_query(new_project_adding.create_docs_structure_table)
-                sequences['docs_table_seq'] = f'{new_project_adding.name} docs_doc_id_seq'
-                sequences['main_files_table_seq'] = f'{new_project_adding.name} main_files_file_id_seq'
-                sequences['support_files_table_seq'] = f'{new_project_adding.name} support_files_id_seq'
-                sequences['docs_structure_table_seq'] = f'{new_project_adding.name} docs_structure_place_id_seq'
+                new_project = Project(self.ui.lineEdit_4.text(), self.ui.lineEdit_3.text(),
+                                      self.logged_user.user_id, self.ui.lineEdit_2.text(),
+                                      self.ui.lineEdit.text(), self.ui.comboBox.currentText(), self.session)
+                self.ui.statusLabel2.setText('Creating folders')
+                new_project.add_folders_thread.start()
+                new_project.add_folders_thread.join()
 
-                new_project_adding.chief_engineer.user_email = self.ui.comboBox_7.itemData(
+                self.session.commit_query(new_project.push_project_table_insert())
+                self.session.commit_query(new_project.create_docs_table)
+                self.session.commit_query(new_project.create_main_files_table)
+                self.session.commit_query(new_project.create_support_files_table)
+                self.session.commit_query(new_project.create_docs_structure_table)
+                sequences['docs_table_seq'] = f'{new_project.name} docs_doc_id_seq'
+                sequences['main_files_table_seq'] = f'{new_project.name} main_files_file_id_seq'
+                sequences['support_files_table_seq'] = f'{new_project.name} support_files_id_seq'
+                sequences['docs_structure_table_seq'] = f'{new_project.name} docs_structure_place_id_seq'
+
+                new_project.chief_engineer.user_email = self.ui.comboBox_7.itemData(
                     self.ui.comboBox_7.currentIndex())['email']
-                new_project_adding.contractor.user_email = self.ui.comboBox_8.itemData(
+                new_project.contractor.user_email = self.ui.comboBox_8.itemData(
                     self.ui.comboBox_8.currentIndex())['email']
-                new_project_adding.technical_client.user_email = self.ui.comboBox_9.itemData(
+                new_project.technical_client.user_email = self.ui.comboBox_9.itemData(
                     self.ui.comboBox_9.currentIndex())['email']
-                new_project_adding.designer.user_email = self.ui.comboBox_2.itemData(
+                new_project.designer.user_email = self.ui.comboBox_2.itemData(
                     self.ui.comboBox_2.currentIndex())['email']
 
-                new_project_adding.project_id = self.session.select_query_fetchone(get_new_project_id(),
-                                                                                   new_project_adding.name)[0]
+                new_project.project_id = self.session.select_query([get_new_project_id(),
+                                                                    (new_project.name,)])[0]
 
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_7.itemData
+                self.session.commit_query(insert_into_users_projects_party(self.ui.comboBox_7.itemData
                                                                            (self.ui.comboBox_7.currentIndex())['id'],
-                                                                           new_project_adding.project_id,
+                                                                           new_project.project_id,
                                                                            'chief engineer'))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_8.itemData
+                self.session.commit_query(insert_into_users_projects_party(self.ui.comboBox_8.itemData
                                                                            (self.ui.comboBox_8.currentIndex())['id'],
-                                                                           new_project_adding.project_id,
+                                                                           new_project.project_id,
                                                                            'contractor'))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_9.itemData
+                self.session.commit_query(insert_into_users_projects_party(self.ui.comboBox_9.itemData
                                                                            (self.ui.comboBox_9.currentIndex())['id'],
-                                                                           new_project_adding.project_id,
+                                                                           new_project.project_id,
                                                                            'technical client'))
-                self.session.insert_query(insert_into_users_projects_party(self.ui.comboBox_2.itemData
+                self.session.commit_query(insert_into_users_projects_party(self.ui.comboBox_2.itemData
                                                                            (self.ui.comboBox_2.currentIndex())['id'],
-                                                                           new_project_adding.project_id,
+                                                                           new_project.project_id,
                                                                            'designer'))
 
                 #######################################################################################
                 # GRANT USERS ACCESS TO PROJECT TABLES
                 #######################################################################################
-                project_tables = [new_project_adding.docs_table_name,
-                                  new_project_adding.main_files_table_name,
-                                  new_project_adding.support_files_table_name,
-                                  new_project_adding.docs_structure_table_name]
-                emails_list = [new_project_adding.chief_engineer.user_email,
-                               new_project_adding.contractor.user_email,
-                               new_project_adding.technical_client.user_email,
-                               new_project_adding.designer.user_email]
-                list_of_queries = [new_project_adding.grant_privs_on_tables_and_add_to_stash_group(
+                project_tables = [new_project.docs_table_name,
+                                  new_project.main_files_table_name,
+                                  new_project.support_files_table_name,
+                                  new_project.docs_structure_table_name]
+                emails_list = [new_project.chief_engineer.user_email,
+                               new_project.contractor.user_email,
+                               new_project.technical_client.user_email,
+                               new_project.designer.user_email]
+                list_of_queries = [new_project.grant_privs_on_tables_and_add_to_stash_group(
                     project_tables, emails_list)]
                 for email in emails_list:
                     for k, v in sequences.items():
                         list_of_queries.append(grant_usage_on_sequence(v, email))
                 big_query = ';\n'.join(list_of_queries)
-                self.session.multiple_insert(big_query)
+                self.session.commit_query([big_query])
 
                 #######################################################################################
 
@@ -527,7 +570,8 @@ class MainWindow(QMainWindow):
 
         def get_picture_filepath():
             self.dialogWindow = QFileDialog()
-            filename = self.dialogWindow.getOpenFileName(None, "Select picture", "", "Images (*.png *.tiff *.jpg)")
+            filename = self.dialogWindow.getOpenFileName(None, "Select picture", "",
+                                                         "Images (*.png *.tiff *.jpg *.jpeg)")
             self.ui.lineEdit_4.setText(filename[0])
 
         #######################################################################################################
@@ -593,8 +637,9 @@ class MainWindow(QMainWindow):
         def update_structure_list():
             structure_list = None
             if self.ui.stackedWidget_3.currentIndex() == 0:
-                design_docs_query_result = self.session.select_query_fetchall(
-                    get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'design')
+                design_docs_query_result = self.session.select_query([
+                    get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'design')],
+                    fetchall=True)
                 self.design_docs_structure_list = []
                 for i in design_docs_query_result:
                     list_element = list(i)
@@ -602,8 +647,9 @@ class MainWindow(QMainWindow):
                     self.design_docs_structure_list.append(list_element)
                 structure_list = self.design_docs_structure_list
             elif self.ui.stackedWidget_3.currentIndex() == 1:
-                construction_docs_query_result = self.session.select_query_fetchall(
-                    get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'construction')
+                construction_docs_query_result = self.session.select_query([
+                    get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'construction')],
+                    fetchall=True)
                 self.construction_docs_structure_list = []
                 for i in construction_docs_query_result:
                     list_element = list(i)
@@ -611,8 +657,9 @@ class MainWindow(QMainWindow):
                     self.construction_docs_structure_list.append(list_element)
                 structure_list = self.construction_docs_structure_list
             elif self.ui.stackedWidget_3.currentIndex() == 2:
-                initial_permit_docs_query_result = self.session.select_query_fetchall(
-                    get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'init_permit')
+                initial_permit_docs_query_result = self.session.select_query([
+                    get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'init_permit')],
+                    fetchall=True)
                 self.initial_permit_docs_structure_list = []
                 for i in initial_permit_docs_query_result:
                     list_element = list(i)
@@ -694,10 +741,11 @@ class MainWindow(QMainWindow):
                         rows_objects_list_with_columns_nums = []
                         for num, obj in enumerated:
                             rows_objects_list_with_columns_nums.append((str(num), obj))
-                        self.session.update_structure_query(
-                            update_pattern_folder_name(), AsIs(f'"{docs_structure_tablename}"'),
-                            AsIs(f'"{rows_objects_list_with_columns_nums[-1][0]}"'),
-                            AsIs(f"'{self.item.folder_name}'"), AsIs(place_id_list), docs_type)
+                        self.session.commit_query([
+                            update_pattern_folder_name(), (AsIs(f'"{docs_structure_tablename}"'),
+                                                           AsIs(f'"{rows_objects_list_with_columns_nums[-1][0]}"'),
+                                                           AsIs(f"'{self.item.folder_name}'"), AsIs(place_id_list),
+                                                           docs_type)])
                         self.item.renamed = False
 
                 self.iterator += 1
@@ -727,7 +775,8 @@ class MainWindow(QMainWindow):
 
             for i in structure_list:
                 if not i[1]:
-                    self.session.delete_row(delete_pattern(), AsIs(f'{docs_structure_tablename}'), i[0], docs_type)
+                    self.session.commit_query(
+                        [delete_pattern(), (AsIs(f'{docs_structure_tablename}'), i[0], docs_type)])
 
             ######################################################################################
             # 2. Prepare list of patterns to add to database
@@ -776,8 +825,8 @@ class MainWindow(QMainWindow):
             # 1. Get names of columns (as ints) in current documents' table except 'place_id' column
             # (column named by its order in database table)
 
-            columns_names_list = list(self.session.select_query_fetchall(
-                columns_names(), AsIs(docs_structure_tablename)))
+            columns_names_list = list(
+                self.session.select_query([columns_names(), (AsIs(docs_structure_tablename),)], fetchall=True))
             del columns_names_list[0:2]
 
             #####################################################################################################
@@ -797,8 +846,7 @@ class MainWindow(QMainWindow):
                         self.column_name_to_add += 1
                         columns_names_to_add.append(self.column_name_to_add)
                 for i in columns_names_to_add:
-                    self.session.add_column(
-                        add_column(), AsIs(docs_structure_tablename), AsIs(i))
+                    self.session.commit_query([add_column(), (AsIs(docs_structure_tablename), AsIs(i))])
 
             #####################################################################################################
             # 4. Adding new patterns to database
@@ -811,9 +859,9 @@ class MainWindow(QMainWindow):
                     if len(i) == 1:
                         columns_single = f'"{str(column)}"'
                         values_single = f"('{value}')"
-                        self.session.insert_query_with_args(
-                            insert_pattern(), AsIs(docs_structure_tablename), AsIs(columns_single),
-                            AsIs('doc_type'), AsIs(values_single), docs_type)
+                        self.session.commit_query(
+                            [insert_pattern(), (AsIs(docs_structure_tablename), AsIs(columns_single),
+                                                AsIs('doc_type'), AsIs(values_single), docs_type)])
                     else:
                         columns_list.append(column)
                         values_list.append(value)
@@ -825,16 +873,16 @@ class MainWindow(QMainWindow):
                     for k in values_list:
                         sql_string_values.append(f"'{k}'")
 
-                    self.session.insert_query_with_args(insert_pattern(), AsIs(docs_structure_tablename),
+                    self.session.commit_query([insert_pattern(), (AsIs(docs_structure_tablename),
                                                         AsIs(', '.join(sql_string_columns)), AsIs('doc_type'),
-                                                        AsIs(', '.join(sql_string_values)), docs_type)
+                                                        AsIs(', '.join(sql_string_values)), docs_type)])
 
             #####################################################################################################
             # 5. Assign place_id_lists for new rows with query to database
             #####################################################################################################
 
-            docs_structure_list = self.session.select_query_fetchall(
-                get_structure(), (AsIs(docs_structure_tablename)), docs_type)
+            docs_structure_list = self.session.select_query(
+                [get_structure(), ((AsIs(docs_structure_tablename)), docs_type)], fetchall=True)
 
             place_id_dict = self.get_place_id_dict(docs_structure_list)
 
@@ -1117,12 +1165,6 @@ class MainWindow(QMainWindow):
                         self.item.lineEdit.setFocus()
                         self.item.frame.show()
             return self.item
-
-        def get_doc_filepath():
-            self.dialogWindow = QFileDialog()
-            filename = self.dialogWindow.getOpenFileName(None, "Select document", "", "PDF (*.pdf)")
-            self.document_filepath = filename[0]
-            print(self.document_filepath)
 
         # loginPage elements
 
@@ -1628,29 +1670,32 @@ class MainWindow(QMainWindow):
         self.ui.designDocsStructureTreeWidget.clear()
         self.ui.constructionDocsStructureTreeWidget.clear()
         self.ui.initialPermitDocsStructureTreeWidget.clear()
-        self.firstItem = RowElement2(self.ui.designDocsStructureTreeWidget, window_object=self)
-        self.firstItem2 = RowElement2(self.ui.constructionDocsStructureTreeWidget, window_object=self)
-        self.firstItem3 = RowElement2(self.ui.initialPermitDocsStructureTreeWidget, window_object=self)
+        RowElement2(self.ui.designDocsStructureTreeWidget, window_object=self)
+        RowElement2(self.ui.constructionDocsStructureTreeWidget, window_object=self)
+        RowElement2(self.ui.initialPermitDocsStructureTreeWidget, window_object=self)
 
         if self.current_project_id:
-            design_docs_query_result = self.session.select_query_fetchall(
-                get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'design')
+            design_docs_query_result = self.session.select_query([
+                get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'design')],
+                fetchall=True)
             self.design_docs_structure_list = []
             for i in design_docs_query_result:
                 list_element = list(i)
                 del list_element[1]
                 self.design_docs_structure_list.append(list_element)
 
-            construction_docs_query_result = self.session.select_query_fetchall(
-                get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'construction')
+            construction_docs_query_result = self.session.select_query([
+                get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'construction')],
+                fetchall=True)
             self.construction_docs_structure_list = []
             for i in construction_docs_query_result:
                 list_element = list(i)
                 del list_element[1]
                 self.construction_docs_structure_list.append(list_element)
 
-            initial_permit_docs_query_result = self.session.select_query_fetchall(
-                get_structure(), AsIs(self.current_project_data_dict['doc_structure_table']), 'init_permit')
+            initial_permit_docs_query_result = self.session.select_query([
+                get_structure(), (AsIs(self.current_project_data_dict['doc_structure_table']), 'init_permit')],
+                fetchall=True)
             self.initial_permit_docs_structure_list = []
             for i in initial_permit_docs_query_result:
                 list_element = list(i)
@@ -1660,10 +1705,8 @@ class MainWindow(QMainWindow):
         self.apply_structure()
 
     def get_current_project_docs_dicts_list(self):
-        self.current_project_docs_dicts_list = self.session.select_query_fetchall(get_docs(),
-                                                                                  AsIs(
-                                                                                      self.current_project_data_dict[
-                                                                                          'project_name']))[0][0]
+        self.current_project_docs_dicts_list = self.session.select_query(
+            [get_docs(), (AsIs(self.current_project_data_dict['project_name']),)], fetchall=True)[0][0]
 
     def clear_tables(self):
         self.ui.folderNameLabel.setText('All Documents')
@@ -1795,8 +1838,9 @@ class MainWindow(QMainWindow):
         dlg = AddDocDialog(self, window_object=self)
         dlg.exec()
 
-    def document_view_dialog(self):
-        dlg = DocViewDialog(self)
+    def document_view_dialog(self, doc_id):
+        dlg = DocViewDialog(main_window=self, project_name=self.current_project_data_dict['project_name'],
+                            doc_id=doc_id)
         dlg.exec()
 
 

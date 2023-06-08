@@ -670,7 +670,7 @@ class Ui_Dialog(object):
         self.label_16.setText(QCoreApplication.translate("Dialog", u"Drop file here", None))
         self.supportDocFileAddressLabel.setText(QCoreApplication.translate("Dialog", u"File Address", None))
         self.deleteAdditionalDoc.setText("")
-        self.checkBox.setText(QCoreApplication.translate("Dialog", u"Sign document", None))
+        self.checkBox.setText(QCoreApplication.translate("Dialog", u"Sign file", None))
         self.addDocBtn.setText(QCoreApplication.translate("Dialog", u"ADD DOCUMENT", None))
     # retranslateUi
 

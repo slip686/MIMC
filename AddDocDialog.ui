@@ -1231,7 +1231,7 @@ border-radius: 3px</string>
                   <item>
                    <widget class="QCheckBox" name="checkBox">
                     <property name="text">
-                     <string>Sign document</string>
+                     <string>Sign file</string>
                     </property>
                    </widget>
                   </item>

@@ -9,13 +9,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>975</width>
+    <width>945</width>
     <height>772</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
-    <width>975</width>
+    <width>945</width>
     <height>745</height>
    </size>
   </property>
@@ -227,7 +227,7 @@ QPushButton:pressed {
                  <string notr="true"/>
                 </property>
                 <property name="currentIndex">
-                 <number>4</number>
+                 <number>0</number>
                 </property>
                 <widget class="QWidget" name="loginPage">
                  <layout class="QVBoxLayout" name="verticalLayout_9">
@@ -5440,7 +5440,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                     <string notr="true">background-color: rgb(136, 136, 136);</string>
                    </property>
                    <property name="currentIndex">
-                    <number>0</number>
+                    <number>1</number>
                    </property>
                    <widget class="QWidget" name="page">
                     <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -7162,7 +7162,13 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                       <number>0</number>
                      </property>
                      <item>
-                      <widget class="QScrollArea" name="scrollArea">
+                      <widget class="CQScrollArea" name="scrollArea">
+                       <property name="sizePolicy">
+                        <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                         <horstretch>0</horstretch>
+                         <verstretch>0</verstretch>
+                        </sizepolicy>
+                       </property>
                        <property name="widgetResizable">
                         <bool>true</bool>
                        </property>
@@ -7171,8 +7177,8 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>100</width>
-                          <height>110</height>
+                          <width>612</width>
+                          <height>701</height>
                          </rect>
                         </property>
                         <property name="sizePolicy">
@@ -7181,24 +7187,30 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                           <verstretch>0</verstretch>
                          </sizepolicy>
                         </property>
-                        <layout class="QVBoxLayout" name="verticalLayout_46">
+                        <layout class="QVBoxLayout" name="verticalLayout_46" stretch="0">
                          <property name="spacing">
                           <number>0</number>
                          </property>
                          <property name="leftMargin">
-                          <number>50</number>
+                          <number>0</number>
                          </property>
                          <property name="topMargin">
-                          <number>50</number>
+                          <number>0</number>
                          </property>
                          <property name="rightMargin">
-                          <number>50</number>
+                          <number>0</number>
                          </property>
                          <property name="bottomMargin">
-                          <number>50</number>
+                          <number>0</number>
                          </property>
                          <item>
-                          <widget class="QWidget" name="widget_4" native="true">
+                          <widget class="CQWidget" name="widget_4" native="true">
+                           <property name="sizePolicy">
+                            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                             <horstretch>0</horstretch>
+                             <verstretch>0</verstretch>
+                            </sizepolicy>
+                           </property>
                            <property name="styleSheet">
                             <string notr="true">background-color: transparent;</string>
                            </property>
@@ -8644,6 +8656,18 @@ border-radius: 6px</string>
   <customwidget>
    <class>QCustomSlideFrame3</class>
    <extends>QFrame</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CQScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CQWidget</class>
+   <extends>QWidget</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>
   </customwidget>

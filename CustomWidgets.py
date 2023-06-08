@@ -1,10 +1,11 @@
 from PySide6 import QtWidgets, QtCore
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData, QEasingCurve, QSortFilterProxyModel
+    QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
-    QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter
+    QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter, QScrollArea, QLayout, \
+    QSpacerItem
 from core import *
 
 
@@ -789,7 +790,7 @@ class HeaderCell(QWidget):
         self.columns_menu.setGeometry(self.contextBtn.button_pos.x(),
                                       self.contextBtn.button_pos.y() + 20, 120, 200)
 
-        class MenuRow(QWidget):
+        class SubMenuRow(QWidget):
             def __init__(self, logical_index: int = None, table: QCustomTableWidget = None):
                 QWidget.__init__(self)
                 self.horizontalLayout = QHBoxLayout(self)
@@ -805,7 +806,7 @@ class HeaderCell(QWidget):
                 self.table = table
 
         for i in self.parent_table.horizontalHeader().cells:
-            row = MenuRow(i.logical_index, self.parent_table)
+            row = SubMenuRow(i.logical_index, self.parent_table)
             row.label.setText(i.label.text())
             self.columns_menu.verticalLayout.addWidget(row)
 
@@ -1246,7 +1247,7 @@ class DraggableCell(QWidget):
         self.layout.addWidget(self.textLabel)
         self.setLayout(self.layout)
         self.textLabel.clicked.connect(lambda: self.parent().parent().row_select(self.row_num, self.doc_id))
-        self.textLabel.clicked.connect(lambda: self.main_window.document_view_dialog())
+        self.textLabel.clicked.connect(lambda: self.main_window.document_view_dialog(doc_id=self.doc_id))
 
     def translate_cursor_pos(self, position: QPoint):
         self.cursor_pos = self.mapToParent(position)
@@ -1356,6 +1357,108 @@ class CQScrollBar(QFrame):
             self.scroll_bar.valueChanged.connect(lambda:
                                                  self.controlled_table.verticalScrollBar().setValue(
                                                      self.scroll_bar.value()))
+
+    #############################################################
+    # Animation
+    #############################################################
+
+    def hide_animate(self):
+        self.animation.stop()
+        self.animation.setStartValue(1)
+        self.animation.setEndValue(0)
+        self.animation.start()
+
+    def show_animate(self):
+        self.animation.stop()
+        self.show()
+        self.animation.setStartValue(0)
+        self.animation.setEndValue(1)
+        self.animation.start()
+
+    def enterEvent(self, event):
+        self.cursor_in = True
+        self.mouse_entered.emit()
+        # print(self.cursor_in)
+
+    def leaveEvent(self, event):
+        self.cursor_in = False
+        self.hide_animate()
+        self.mouse_left.emit()
+
+    def finished_animate(self):
+        try:
+            if self.effect.opacity() == 1:
+                loop = QEventLoop()
+                QTimer.singleShot(1000, lambda: loop.quit() if not self.cursor_in else print(''))
+                self.mouse_left.connect(loop.quit)
+                loop.exec_()
+
+                loop = QEventLoop()
+                QTimer.singleShot(200, loop.quit)
+                loop.exec_()
+
+                self.hide_animate()
+
+            if self.effect.opacity() == 0:
+                self.hide()
+        except RuntimeError:
+            pass
+
+
+class CQScrollBar2(QFrame):
+    mouse_entered = Signal()
+    mouse_left = Signal()
+
+    def __init__(self, parent=None, orientation=None):
+        super(CQScrollBar2, self).__init__()
+        self.setParent(parent)
+        self.orientation = orientation
+        self.setStyleSheet(u'QFrame{background-color: transparent}')
+        self.scroll_widget_frame_layout = QVBoxLayout()
+        self.scroll_widget_frame_layout.setContentsMargins(0, 0, 0, 0)
+        self.scroll_widget_frame_layout.setSpacing(0)
+        self.scroll_bar = QScrollBar()
+
+        if self.orientation == 'h':
+            self.scroll_bar.setOrientation(Qt.Horizontal)
+            self.scroll_bar.setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                          'border-bottom-left-radius: 6px;\n'
+                                          'border-bottom-right-radius: 6px}'
+                                          'QScrollBar::handle:horizontal {background-color: rgb(136,136,136);\n'
+                                          'border-radius: 4px;\n'
+                                          'margin: 3px}'
+                                          'QScrollBar::add-line:horizontal {border: none; background: none}'
+                                          'QScrollBar::sub-line:horizontal {border: none; background: none}'
+                                          'QScrollBar::sub-page:horizontal {background: transparent}'
+                                          'QScrollBar::add-page:horizontal {background: transparent}')
+        if self.orientation == 'v':
+            self.scroll_bar.setOrientation(Qt.Vertical)
+            self.scroll_bar.setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                          'border-top-right-radius: 0px;\n'
+                                          'border-bottom-right-radius: 6px}'
+                                          'QScrollBar::handle:vertical {background-color: rgb(65,65,65);\n'
+                                          'border-radius: 4px;\n'
+                                          'margin: 3px}'
+                                          'QScrollBar::add-line:vertical {border: none; background: none}'
+                                          'QScrollBar::sub-line:vertical {border: none; background: none}'
+                                          'QScrollBar::sub-page:vertical {background: transparent}'
+                                          'QScrollBar::add-page:vertical {background: transparent}')
+        self.setLayout(self.scroll_widget_frame_layout)
+        self.scroll_widget_frame_layout.addWidget(self.scroll_bar)
+
+        self.hide()
+
+        self.effect = QGraphicsOpacityEffect()
+        self.setGraphicsEffect(self.effect)
+
+        self.cursor_in = False
+        self.inside = False
+        self.timer = QTimer()
+        self.scrolling_in_progress = False
+
+        self.animation = QPropertyAnimation(self.effect, b'opacity')
+        self.animation.setDuration(400)
+        self.animation.finished.connect(lambda: self.finished_animate())
 
     #############################################################
     # Animation
@@ -1953,9 +2056,11 @@ class CQLineEdit(QLineEdit):
 class CQWidget(QWidget):
     clicked = Signal()
     lostFocus = Signal()
+    sizeChanged = Signal()
 
     def __init__(self, parent=None):
         super(CQWidget, self).__init__(parent)
+        self.setMouseTracking(True)
 
     def focusOutEvent(self, event):
         self.lostFocus.emit()
@@ -1967,6 +2072,10 @@ class CQWidget(QWidget):
 
     def dragEnterEvent(self, e):
         e.accept()
+
+    def resizeEvent(self, event):
+        self.sizeChanged.emit()
+        super().resizeEvent(event)
 
 
 class CQLineEdit2(QTextEdit):
@@ -2433,8 +2542,8 @@ class ProjectCard(Ui_Form, QWidget):
         self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid black}")
 
     def mouseReleaseEvent(self, event):
-        self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid white}")
-        if self.main_window:
+        self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid transparent}")
+        if self.main_window.session.connection_success:
             self.main_window.ui.interfaceBodyStackedWidget.slideInIdx(2)
             self.main_window.current_project_id = self.project_id
             self.main_window.current_project_data_dict = self.project_data_dict
@@ -2444,8 +2553,9 @@ class ProjectCard(Ui_Form, QWidget):
             self.main_window.ui.newProjectBtn.hide()
             self.main_window.ui.editProjectCardBtn.hide()
             self.main_window.current_project_docs_dicts_list = \
-                self.main_window.session.select_query_fetchall(get_docs(),
-                                                               AsIs(self.project_data_dict['project_name']))[0][0]
+                self.main_window.session.select_query([get_docs(),
+                                                       (AsIs(self.project_data_dict['project_name']),)], fetchall=True)[
+                    0][0]
             self.main_window.get_project_structure()
 
             for i in ['design', 'construction', 'init_permit']:
@@ -2487,12 +2597,12 @@ class QCustomSlideFrame2(QFrame):
         self.expanded_width = 300
         self.parent().resized.connect(lambda: self.correct_self_position())
         if self.parent:
-            self.setGeometry(self.parent_widget.width()-self.collapsed_width, 0,
+            self.setGeometry(self.parent_widget.width() - self.collapsed_width, 0,
                              self.expanded_width, self.parent_widget.height())
             # self.hide()
 
     def correct_self_position(self):
-        self.setGeometry(self.parent_widget.width()-self.width(), 0, self.width(), self.parent_widget.height())
+        self.setGeometry(self.parent_widget.width() - self.width(), 0, self.width(), self.parent_widget.height())
 
     def hide_show_func(self):
         if self.isHidden():
@@ -2520,31 +2630,68 @@ class QCustomSlideFrame2(QFrame):
 
 
 class QCustomSlideFrame3(QFrame):
-    def __init__(self, parent: QFrameWithResizeSignal = None):
+    def __init__(self, parent: QFrameWithResizeSignal = None, ):
         super(QCustomSlideFrame3, self).__init__(parent)
+        self.trigger_btn = None
         self.parent_widget = parent
-        self.expanded_width = 400
+        self.value = 400
         self.animation = QVariantAnimation()
         self.animation.valueChanged.connect(self.animation_process)
         self.animation.setDuration(300)
+        self.hidden = None
+        self.icon1 = QIcon()
+        self.icon2 = QIcon()
+        self.icon1.addFile(u":/icon/icons/chevron-down.svg", QSize(), QIcon.Normal, QIcon.Off)
+        self.icon2.addFile(u":/icon/icons/chevron-right.svg", QSize(), QIcon.Normal, QIcon.Off)
 
-    def animation_process(self, width):
-        self.setFixedWidth(width)
+        self.animation_direction = 'horizontal'
+
+    def set_trigger(self, trigger_btn: QPushButton=None):
+        self.trigger_btn = trigger_btn
+        self.trigger_btn.clicked.connect(lambda: self.hide_show_func())
+
+    def animation_process(self, value):
+        if self.animation_direction == 'horizontal':
+            self.setFixedWidth(value)
+        if self.animation_direction == 'vertical':
+            self.setFixedHeight(value)
 
     def hide_show_func(self):
-        if self.width() < 35:
-            self.show_animate()
-        else:
-            self.hide_animate()
+        if self.animation_direction == 'horizontal':
+            if self.width() < 35:
+                self.show_animate()
+                if self.trigger_btn:
+                    self.trigger_btn.setIcon(self.icon1)
+            else:
+                self.hide_animate()
+                if self.trigger_btn:
+                    self.trigger_btn.setIcon(self.icon2)
+        if self.animation_direction == 'vertical':
+            if self.height() < 1:
+                self.show_animate()
+                if self.trigger_btn:
+                    self.trigger_btn.setIcon(self.icon1)
+            else:
+                self.hide_animate()
+                if self.trigger_btn:
+                    self.trigger_btn.setIcon(self.icon2)
 
     def hide_animate(self):
-        self.animation.setStartValue(self.width())
-        self.animation.setEndValue(30)
-        self.animation.start()
+        if self.animation_direction == 'horizontal':
+            self.animation.setStartValue(self.width())
+            self.animation.setEndValue(30)
+            self.animation.start()
+        if self.animation_direction == 'vertical':
+            self.animation.setStartValue(self.height())
+            self.animation.setEndValue(0)
+            self.animation.start()
 
     def show_animate(self):
-        self.animation.setStartValue(self.width())
-        self.animation.setEndValue(self.expanded_width)
+        if self.animation_direction == 'horizontal':
+            self.animation.setStartValue(self.width())
+        if self.animation_direction == 'vertical':
+            self.animation.setStartValue(self.height())
+        self.animation.setEndValue(self.value)
         self.animation.start()
 
 
@@ -2590,6 +2737,173 @@ class ExtendedComboBox(QComboBox):
         super(ExtendedComboBox, self).setModelColumn(column)
 
 
+class CQScrollArea(QScrollArea):
+    def __init__(self, widget=None):
+        super(CQScrollArea, self).__init__()
+        self.inner_contents_widget = None
+        self.setParent(widget)
+        self.inner_contents_container = None
+        self.delta_x = 0
+        self.delta_y = 0
+        self.setWidgetResizable(True)
+        self.vertical_scroll_bar = CQScrollBar2(parent=self, orientation='v')
+        self.vertical_scroll_bar.scroll_bar.valueChanged.connect(lambda: self.verticalScrollBar().setValue(
+            self.vertical_scroll_bar.scroll_bar.value()))
+        self.current_value = 0
+        self.setMouseTracking(True)
+
+    def set_scroll_bar_parameters(self):
+        self.vertical_scroll_bar.setGeometry(self.geometry().width() - 16, 22, 16, self.geometry().height() - 22)
+        self.vertical_scroll_bar.scroll_bar.setPageStep(2000)
+        self.vertical_scroll_bar.scroll_bar.setRange(0, self.inner_contents_widget.height() -
+                                                     self.height() +
+                                                     self.inner_contents_container.layout().contentsMargins().top() +
+                                                     self.inner_contents_container.layout().contentsMargins().bottom())
+        self.vertical_scroll_bar.scroll_bar.setValue(self.current_value)
+
+    def showEvent(self, event):
+        self.inner_contents_widget = self.inner_contents_container.findChild(QWidget)
+        self.inner_contents_widget.installEventFilter(self)
+        self.inner_contents_container.findChild(QWidget).sizeChanged.connect(lambda: self.set_scroll_bar_parameters())
+
+    def resizeEvent(self, event):
+        self.inner_contents_container = self.viewport().findChild(QWidget)
+        self.inner_contents_container.setGeometry(self.rect())
+
+    def wheelEvent(self, event):
+        if event.angleDelta().y():
+            if event.phase().ScrollUpdate:
+                self.delta_y += event.angleDelta().y()
+                if self.vertical_scroll_bar.isHidden():
+                    self.vertical_scroll_bar.show_animate()
+                self.vertical_scroll_bar.scroll_bar.setValue(self.vertical_scroll_bar.scroll_bar.value() - self.delta_y)
+                self.current_value = self.vertical_scroll_bar.scroll_bar.value() - self.delta_y
+            if event.phase().ScrollEnd:
+                self.delta_y = 0
+
+    def eventFilter(self, target, event):
+        if target == self.inner_contents_widget and event.type() == QEvent.Type.MouseMove:
+            if self.vertical_scroll_bar and self.vertical_scroll_bar.isHidden():
+                if event.pos().x() > self.width() - 20:
+                    self.vertical_scroll_bar.show_animate()
+            return False
+        return super().eventFilter(target, event)
 
 
+class FlowLayout(QLayout):
+    """A ``QLayout`` that aranges its child widgets horizontally and
+    vertically.
+
+    If enough horizontal space is available, it looks like an ``HBoxLayout``,
+    but if enough space is lacking, it automatically wraps its children into
+    multiple rows.
+
+    """
+    heightChanged = Signal(int)
+
+    def __init__(self, parent=None, margin=0, spacing=-1):
+        super().__init__(parent)
+        if parent is not None:
+            self.setContentsMargins(margin, margin, margin, margin)
+        self.setSpacing(spacing)
+
+        self._item_list = []
+
+    def __del__(self):
+        while self.count():
+            self.takeAt(0)
+
+    def addItem(self, item):  # pylint: disable=invalid-name
+        self._item_list.append(item)
+
+    def addSpacing(self, size):  # pylint: disable=invalid-name
+        self.addItem(QSpacerItem(size, 0, QSizePolicy.Fixed, QSizePolicy.Minimum))
+
+    def count(self):
+        return len(self._item_list)
+
+    def itemAt(self, index):  # pylint: disable=invalid-name
+        if 0 <= index < len(self._item_list):
+            return self._item_list[index]
+        return None
+
+    def takeAt(self, index):  # pylint: disable=invalid-name
+        if 0 <= index < len(self._item_list):
+            return self._item_list.pop(index)
+        return None
+
+    def expandingDirections(self):  # pylint: disable=invalid-name,no-self-use
+        return Qt.Orientations(Qt.Orientation(0))
+
+    def hasHeightForWidth(self):  # pylint: disable=invalid-name,no-self-use
+        return True
+
+    def heightForWidth(self, width):  # pylint: disable=invalid-name
+        height = self._do_layout(QRect(0, 0, width, 0), True)
+        return height
+
+    def setGeometry(self, rect):  # pylint: disable=invalid-name
+        super().setGeometry(rect)
+        self._do_layout(rect, False)
+
+    def sizeHint(self):  # pylint: disable=invalid-name
+        return self.minimumSize()
+
+    def minimumSize(self):  # pylint: disable=invalid-name
+        size = QSize()
+
+        for item in self._item_list:
+            minsize = item.minimumSize()
+            extent = item.geometry().bottomRight()
+            size = size.expandedTo(QSize(minsize.width(), extent.y()))
+
+        margin = self.contentsMargins().left()
+        size += QSize(2 * margin, 2 * margin)
+        return size
+
+    def _do_layout(self, rect, test_only=False):
+        m = self.contentsMargins()
+        effective_rect = rect.adjusted(+m.left(), +m.top(), -m.right(), -m.bottom())
+        x = effective_rect.x()
+        y = effective_rect.y()
+        line_height = 0
+
+        for item in self._item_list:
+            wid = item.widget()
+
+            space_x = self.spacing()
+            space_y = self.spacing()
+            if wid is not None:
+                space_x += wid.style().layoutSpacing(
+                    QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Horizontal)
+                space_y += wid.style().layoutSpacing(
+                    QSizePolicy.PushButton, QSizePolicy.PushButton, Qt.Vertical)
+
+            next_x = x + item.sizeHint().width() + space_x
+            if next_x - space_x > effective_rect.right() and line_height > 0:
+                x = effective_rect.x()
+                y = y + line_height + space_y
+                next_x = x + item.sizeHint().width() + space_x
+                line_height = 0
+
+            if not test_only:
+                item.setGeometry(QRect(QPoint(x, y), item.sizeHint()))
+
+            x = next_x
+            line_height = max(line_height, item.sizeHint().height())
+
+        new_height = y + line_height - rect.y()
+        self.heightChanged.emit(new_height)
+        return new_height
+
+
+class CQLabel3(QLabel):
+    clicked = Signal()
+
+    def __init__(self):
+        super(CQLabel3, self).__init__()
+        self.expanded = False
+
+    def mouseReleaseEvent(self, event):
+        self.clicked.emit()
 

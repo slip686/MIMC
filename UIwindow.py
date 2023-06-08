@@ -22,9 +22,9 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QTabWidget, QTableWidgetItem, QTreeWidgetItem, QVBoxLayout,
     QWidget)
 
-from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    QCustomSlideFrame, QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget,
-    QCustomTitleBar, QFrameWithResizeSignal)
+from CustomWidgets import (CQLineEdit, CQScrollArea, CQSizeGrip, CQSizeGrip2,
+    CQTreeWidget, CQWidget, QCustomSlideFrame, QCustomSlideFrame3,
+    QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar, QFrameWithResizeSignal)
 import resources_rc_rc
 import resources_rc_rc
 import resources_rc_rc
@@ -34,8 +34,8 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(975, 772)
-        MainWindow.setMinimumSize(QSize(975, 745))
+        MainWindow.resize(945, 772)
+        MainWindow.setMinimumSize(QSize(945, 745))
         MainWindow.setStyleSheet(u"#MainWindow {border-top-right-radius: 10px;\n"
 "	border-top-left-radius: 10px}\n"
 "*{\n"
@@ -2841,20 +2841,24 @@ class Ui_MainWindow(object):
         self.verticalLayout_42.setSpacing(0)
         self.verticalLayout_42.setObjectName(u"verticalLayout_42")
         self.verticalLayout_42.setContentsMargins(0, 0, 0, 0)
-        self.scrollArea = QScrollArea(self.page_2)
+        self.scrollArea = CQScrollArea(self.page_2)
         self.scrollArea.setObjectName(u"scrollArea")
+        sizePolicy.setHeightForWidth(self.scrollArea.sizePolicy().hasHeightForWidth())
+        self.scrollArea.setSizePolicy(sizePolicy)
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 100, 110))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 612, 701))
         sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents_2.setSizePolicy(sizePolicy)
         self.verticalLayout_46 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_46.setSpacing(0)
         self.verticalLayout_46.setObjectName(u"verticalLayout_46")
-        self.verticalLayout_46.setContentsMargins(50, 50, 50, 50)
-        self.widget_4 = QWidget(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_46.setContentsMargins(0, 0, 0, 0)
+        self.widget_4 = CQWidget(self.scrollAreaWidgetContents_2)
         self.widget_4.setObjectName(u"widget_4")
+        sizePolicy.setHeightForWidth(self.widget_4.sizePolicy().hasHeightForWidth())
+        self.widget_4.setSizePolicy(sizePolicy)
         self.widget_4.setStyleSheet(u"background-color: transparent;")
 
         self.verticalLayout_46.addWidget(self.widget_4)
@@ -3446,10 +3450,10 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
 
         self.mainMenuStack.setCurrentIndex(1)
-        self.regStackedWidget.setCurrentIndex(4)
+        self.regStackedWidget.setCurrentIndex(0)
         self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_3.setCurrentIndex(1)
-        self.interfaceBodyStackedWidget.setCurrentIndex(0)
+        self.interfaceBodyStackedWidget.setCurrentIndex(1)
         self.newProjectStackedWidget.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
 

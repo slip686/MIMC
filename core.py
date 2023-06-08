@@ -1,6 +1,17 @@
 import mimetypes
+import concurrent.futures
+from concurrent.futures import wait
+from functools import partial
 import sys
 from random import randint as rand
+
+from PySide6 import QtCore
+from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread
+from PySide6.QtGui import Qt
+from PySide6.QtPdf import QPdfDocument
+from PySide6.QtPdfWidgets import QPdfView
+from PySide6.QtWidgets import QProgressBar
+
 from searchRow import Ui_Form as Row
 from ProjectWidget import Ui_Form
 from tqdm import tqdm
@@ -22,7 +33,7 @@ import seafileapi
 import os
 import platform
 import requests
-from requests.exceptions import ConnectionError, Timeout
+from requests.exceptions import ConnectionError, Timeout, ReadTimeout
 from requests_toolbelt import MultipartEncoder
 from threading import Thread
 import pathlib
@@ -33,6 +44,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from functools import wraps
+from seafileapi import exceptions
 import time
 
 
@@ -72,8 +84,11 @@ def get_paths():
 
 
 def get_advice():
-    response = requests.get('http://fucking-great-advice.ru/api/random').json()
-    return response["text"]
+    try:
+        response = requests.get('http://fucking-great-advice.ru/api/random').json()
+        return response["text"]
+    except ConnectionError:
+        pass
 
 
 def get_key(Email):
@@ -241,7 +256,7 @@ class Email_recover_sending:
 
 
 class user_connection:
-    def __init__(self, email, password):
+    def __init__(self, email, password, status_label):
         self.email = email
         self.password = password
         self.conn = None
@@ -254,7 +269,13 @@ class user_connection:
         self.os_login = get_paths()['os_login']
         self.uploaded_bytes_counter = 0
         self.total_uploading_bytes = 0
-        self.finish_upload_flag = False
+        self.finish_upload_flag = None
+        self.stop_checking = False
+        self.status_label = status_label
+        self.stop_download = False
+
+    def set_stop_checking(self):
+        self.stop_checking = True
 
     def session(self):
 
@@ -262,111 +283,159 @@ class user_connection:
             file_content = f.read()
             template = json.loads(file_content)
             self.stash_url = template["stash_url"]
-        try:
-            ##################################################
-            # CONNECT TO DATABASE
-            ##################################################
-            # print(self.email, self.password, template["host"], template["port"], template["database"])
+            try:
+                ##################################################
+                # CONNECT TO DATABASE
+                ##################################################
 
-            self.conn = psycopg2.connect(user=self.email,
-                                         password=self.password,
-                                         host=template["host"],
-                                         port=template["port"],
-                                         database=template["database"])
-            self.cur = self.conn.cursor()
+                self.conn = psycopg2.connect(user=self.email,
+                                             password=self.password,
+                                             host=template["host"],
+                                             port=template["port"],
+                                             database=template["database"])
+                self.cur = self.conn.cursor()
 
-            ##################################################
-            # CONNECT TO STASH
-            ##################################################
+                ##################################################
+                # CONNECT TO STASH
+                ##################################################
 
-            self.stash_connection = seafileapi.connect(self.stash_url, self.email, self.password)
+                self.stash_connection = seafileapi.connect(self.stash_url, self.email, self.password)
 
-            #################################################################
-            # GET STASH CURRENT USER TOKEN
-            #################################################################
+                #################################################################
+                # GET STASH CURRENT USER TOKEN
+                #################################################################
 
-            headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-            data = f'username={self.email}&password={self.password}'
-            response = requests.post(f'{self.stash_url}/api2/auth-token/', headers=headers, data=data)
-            self.token = response.json()['token']
+                headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+                data = f'username={self.email}&password={self.password}'
+                response = requests.post(f'{self.stash_url}/api2/auth-token/', headers=headers, data=data)
+                self.token = response.json()['token']
 
-            self.connection_success = 1
+                self.connection_success = 1
 
-        except (Exception, Error) as error:
-            print("Error while working with PostgreSQL", error)
+                def check_conn(stop):
+                    while True:
+                        try:
+                            time.sleep(3)
+                            requests.get('http://sliplab.net', timeout=3)
+                            self.connection_success = True
+                            self.status_label.setText('')
+                        except requests.exceptions.ConnectionError:
+                            self.connection_success = False
+                            self.status_label.setText('Connection lost')
+                            if stop():
+                                break
+                            continue
+                        except requests.exceptions.ReadTimeout:
+                            self.connection_success = False
+                            self.status_label.setText('Connection lost')
+                            if stop():
+                                break
+                            continue
+                        if stop():
+                            break
 
-    def insert_query(self, query):
-        self.cur.execute(*query)
-        self.conn.commit()
+                connection_check_thread = Thread(target=check_conn, args=(lambda: self.stop_checking,),
+                                                 name='check_conn')
+                connection_check_thread.start()
 
-    def create_table_query(self, query):
-        self.cur.execute(*query)
-        self.conn.commit()
+                return 'connected'
 
-    def select_query_fetchone(self, query, *args):
-        self.cur.execute(query, args)
-        return self.cur.fetchone()
+            except psycopg2.OperationalError as err:
+                error_text = (str(err).split(' '))
+                if 'translate' in error_text:
+                    return 'check connection'
+                elif 'authentication' in error_text:
+                    return 'invalid credentials'
+            except requests.exceptions.RequestException:
+                return 'stash connection failed'
 
-    def select_query_fetchone_with_list(self, query):
-        self.cur.execute(*query)
-        return self.cur.fetchone()
+    def commit_query(self, query: list):
+        if self.connection_success:
+            try:
+                self.cur.execute(*query)
+                self.conn.commit()
+            except psycopg2.OperationalError as err:
+                print(err)
+            except psycopg2.InterfaceError as err:
+                print(err)
+            except psycopg2.DatabaseError as err:
+                print(err)
 
-    def select_query_fetchall(self, query, *args):
-        self.cur.execute(query, args)
-        return self.cur.fetchall()
-
-    def add_column(self, query, *args):
-        self.cur.execute(query, args)
-        return self.conn.commit()
-
-    def delete_row(self, query, *args):
-        self.cur.execute(query, args)
-        return self.conn.commit()
-
-    def insert_query_with_args(self, query, *args):
-        self.cur.execute(query, args)
-        return self.conn.commit()
-
-    def multiple_insert(self, query):
-        self.cur.execute(query)
-        return self.conn.commit()
+    def select_query(self, query, fetchall: bool = False):
+        if self.connection_success:
+            try:
+                self.cur.execute(*query)
+                if fetchall:
+                    return self.cur.fetchall()
+                else:
+                    return self.cur.fetchone()
+            except psycopg2.OperationalError as err:
+                print(err)
+            except psycopg2.InterfaceError as err:
+                print(err)
+            except psycopg2.DatabaseError as err:
+                print(err)
 
     def close_session(self):
         self.connection_success = 0
         self.cur.close()
         self.conn.close()
 
-    def update_structure_query(self, query, *args):
-        self.cur.execute(query, args)
-        return self.conn.commit()
-
-    def download_process(self, repo_id=None, file_address=None, file_type=None, bytes_format=None):
-
+    def download_process(self, repo_id=None, file_address=None, file_name=None, file_type=None, bytes_format=None,
+                         pdf_document_view: QPdfDocument = None, buffer_device: QBuffer = None,
+                         window_instance=None):
         #################################################################
         # DOWNLOAD
         #################################################################
+        try:
+            headers = {'Authorization': f'Token {self.token}', 'Accept': 'application/json; charset=utf-8; indent=4', }
+            link_request = requests.get(f'{self.stash_url}/api2/repos/{repo_id}/file/?p={file_address}',
+                                        headers=headers, timeout=3)
+            link = link_request.text.strip('"')
 
-        repo = self.stash_connection.repos.get_repo(repo_id)
-        file = repo.get_file(file_address)
-        content = file.get_content()
-        if not bytes_format:
-            with open(f'/Users/{self.os_login}/Downloads/filename.{file_type}', 'wb') as f:
-                f.write(content)
-                f.close()
-        else:
-            return content
+            response = requests.get(link, timeout=1, stream=True)
 
-    def download_file_in_thread(self, repo_id=None, file_address=None, file_type=None, bytes_format=None):
-        thread = Thread(target=self.download_process, args=(repo_id, file_address, file_type, bytes_format))
-        thread.start()
+            content = b''
+            downloaded_bytes = 0
+            total_length = response.headers.get('content-length')
+            chunk_size = 1024 * 512
+
+            for data in response.iter_content(chunk_size=chunk_size):
+                if not self.stop_download:
+                    time.sleep(0.01)
+                    content += data
+                    downloaded_bytes += chunk_size
+                    val = round(int(downloaded_bytes) / int(total_length), 3)
+                    if window_instance:
+                        if val <= 1:
+                            window_instance.draw_progress(val)
+                else:
+                    response.close()
+                    self.stop_download = False
+                    return None
+            if not bytes_format:
+                with open(f'/Users/{self.os_login}/Downloads/{file_name}.{file_type}', 'wb') as f:
+                    f.write(content)
+            else:
+                if pdf_document_view and buffer_device:
+                    buffer_device.open(QBuffer.ReadWrite)
+                    buffer_device.write(content)
+                    pdf_document_view.load(buffer_device)
+                return content
+        except requests.exceptions.ReadTimeout:
+
+            return None
+        except requests.exceptions.ConnectionError:
+            return None
 
     # @timeit
-    def upload_file(self, repo_id, local_address, path_in_repo, uploaded_file_name, info_object=None):
+    def upload_file(self, repo_id, local_address, path_in_repo, uploaded_file_name, info_object):
         #################################################################
         # UPLOAD
         #################################################################
+        self.finish_upload_flag = None
         file_size = os.stat(local_address).st_size
-        self.total_uploading_bytes += file_size / (1024*1024)
+        self.total_uploading_bytes += file_size / (1024 * 1024)
         ext = mimetypes.guess_extension(mimetypes.guess_type(local_address)[0])
         headers = {'Authorization': f'Token {self.token}'}
         request = requests.get(f'{self.stash_url}/api2/repos/{repo_id}/upload-link/?p={path_in_repo}', headers=headers)
@@ -382,59 +451,39 @@ class user_connection:
                     index = offset
                     files = {'file': chunk, 'parent_dir': (None, path_in_repo)}
                     try:
-                        response = session.post(upload_link, headers=headers, files=files, params=params)
-                        if info_object and response.status_code == 200:
-                            info_object.setText('Uploading {0}: {1:>10} out of {2} MB'.format(
-                                uploaded_file_name, round((offset - 1) / 1000000, 2), round(file_size / 1000000, 2)))
-                        else:
-                            self.uploaded_bytes_counter += len(chunk) / (1024*1024)
-                    except (ConnectionError, Timeout):
-                        info_object.setText('Uploading failed, check connection')
-                if info_object:
-                    info_object.setText(f'Uploading {uploaded_file_name}: Done!')
-                    time.sleep(5)
-                    info_object.setText('')
+                        session.post(upload_link, headers=headers, files=files, params=params, timeout=4)
+                        self.uploaded_bytes_counter += len(chunk) / (1024 * 1024)
+                        self.show_uploading_status(self.uploaded_bytes_counter, self.total_uploading_bytes, info_object)
+                    except (ConnectionError, Timeout, ReadTimeout):
+                        return False
+                return local_address
 
     def start_upload(self, repo_id, local_address, path_in_repo, uploaded_file_name, info_object):
-        if len(local_address) == 1 and len(uploaded_file_name) == 1:
-            thread = Thread(target=self.upload_file,
-                            args=(repo_id, local_address[0], path_in_repo, uploaded_file_name[0], info_object))
-            thread.start()
-        elif 1 < len(local_address) == len(uploaded_file_name) > 1:
-            threads = []
-            for thread_num in range(len(local_address)):
-                thread = Thread(target=self.upload_file,
-                                args=(repo_id, local_address[thread_num], path_in_repo, uploaded_file_name[thread_num]))
-                threads.append(thread)
 
-            show_status_thread = Thread(target=self.show_uploading_status,
-                                        args=(lambda: (self.uploaded_bytes_counter,),
-                                              lambda: (self.total_uploading_bytes,),
-                                              lambda: (self.finish_upload_flag,), info_object))
+        upload_executor = concurrent.futures.ThreadPoolExecutor(max_workers=len(local_address))
+        futures = [upload_executor.submit(self.upload_file, repo_id, local_address[thread_num],
+                                          path_in_repo,
+                                          uploaded_file_name[thread_num], info_object)
+                   for thread_num in range(len(local_address))]
 
-            def wait_for_threads(threads_list, status_thread):
-                status_thread.start()
-                for single_upload_thread in threads_list:
-                    single_upload_thread.start()
-                for single_upload_thread in threads_list:
-                    single_upload_thread.join()
+        upload_result = []
+        for future in futures:
+            if future.result():
+                upload_result.append(future.result())
+            else:
+                upload_result.append(False)
+        if all(upload_result):
+            self.uploaded_bytes_counter = 0
+            self.total_uploading_bytes = 0
+            info_object.setText('Uploading files: done!')
+        else:
+            info_object.setText('Uploading fault: check connection')
+        return upload_result
 
-                self.finish_upload_flag = True
-
-            waiting_threads = Thread(target=wait_for_threads, args=(threads, show_status_thread))
-            waiting_threads.start()
-
-    def show_uploading_status(self, uploaded_bytes, total_bytes, stop_flag, info_object=None):
+    def show_uploading_status(self, uploaded_bytes, total_bytes, info_object=None):
         if info_object:
-            while True:
-                uploaded = uploaded_bytes()[0]
-                total = total_bytes()[0]
-                info_object.setText('Uploading files: {0:>10} out of {1} MB'.format(round(uploaded, 2), round(total, 2)))
-                if stop_flag()[0]:
-                    info_object.setText('Uploading files: done!')
-                    time.sleep(5)
-                    info_object.setText('')
-                    break
+            info_object.setText(
+                'Uploading files: {0:>10} out of {1} MB'.format(round(uploaded_bytes, 2), round(total_bytes, 2)))
 
     def stop(self):
         self.finish_upload_flag = True
@@ -467,6 +516,8 @@ class push_user_data:
         self.TIN = TIN
         self.successful_insertion = False
         self.stash_url = None
+        self.conn = None
+        self.cur = None
 
     def start(self):
         with open(get_paths()['connection_config_json']) as f:
@@ -479,50 +530,33 @@ class push_user_data:
         ##############################################################
 
         try:
-            conn = psycopg2.connect(user=template["user"],
-                                    password=template["password"],
-                                    host=template["host"],
-                                    port=template["port"],
-                                    database=template["database"])
-            cur = conn.cursor()
-            cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
+            self.conn = psycopg2.connect(user=template["user"],
+                                         password=template["password"],
+                                         host=template["host"],
+                                         port=template["port"],
+                                         database=template["database"])
+            self.cur = self.conn.cursor()
+            self.cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
                             notification_table, tin) VALUES (%s, %s, %s, %s, %s, %s)""",
-                        (self.email, self.name, self.last_name, self.company_name, self.email +
-                         '_notification', self.TIN))
+                             (self.email, self.name, self.last_name, self.company_name, self.email +
+                              '_notification', self.TIN))
 
-            cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
+            self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
                 sql.Identifier(self.email), sql.Literal(self.password)))
 
-            # if self.job_title == 'Chief Project Engineer':
-            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP chief_engineer").format(
-            #         sql.Identifier(self.email),
-            #         sql.Literal(self.password)))
-            # elif self.job_title == 'Contractor':
-            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP contractor").format(
-            #         sql.Identifier(self.email),
-            #         sql.Literal(self.password)))
-            # elif self.job_title == 'Technical Client':
-            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP technical_client").format(
-            #         sql.Identifier(self.email),
-            #         sql.Literal(self.password)))
-            # elif self.job_title == 'Designer':
-            #     cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP designer").format(
-            #         sql.Identifier(self.email),
-            #         sql.Literal(self.password)))
-
-            cur.execute(create_notification_table(), (AsIs(self.email),))
-            conn.commit()
+            self.cur.execute(create_notification_table(), (AsIs(self.email),))
+            self.conn.commit()
 
             ##############################################################
             # REGISTRATION ON CLOUD FILE STASH
             ##############################################################
 
             headers = {
-                'Authorization': 'Token d9f5445c093c08284c3681604e92bf1591dd2299',
+                'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
                 'Accept': 'application/json; charset=utf-8; indent=4',
                 'Content-Type': 'application/x-www-form-urlencoded',
             }
-            print(self.email, self.password)
+            # print(self.email, self.password)
             data = f'email={self.email}&password={self.password}'
             requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
 
@@ -530,9 +564,9 @@ class push_user_data:
         except (Exception, Error) as error:
             print("Error while working with PostgreSQL", error)
         finally:
-            if conn:
-                cur.close()
-                conn.close()
+            if self.conn:
+                self.cur.close()
+                self.conn.close()
 
 
 class push_recover_user_data:
@@ -615,6 +649,9 @@ class Project(User):
         self.docs_structure_table_name = f'{self.name} docs_structure'
         self.create_project_users_table = reg_new_users_access_table(self.name)
 
+        self.add_folders_thread = Thread(target=self.add_folders_process)
+
+    def add_folders_process(self):
         self.get_stash_url()
         self.create_project_folders()
         self.pick_picture()
@@ -665,7 +702,7 @@ class Project(User):
         #########################################################
 
         headers = {
-            'Authorization': 'Token d9f5445c093c08284c3681604e92bf1591dd2299',
+            'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Accept': 'application/json; indent=4',
             'Content-Type': 'application/x-www-form-urlencoded'}
         data = f'group_name={self.name.encode("utf-8").decode("latin-1")}&group_owner='
@@ -676,7 +713,7 @@ class Project(User):
         #########################################################
 
         headers = {
-            'Authorization': 'Token d9f5445c093c08284c3681604e92bf1591dd2299',
+            'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Accept': 'application/json; indent=4'}
         group_id = self.get_stash_group_id()
         data = {'repo_id': self.repo_id, 'share_type': 'group', 'permission': 'rw', 'share_to': [group_id]}
@@ -689,7 +726,7 @@ class Project(User):
         #########################################################
 
         headers = {
-            'Authorization': 'Token d9f5445c093c08284c3681604e92bf1591dd2299',
+            'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Accept': 'application/json; indent=4'}
         params = {'page': '1'}
         response = requests.get(f'{self.stash_url}/api/v2.1/admin/groups/', params=params, headers=headers)
@@ -706,7 +743,7 @@ class Project(User):
         #####################################################
 
         headers = {
-            'Authorization': 'Token d9f5445c093c08284c3681604e92bf1591dd2299',
+            'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Content-Type': 'application/x-www-form-urlencoded'}
         data = f'email={email}'
         requests.post(f'{self.stash_url}/api/v2.1/groups/{self.stash_group_id}/members/', headers=headers, data=data)
@@ -791,7 +828,7 @@ class ProjectMainFile:
     APPRW = STATUS[6]
     ACC = [7]
 
-    def __init__(self, doc_id, cypher, project_name, revision='0', version='1', status=JL,
+    def __init__(self, doc_id, cypher, project_name, user_id, revision='0', version='1', status=JL,
                  status_set_time=str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))):
         self.doc_id = doc_id
         self.cypher = cypher
@@ -800,12 +837,13 @@ class ProjectMainFile:
         self.status = status
         self.status_set_time = status_set_time
         self.loading_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        self.name = f'{self.cypher}-{self.revision}-{self.version}'
+        self.name = f'{self.cypher}-rev{self.revision}-ver{self.version}'
         self.project_name = project_name
+        self.user_id = user_id
         self.id = None
 
     def insert_data_to_db(self, session_object):
-        session_object.insert_query(insert_main_file_info(
+        session_object.commit_query(insert_main_file_info(
             project_name=self.project_name,
             doc_id=self.doc_id,
             name=self.name,
@@ -813,12 +851,11 @@ class ProjectMainFile:
             version=self.version,
             status=self.status,
             status_set_time=self.status_set_time,
-            loading_time=self.loading_time))
-
-        self.get_id(session_object)
+            loading_time=self.loading_time,
+            user_id=self.user_id))
 
     def get_id(self, session_object):
-        file_id = session_object.select_query_fetchone_with_list(
+        file_id = session_object.select_query(
             get_main_file_id(project_name=self.project_name, name=self.name))
         self.id = file_id[0]
 
@@ -828,19 +865,24 @@ class Support_File:
     DOC = 'sup_doc'
 
     def __init__(self, file_type, main_file_object: ProjectMainFile):
-        self.main_file_id = main_file_object.id
+        self.main_file_object = main_file_object
+        self.main_file_id = self.main_file_object.id
         self.file_type = file_type
-        self.name = f'{main_file_object.cypher}-rev{main_file_object.revision}-' \
-                    f'ver{main_file_object.version}-{main_file_object.id}-{file_type}'
+        self.name = f'{self.main_file_object.cypher}-rev{self.main_file_object.revision}-' \
+                    f'ver{self.main_file_object.version}-id{self.main_file_object.id}-{self.file_type}'
         self.project_name = main_file_object.project_name
 
     def insert_data_to_db(self, session_object):
-        session_object.insert_query(insert_support_file_info(
+        session_object.commit_query(insert_support_file_info(
             project_name=self.project_name,
             file_name=self.name,
             file_type=self.file_type,
             main_file_id=self.main_file_id))
 
+    def reset_name(self):
+        self.main_file_id = self.main_file_object.id
+        self.name = f'{self.main_file_object.cypher}-rev{self.main_file_object.revision}-' \
+                    f'ver{self.main_file_object.version}-id{self.main_file_object.id}-{self.file_type}'
 
 
 class Action(User):

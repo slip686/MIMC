@@ -48,7 +48,7 @@ class Ui_Form(object):
         self.widget_3.setGeometry(QRect(0, 0, 410, 250))
         self.widget_3.setMinimumSize(QSize(410, 250))
         self.widget_3.setMaximumSize(QSize(410, 250))
-        self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid white}")
+        self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid transparent}")
         self.Owner = QLabel(self.widget)
         self.Owner.setObjectName(u"Owner")
         self.Owner.setGeometry(QRect(15, 220, 391, 16))
