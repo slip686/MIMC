@@ -26,7 +26,11 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#Dialog{
+   <string notr="true">* {color: white;
+  font-family: Arial;
+  font-size: 13px;
+  font-weight: Normal;}
+#Dialog{
 	border-radius: 10px}
 *{
 	border: none;
@@ -196,7 +200,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>14</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -220,7 +226,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -292,7 +300,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -336,7 +346,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                  </property>
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -372,7 +384,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                 <widget class="QLabel" name="docStatusLabel">
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -384,7 +398,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                 <widget class="QLabel" name="authorLabel">
                  <property name="font">
                   <font>
-                   <pointsize>12</pointsize>
+                   <family>Arial</family>
+                   <pointsize>-1</pointsize>
+                   <bold>false</bold>
                   </font>
                  </property>
                  <property name="text">
@@ -467,7 +483,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>10</pointsize>
+                    <family>Arial</family>
+                    <pointsize>-1</pointsize>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="styleSheet">
@@ -500,7 +518,9 @@ border-bottom: 3px solid rgb(136, 136, 136)}</string>
                   </property>
                   <property name="font">
                    <font>
-                    <pointsize>15</pointsize>
+                    <family>Arial</family>
+                    <pointsize>-1</pointsize>
+                    <bold>false</bold>
                    </font>
                   </property>
                   <property name="styleSheet">

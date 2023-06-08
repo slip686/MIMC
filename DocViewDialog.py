@@ -31,7 +31,11 @@ class Ui_Dialog(object):
         Dialog.resize(1000, 700)
         Dialog.setMinimumSize(QSize(1000, 700))
         Dialog.setMaximumSize(QSize(16777215, 16777215))
-        Dialog.setStyleSheet(u"#Dialog{\n"
+        Dialog.setStyleSheet(u"* {color: white;\n"
+"  font-family: Arial;\n"
+"  font-size: 13px;\n"
+"  font-weight: Normal;}\n"
+"#Dialog{\n"
 "	border-radius: 10px}\n"
 "*{\n"
 "	border: none;\n"
@@ -112,7 +116,8 @@ class Ui_Dialog(object):
         self.docNameLabel.setMinimumSize(QSize(350, 0))
         self.docNameLabel.setMaximumSize(QSize(350, 16777215))
         font = QFont()
-        font.setPointSize(14)
+        font.setFamilies([u"Arial"])
+        font.setBold(False)
         self.docNameLabel.setFont(font)
 
         self.verticalLayout_4.addWidget(self.docNameLabel)
@@ -121,9 +126,7 @@ class Ui_Dialog(object):
         self.docCypherLabel.setObjectName(u"docCypherLabel")
         self.docCypherLabel.setMinimumSize(QSize(350, 0))
         self.docCypherLabel.setMaximumSize(QSize(350, 16777215))
-        font1 = QFont()
-        font1.setPointSize(12)
-        self.docCypherLabel.setFont(font1)
+        self.docCypherLabel.setFont(font)
 
         self.verticalLayout_4.addWidget(self.docCypherLabel)
 
@@ -153,7 +156,7 @@ class Ui_Dialog(object):
         self.docRevision = QLabel(self.docInfoFrame)
         self.docRevision.setObjectName(u"docRevision")
         self.docRevision.setMaximumSize(QSize(55, 16777215))
-        self.docRevision.setFont(font1)
+        self.docRevision.setFont(font)
 
         self.horizontalLayout.addWidget(self.docRevision)
 
@@ -175,7 +178,7 @@ class Ui_Dialog(object):
         self.docVersion = QLabel(self.docInfoFrame)
         self.docVersion.setObjectName(u"docVersion")
         self.docVersion.setMaximumSize(QSize(50, 16777215))
-        self.docVersion.setFont(font1)
+        self.docVersion.setFont(font)
 
         self.horizontalLayout.addWidget(self.docVersion)
 
@@ -194,13 +197,13 @@ class Ui_Dialog(object):
 
         self.docStatusLabel = QLabel(self.docInfoFrame)
         self.docStatusLabel.setObjectName(u"docStatusLabel")
-        self.docStatusLabel.setFont(font1)
+        self.docStatusLabel.setFont(font)
 
         self.horizontalLayout.addWidget(self.docStatusLabel)
 
         self.authorLabel = QLabel(self.docInfoFrame)
         self.authorLabel.setObjectName(u"authorLabel")
-        self.authorLabel.setFont(font1)
+        self.authorLabel.setFont(font)
 
         self.horizontalLayout.addWidget(self.authorLabel)
 
@@ -233,9 +236,7 @@ class Ui_Dialog(object):
         self.downloadInfoLabel.setObjectName(u"downloadInfoLabel")
         self.downloadInfoLabel.setMinimumSize(QSize(200, 18))
         self.downloadInfoLabel.setMaximumSize(QSize(600, 18))
-        font2 = QFont()
-        font2.setPointSize(10)
-        self.downloadInfoLabel.setFont(font2)
+        self.downloadInfoLabel.setFont(font)
         self.downloadInfoLabel.setStyleSheet(u"")
         self.downloadInfoLabel.setScaledContents(True)
         self.downloadInfoLabel.setAlignment(Qt.AlignCenter)
@@ -246,9 +247,7 @@ class Ui_Dialog(object):
         self.retryBtn.setObjectName(u"retryBtn")
         self.retryBtn.setMinimumSize(QSize(200, 30))
         self.retryBtn.setMaximumSize(QSize(200, 30))
-        font3 = QFont()
-        font3.setPointSize(15)
-        self.retryBtn.setFont(font3)
+        self.retryBtn.setFont(font)
         self.retryBtn.setStyleSheet(u"QPushButton{background-color: transparent;\n"
 "	color : black;}\n"
 "\n"

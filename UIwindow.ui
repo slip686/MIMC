@@ -23,7 +23,11 @@
    <string>MainWindow</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#MainWindow {border-top-right-radius: 10px;
+   <string notr="true">* {color: white;
+  font-family: Arial;
+  font-size: 13px;
+  font-weight: Normal;}
+#MainWindow {border-top-right-radius: 10px;
 	border-top-left-radius: 10px}
 *{
 	border: none;
@@ -347,7 +351,8 @@ QPushButton:pressed {
                                 <property name="font">
                                  <font>
                                   <family>Arial</family>
-                                  <pointsize>20</pointsize>
+                                  <pointsize>-1</pointsize>
+                                  <bold>false</bold>
                                  </font>
                                 </property>
                                 <property name="styleSheet">
@@ -436,7 +441,9 @@ MIMC Projects</string>
                                 </property>
                                 <property name="font">
                                  <font>
-                                  <pointsize>15</pointsize>
+                                  <family>Arial</family>
+                                  <pointsize>-1</pointsize>
+                                  <bold>false</bold>
                                  </font>
                                 </property>
                                 <property name="styleSheet">
@@ -495,7 +502,9 @@ MIMC Projects</string>
                                 </property>
                                 <property name="font">
                                  <font>
-                                  <pointsize>15</pointsize>
+                                  <family>Arial</family>
+                                  <pointsize>-1</pointsize>
+                                  <bold>false</bold>
                                  </font>
                                 </property>
                                 <property name="styleSheet">
@@ -565,7 +574,9 @@ MIMC Projects</string>
                                 </property>
                                 <property name="font">
                                  <font>
-                                  <pointsize>15</pointsize>
+                                  <family>Arial</family>
+                                  <pointsize>-1</pointsize>
+                                  <bold>false</bold>
                                  </font>
                                 </property>
                                 <property name="styleSheet">
@@ -586,7 +597,9 @@ MIMC Projects</string>
                             <widget class="QLabel" name="label_3">
                              <property name="font">
                               <font>
-                               <pointsize>10</pointsize>
+                               <family>Arial</family>
+                               <pointsize>-1</pointsize>
+                               <bold>false</bold>
                               </font>
                              </property>
                              <property name="styleSheet">
@@ -799,7 +812,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -839,7 +853,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -864,7 +880,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -882,7 +900,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_3">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -898,7 +918,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_2">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="text">
@@ -935,7 +957,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1018,7 +1042,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1058,7 +1083,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="whatsThis">
@@ -1089,7 +1116,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1107,7 +1136,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_4">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1134,7 +1165,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1217,7 +1250,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1250,7 +1284,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="whatsThis">
@@ -1284,7 +1320,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1314,7 +1352,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1332,7 +1372,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_5">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1359,7 +1401,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1442,7 +1486,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1475,7 +1520,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="whatsThis">
@@ -1507,7 +1554,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1534,7 +1583,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1564,7 +1615,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1582,7 +1635,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_6">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1609,7 +1664,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1692,7 +1749,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1725,7 +1783,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1811,7 +1871,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1851,7 +1912,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1876,7 +1939,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1894,7 +1959,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_7">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -1910,7 +1977,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_8">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="text">
@@ -1934,7 +2003,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2017,7 +2088,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2058,7 +2130,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="whatsThis">
@@ -2089,7 +2163,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2107,7 +2183,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_9">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2134,7 +2212,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2217,7 +2297,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2250,7 +2331,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="whatsThis">
@@ -2284,7 +2367,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2314,7 +2399,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2332,7 +2419,9 @@ MIMC Projects</string>
                          <widget class="QLabel" name="infoLabel_10">
                           <property name="font">
                            <font>
-                            <pointsize>10</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2359,7 +2448,9 @@ MIMC Projects</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2442,7 +2533,8 @@ MIMC Projects</string>
                           <property name="font">
                            <font>
                             <family>Arial</family>
-                            <pointsize>20</pointsize>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -2476,7 +2568,9 @@ Successfully!</string>
                           </property>
                           <property name="font">
                            <font>
-                            <pointsize>15</pointsize>
+                            <family>Arial</family>
+                            <pointsize>-1</pointsize>
+                            <bold>false</bold>
                            </font>
                           </property>
                           <property name="styleSheet">
@@ -3412,7 +3506,9 @@ border-radius: 6px</string>
                                        </property>
                                        <property name="font">
                                         <font>
-                                         <pointsize>13</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="styleSheet">
@@ -3696,6 +3792,15 @@ border-radius: 6px</string>
                                    </color>
                                   </brush>
                                  </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
                                 </active>
                                 <inactive>
                                  <colorrole role="Button">
@@ -3725,6 +3830,15 @@ border-radius: 6px</string>
                                    </color>
                                   </brush>
                                  </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
                                 </inactive>
                                 <disabled>
                                  <colorrole role="Button">
@@ -3751,6 +3865,15 @@ border-radius: 6px</string>
                                     <red>165</red>
                                     <green>165</green>
                                     <blue>165</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
                                    </color>
                                   </brush>
                                  </colorrole>
@@ -3879,7 +4002,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>101</width>
+                                 <width>100</width>
                                  <height>30</height>
                                 </rect>
                                </property>
@@ -4211,7 +4334,9 @@ border-radius: 6px</string>
                                        </property>
                                        <property name="font">
                                         <font>
-                                         <pointsize>13</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="styleSheet">
@@ -4526,7 +4651,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>101</width>
+                                 <width>100</width>
                                  <height>30</height>
                                 </rect>
                                </property>
@@ -4837,7 +4962,9 @@ border-radius: 6px</string>
                                        </property>
                                        <property name="font">
                                         <font>
-                                         <pointsize>13</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="styleSheet">
@@ -5112,6 +5239,15 @@ border-radius: 6px</string>
                                    </color>
                                   </brush>
                                  </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
                                 </active>
                                 <inactive>
                                  <colorrole role="Button">
@@ -5141,6 +5277,15 @@ border-radius: 6px</string>
                                    </color>
                                   </brush>
                                  </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
                                 </inactive>
                                 <disabled>
                                  <colorrole role="Button">
@@ -5167,6 +5312,15 @@ border-radius: 6px</string>
                                     <red>165</red>
                                     <green>165</green>
                                     <blue>165</blue>
+                                   </color>
+                                  </brush>
+                                 </colorrole>
+                                 <colorrole role="PlaceholderText">
+                                  <brush brushstyle="SolidPattern">
+                                   <color alpha="255">
+                                    <red>255</red>
+                                    <green>255</green>
+                                    <blue>255</blue>
                                    </color>
                                   </brush>
                                  </colorrole>
@@ -5287,7 +5441,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                 <rect>
                                  <x>0</x>
                                  <y>0</y>
-                                 <width>101</width>
+                                 <width>100</width>
                                  <height>30</height>
                                 </rect>
                                </property>
@@ -5440,7 +5594,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                     <string notr="true">background-color: rgb(136, 136, 136);</string>
                    </property>
                    <property name="currentIndex">
-                    <number>1</number>
+                    <number>2</number>
                    </property>
                    <widget class="QWidget" name="page">
                     <layout class="QVBoxLayout" name="verticalLayout_40">
@@ -5563,7 +5717,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                  </property>
                                  <property name="font">
                                   <font>
-                                   <pointsize>20</pointsize>
+                                   <family>Arial</family>
+                                   <pointsize>-1</pointsize>
+                                   <bold>false</bold>
                                   </font>
                                  </property>
                                  <property name="styleSheet">
@@ -5659,7 +5815,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       <widget class="QLabel" name="label_9">
                                        <property name="font">
                                         <font>
-                                         <pointsize>10</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="text">
@@ -5733,7 +5891,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       <widget class="QLabel" name="label_8">
                                        <property name="font">
                                         <font>
-                                         <pointsize>10</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="text">
@@ -5806,7 +5966,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       <widget class="QLabel" name="label_7">
                                        <property name="font">
                                         <font>
-                                         <pointsize>10</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="text">
@@ -5879,7 +6041,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       <widget class="QLabel" name="label_6">
                                        <property name="font">
                                         <font>
-                                         <pointsize>10</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="text">
@@ -5952,7 +6116,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       <widget class="QLabel" name="label_11">
                                        <property name="font">
                                         <font>
-                                         <pointsize>10</pointsize>
+                                         <family>Arial</family>
+                                         <pointsize>-1</pointsize>
+                                         <bold>false</bold>
                                         </font>
                                        </property>
                                        <property name="text">
@@ -6037,7 +6203,9 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                  </property>
                                  <property name="font">
                                   <font>
-                                   <pointsize>20</pointsize>
+                                   <family>Arial</family>
+                                   <pointsize>-1</pointsize>
+                                   <bold>false</bold>
                                   </font>
                                  </property>
                                  <property name="styleSheet">
@@ -6145,7 +6313,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                               </property>
                               <property name="font">
                                <font>
-                                <pointsize>20</pointsize>
+                                <family>Arial</family>
+                                <pointsize>-1</pointsize>
+                                <bold>false</bold>
                                </font>
                               </property>
                               <property name="styleSheet">
@@ -6265,7 +6435,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                     </property>
                                     <property name="font">
                                      <font>
-                                      <pointsize>16</pointsize>
+                                      <family>Arial</family>
+                                      <pointsize>-1</pointsize>
+                                      <bold>false</bold>
                                      </font>
                                     </property>
                                     <property name="styleSheet">
@@ -6361,7 +6533,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_19">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6439,7 +6613,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_20">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6517,7 +6693,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_21">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6595,7 +6773,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_22">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6709,7 +6889,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                     </property>
                                     <property name="font">
                                      <font>
-                                      <pointsize>16</pointsize>
+                                      <family>Arial</family>
+                                      <pointsize>-1</pointsize>
+                                      <bold>false</bold>
                                      </font>
                                     </property>
                                     <property name="styleSheet">
@@ -6805,7 +6987,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_14">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6878,7 +7062,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_15">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -6951,7 +7137,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_16">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -7024,7 +7212,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                                          <widget class="QLabel" name="label_17">
                                           <property name="font">
                                            <font>
-                                            <pointsize>10</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="text">
@@ -7088,7 +7278,9 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                               </property>
                               <property name="font">
                                <font>
-                                <pointsize>20</pointsize>
+                                <family>Arial</family>
+                                <pointsize>-1</pointsize>
+                                <bold>false</bold>
                                </font>
                               </property>
                               <property name="styleSheet">
@@ -7294,7 +7486,9 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
                            </property>
                            <property name="font">
                             <font>
-                             <pointsize>1</pointsize>
+                             <family>Arial</family>
+                             <pointsize>-1</pointsize>
+                             <bold>false</bold>
                             </font>
                            </property>
                            <property name="frameShape">
@@ -7497,7 +7691,9 @@ border-radius: 6px</string>
                                           </property>
                                           <property name="font">
                                            <font>
-                                            <pointsize>13</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="styleSheet">
@@ -7702,7 +7898,9 @@ border-radius: 6px</string>
                            </property>
                            <property name="font">
                             <font>
-                             <pointsize>1</pointsize>
+                             <family>Arial</family>
+                             <pointsize>-1</pointsize>
+                             <bold>false</bold>
                             </font>
                            </property>
                            <property name="frameShape">
@@ -7905,7 +8103,9 @@ border-radius: 6px</string>
                                           </property>
                                           <property name="font">
                                            <font>
-                                            <pointsize>13</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="styleSheet">
@@ -8104,7 +8304,9 @@ border-radius: 6px</string>
                            </property>
                            <property name="font">
                             <font>
-                             <pointsize>1</pointsize>
+                             <family>Arial</family>
+                             <pointsize>-1</pointsize>
+                             <bold>false</bold>
                             </font>
                            </property>
                            <property name="frameShape">
@@ -8307,7 +8509,9 @@ border-radius: 6px</string>
                                           </property>
                                           <property name="font">
                                            <font>
-                                            <pointsize>13</pointsize>
+                                            <family>Arial</family>
+                                            <pointsize>-1</pointsize>
+                                            <bold>false</bold>
                                            </font>
                                           </property>
                                           <property name="styleSheet">

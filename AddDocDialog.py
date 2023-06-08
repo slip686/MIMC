@@ -30,7 +30,11 @@ class Ui_Dialog(object):
         Dialog.resize(1000, 700)
         Dialog.setMinimumSize(QSize(1000, 700))
         Dialog.setMaximumSize(QSize(16777215, 16777215))
-        Dialog.setStyleSheet(u"#Dialog{\n"
+        Dialog.setStyleSheet(u"* {color: white;\n"
+"  font-family: Arial;\n"
+"  font-size: 13px;\n"
+"  font-weight: Normal;}\n"
+"#Dialog{\n"
 "	border-radius: 10px}\n"
 "*{\n"
 "	border: none;\n"

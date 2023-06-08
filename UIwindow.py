@@ -36,7 +36,11 @@ class Ui_MainWindow(object):
         MainWindow.setEnabled(True)
         MainWindow.resize(945, 772)
         MainWindow.setMinimumSize(QSize(945, 745))
-        MainWindow.setStyleSheet(u"#MainWindow {border-top-right-radius: 10px;\n"
+        MainWindow.setStyleSheet(u"* {color: white;\n"
+"  font-family: Arial;\n"
+"  font-size: 13px;\n"
+"  font-weight: Normal;}\n"
+"#MainWindow {border-top-right-radius: 10px;\n"
 "	border-top-left-radius: 10px}\n"
 "*{\n"
 "	border: none;\n"
@@ -194,7 +198,7 @@ class Ui_MainWindow(object):
         self.welcomeLabel.setObjectName(u"welcomeLabel")
         font = QFont()
         font.setFamilies([u"Arial"])
-        font.setPointSize(20)
+        font.setBold(False)
         self.welcomeLabel.setFont(font)
         self.welcomeLabel.setStyleSheet(u"background-color : transparent ; color : black;")
         self.welcomeLabel.setTextFormat(Qt.AutoText)
@@ -231,9 +235,7 @@ class Ui_MainWindow(object):
         self.emailEntering.setObjectName(u"emailEntering")
         self.emailEntering.setMinimumSize(QSize(270, 30))
         self.emailEntering.setMaximumSize(QSize(270, 30))
-        font1 = QFont()
-        font1.setPointSize(15)
-        self.emailEntering.setFont(font1)
+        self.emailEntering.setFont(font)
         self.emailEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
 
@@ -259,7 +261,7 @@ class Ui_MainWindow(object):
         self.passEntering.setObjectName(u"passEntering")
         self.passEntering.setMinimumSize(QSize(270, 30))
         self.passEntering.setMaximumSize(QSize(270, 30))
-        self.passEntering.setFont(font1)
+        self.passEntering.setFont(font)
         self.passEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
         self.passEntering.setEchoMode(QLineEdit.Password)
@@ -291,7 +293,7 @@ class Ui_MainWindow(object):
         self.loginBtn.setObjectName(u"loginBtn")
         self.loginBtn.setMinimumSize(QSize(200, 30))
         self.loginBtn.setMaximumSize(QSize(200, 30))
-        self.loginBtn.setFont(font1)
+        self.loginBtn.setFont(font)
         self.loginBtn.setStyleSheet(u"")
 
         self.verticalLayout_8.addWidget(self.loginBtn)
@@ -301,9 +303,7 @@ class Ui_MainWindow(object):
 
         self.label_3 = QLabel(self.optionsContainer)
         self.label_3.setObjectName(u"label_3")
-        font2 = QFont()
-        font2.setPointSize(10)
-        self.label_3.setFont(font2)
+        self.label_3.setFont(font)
         self.label_3.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_7.addWidget(self.label_3)
@@ -407,7 +407,7 @@ class Ui_MainWindow(object):
         self.emailRegEntering.setObjectName(u"emailRegEntering")
         self.emailRegEntering.setMinimumSize(QSize(270, 30))
         self.emailRegEntering.setMaximumSize(QSize(270, 30))
-        self.emailRegEntering.setFont(font1)
+        self.emailRegEntering.setFont(font)
         self.emailRegEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
 
@@ -417,14 +417,14 @@ class Ui_MainWindow(object):
         self.regBtn_2.setObjectName(u"regBtn_2")
         self.regBtn_2.setMinimumSize(QSize(200, 30))
         self.regBtn_2.setMaximumSize(QSize(200, 30))
-        self.regBtn_2.setFont(font1)
+        self.regBtn_2.setFont(font)
         self.regBtn_2.setStyleSheet(u"")
 
         self.verticalLayout_12.addWidget(self.regBtn_2, 0, Qt.AlignHCenter)
 
         self.infoLabel_3 = QLabel(self.regSubContainer)
         self.infoLabel_3.setObjectName(u"infoLabel_3")
-        self.infoLabel_3.setFont(font2)
+        self.infoLabel_3.setFont(font)
         self.infoLabel_3.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;\n"
 "")
 
@@ -432,7 +432,7 @@ class Ui_MainWindow(object):
 
         self.infoLabel_2 = QLabel(self.regSubContainer)
         self.infoLabel_2.setObjectName(u"infoLabel_2")
-        self.infoLabel_2.setFont(font2)
+        self.infoLabel_2.setFont(font)
 
         self.verticalLayout_12.addWidget(self.infoLabel_2)
 
@@ -447,7 +447,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn.setObjectName(u"cancelRegBtn")
         self.cancelRegBtn.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn.setFont(font1)
+        self.cancelRegBtn.setFont(font)
         self.cancelRegBtn.setStyleSheet(u"")
 
         self.verticalLayout_12.addWidget(self.cancelRegBtn, 0, Qt.AlignHCenter)
@@ -497,7 +497,7 @@ class Ui_MainWindow(object):
         self.keyEntering.setObjectName(u"keyEntering")
         self.keyEntering.setMinimumSize(QSize(270, 30))
         self.keyEntering.setMaximumSize(QSize(270, 30))
-        self.keyEntering.setFont(font1)
+        self.keyEntering.setFont(font)
         self.keyEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
 
@@ -507,14 +507,14 @@ class Ui_MainWindow(object):
         self.proceedBtn.setObjectName(u"proceedBtn")
         self.proceedBtn.setMinimumSize(QSize(200, 30))
         self.proceedBtn.setMaximumSize(QSize(200, 30))
-        self.proceedBtn.setFont(font1)
+        self.proceedBtn.setFont(font)
         self.proceedBtn.setStyleSheet(u"")
 
         self.verticalLayout_14.addWidget(self.proceedBtn, 0, Qt.AlignHCenter)
 
         self.infoLabel_4 = QLabel(self.regSubContainer_2)
         self.infoLabel_4.setObjectName(u"infoLabel_4")
-        self.infoLabel_4.setFont(font2)
+        self.infoLabel_4.setFont(font)
         self.infoLabel_4.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_14.addWidget(self.infoLabel_4)
@@ -523,7 +523,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_2.setObjectName(u"cancelRegBtn_2")
         self.cancelRegBtn_2.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_2.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_2.setFont(font1)
+        self.cancelRegBtn_2.setFont(font)
         self.cancelRegBtn_2.setStyleSheet(u"")
 
         self.verticalLayout_14.addWidget(self.cancelRegBtn_2, 0, Qt.AlignHCenter)
@@ -568,7 +568,7 @@ class Ui_MainWindow(object):
         self.passEntering_2.setObjectName(u"passEntering_2")
         self.passEntering_2.setMinimumSize(QSize(270, 30))
         self.passEntering_2.setMaximumSize(QSize(270, 30))
-        self.passEntering_2.setFont(font1)
+        self.passEntering_2.setFont(font)
         self.passEntering_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
         self.passEntering_2.setEchoMode(QLineEdit.Password)
@@ -579,7 +579,7 @@ class Ui_MainWindow(object):
         self.passRepeatEntering.setObjectName(u"passRepeatEntering")
         self.passRepeatEntering.setMinimumSize(QSize(270, 30))
         self.passRepeatEntering.setMaximumSize(QSize(270, 30))
-        self.passRepeatEntering.setFont(font1)
+        self.passRepeatEntering.setFont(font)
         self.passRepeatEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
         self.passRepeatEntering.setEchoMode(QLineEdit.Password)
 
@@ -589,14 +589,14 @@ class Ui_MainWindow(object):
         self.proceedBtn_2.setObjectName(u"proceedBtn_2")
         self.proceedBtn_2.setMinimumSize(QSize(200, 30))
         self.proceedBtn_2.setMaximumSize(QSize(200, 30))
-        self.proceedBtn_2.setFont(font1)
+        self.proceedBtn_2.setFont(font)
         self.proceedBtn_2.setStyleSheet(u"")
 
         self.verticalLayout_17.addWidget(self.proceedBtn_2, 0, Qt.AlignHCenter)
 
         self.infoLabel_5 = QLabel(self.regSubContainer_3)
         self.infoLabel_5.setObjectName(u"infoLabel_5")
-        self.infoLabel_5.setFont(font2)
+        self.infoLabel_5.setFont(font)
         self.infoLabel_5.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_17.addWidget(self.infoLabel_5)
@@ -605,7 +605,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_3.setObjectName(u"cancelRegBtn_3")
         self.cancelRegBtn_3.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_3.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_3.setFont(font1)
+        self.cancelRegBtn_3.setFont(font)
         self.cancelRegBtn_3.setStyleSheet(u"")
 
         self.verticalLayout_17.addWidget(self.cancelRegBtn_3, 0, Qt.AlignHCenter)
@@ -650,7 +650,7 @@ class Ui_MainWindow(object):
         self.nameEntering.setObjectName(u"nameEntering")
         self.nameEntering.setMinimumSize(QSize(270, 30))
         self.nameEntering.setMaximumSize(QSize(270, 30))
-        self.nameEntering.setFont(font1)
+        self.nameEntering.setFont(font)
         self.nameEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "\n"
 "")
@@ -661,7 +661,7 @@ class Ui_MainWindow(object):
         self.lastNameEntering.setObjectName(u"lastNameEntering")
         self.lastNameEntering.setMinimumSize(QSize(270, 30))
         self.lastNameEntering.setMaximumSize(QSize(270, 30))
-        self.lastNameEntering.setFont(font1)
+        self.lastNameEntering.setFont(font)
         self.lastNameEntering.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
 
         self.verticalLayout_20.addWidget(self.lastNameEntering)
@@ -670,7 +670,7 @@ class Ui_MainWindow(object):
         self.companyTIN.setObjectName(u"companyTIN")
         self.companyTIN.setMinimumSize(QSize(270, 30))
         self.companyTIN.setMaximumSize(QSize(270, 30))
-        self.companyTIN.setFont(font1)
+        self.companyTIN.setFont(font)
         self.companyTIN.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
         self.companyTIN.setReadOnly(False)
 
@@ -680,14 +680,14 @@ class Ui_MainWindow(object):
         self.proceedBtn_3.setObjectName(u"proceedBtn_3")
         self.proceedBtn_3.setMinimumSize(QSize(200, 30))
         self.proceedBtn_3.setMaximumSize(QSize(200, 30))
-        self.proceedBtn_3.setFont(font1)
+        self.proceedBtn_3.setFont(font)
         self.proceedBtn_3.setStyleSheet(u"")
 
         self.verticalLayout_20.addWidget(self.proceedBtn_3, 0, Qt.AlignHCenter)
 
         self.infoLabel_6 = QLabel(self.regSubContainer_4)
         self.infoLabel_6.setObjectName(u"infoLabel_6")
-        self.infoLabel_6.setFont(font2)
+        self.infoLabel_6.setFont(font)
         self.infoLabel_6.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_20.addWidget(self.infoLabel_6)
@@ -696,7 +696,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_4.setObjectName(u"cancelRegBtn_4")
         self.cancelRegBtn_4.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_4.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_4.setFont(font1)
+        self.cancelRegBtn_4.setFont(font)
         self.cancelRegBtn_4.setStyleSheet(u"")
 
         self.verticalLayout_20.addWidget(self.cancelRegBtn_4, 0, Qt.AlignHCenter)
@@ -741,7 +741,7 @@ class Ui_MainWindow(object):
         self.goLoginBtn.setObjectName(u"goLoginBtn")
         self.goLoginBtn.setMinimumSize(QSize(200, 30))
         self.goLoginBtn.setMaximumSize(QSize(200, 30))
-        self.goLoginBtn.setFont(font1)
+        self.goLoginBtn.setFont(font)
         self.goLoginBtn.setStyleSheet(u"")
 
         self.verticalLayout_22.addWidget(self.goLoginBtn, 0, Qt.AlignHCenter)
@@ -791,7 +791,7 @@ class Ui_MainWindow(object):
         self.emailRegEntering_2.setObjectName(u"emailRegEntering_2")
         self.emailRegEntering_2.setMinimumSize(QSize(270, 30))
         self.emailRegEntering_2.setMaximumSize(QSize(270, 30))
-        self.emailRegEntering_2.setFont(font1)
+        self.emailRegEntering_2.setFont(font)
         self.emailRegEntering_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
 
@@ -801,14 +801,14 @@ class Ui_MainWindow(object):
         self.restorePasswordBtn.setObjectName(u"restorePasswordBtn")
         self.restorePasswordBtn.setMinimumSize(QSize(200, 30))
         self.restorePasswordBtn.setMaximumSize(QSize(200, 30))
-        self.restorePasswordBtn.setFont(font1)
+        self.restorePasswordBtn.setFont(font)
         self.restorePasswordBtn.setStyleSheet(u"")
 
         self.verticalLayout_26.addWidget(self.restorePasswordBtn, 0, Qt.AlignHCenter)
 
         self.infoLabel_7 = QLabel(self.regSubContainer_6)
         self.infoLabel_7.setObjectName(u"infoLabel_7")
-        self.infoLabel_7.setFont(font2)
+        self.infoLabel_7.setFont(font)
         self.infoLabel_7.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;\n"
 "")
 
@@ -816,7 +816,7 @@ class Ui_MainWindow(object):
 
         self.infoLabel_8 = QLabel(self.regSubContainer_6)
         self.infoLabel_8.setObjectName(u"infoLabel_8")
-        self.infoLabel_8.setFont(font2)
+        self.infoLabel_8.setFont(font)
 
         self.verticalLayout_26.addWidget(self.infoLabel_8)
 
@@ -824,7 +824,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_5.setObjectName(u"cancelRegBtn_5")
         self.cancelRegBtn_5.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_5.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_5.setFont(font1)
+        self.cancelRegBtn_5.setFont(font)
         self.cancelRegBtn_5.setStyleSheet(u"")
 
         self.verticalLayout_26.addWidget(self.cancelRegBtn_5, 0, Qt.AlignHCenter)
@@ -874,7 +874,7 @@ class Ui_MainWindow(object):
         self.keyEntering_2.setObjectName(u"keyEntering_2")
         self.keyEntering_2.setMinimumSize(QSize(270, 30))
         self.keyEntering_2.setMaximumSize(QSize(270, 30))
-        self.keyEntering_2.setFont(font1)
+        self.keyEntering_2.setFont(font)
         self.keyEntering_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
 
@@ -884,14 +884,14 @@ class Ui_MainWindow(object):
         self.proceedBtn_4.setObjectName(u"proceedBtn_4")
         self.proceedBtn_4.setMinimumSize(QSize(200, 30))
         self.proceedBtn_4.setMaximumSize(QSize(200, 30))
-        self.proceedBtn_4.setFont(font1)
+        self.proceedBtn_4.setFont(font)
         self.proceedBtn_4.setStyleSheet(u"")
 
         self.verticalLayout_29.addWidget(self.proceedBtn_4, 0, Qt.AlignHCenter)
 
         self.infoLabel_9 = QLabel(self.regSubContainer_7)
         self.infoLabel_9.setObjectName(u"infoLabel_9")
-        self.infoLabel_9.setFont(font2)
+        self.infoLabel_9.setFont(font)
         self.infoLabel_9.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_29.addWidget(self.infoLabel_9)
@@ -900,7 +900,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_6.setObjectName(u"cancelRegBtn_6")
         self.cancelRegBtn_6.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_6.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_6.setFont(font1)
+        self.cancelRegBtn_6.setFont(font)
         self.cancelRegBtn_6.setStyleSheet(u"")
 
         self.verticalLayout_29.addWidget(self.cancelRegBtn_6, 0, Qt.AlignHCenter)
@@ -945,7 +945,7 @@ class Ui_MainWindow(object):
         self.passEntering_3.setObjectName(u"passEntering_3")
         self.passEntering_3.setMinimumSize(QSize(270, 30))
         self.passEntering_3.setMaximumSize(QSize(270, 30))
-        self.passEntering_3.setFont(font1)
+        self.passEntering_3.setFont(font)
         self.passEntering_3.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
 "")
         self.passEntering_3.setEchoMode(QLineEdit.Password)
@@ -956,7 +956,7 @@ class Ui_MainWindow(object):
         self.passRepeatEntering_2.setObjectName(u"passRepeatEntering_2")
         self.passRepeatEntering_2.setMinimumSize(QSize(270, 30))
         self.passRepeatEntering_2.setMaximumSize(QSize(270, 30))
-        self.passRepeatEntering_2.setFont(font1)
+        self.passRepeatEntering_2.setFont(font)
         self.passRepeatEntering_2.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;")
         self.passRepeatEntering_2.setEchoMode(QLineEdit.Password)
 
@@ -966,14 +966,14 @@ class Ui_MainWindow(object):
         self.proceedBtn_5.setObjectName(u"proceedBtn_5")
         self.proceedBtn_5.setMinimumSize(QSize(200, 30))
         self.proceedBtn_5.setMaximumSize(QSize(200, 30))
-        self.proceedBtn_5.setFont(font1)
+        self.proceedBtn_5.setFont(font)
         self.proceedBtn_5.setStyleSheet(u"")
 
         self.verticalLayout_32.addWidget(self.proceedBtn_5, 0, Qt.AlignHCenter)
 
         self.infoLabel_10 = QLabel(self.regSubContainer_8)
         self.infoLabel_10.setObjectName(u"infoLabel_10")
-        self.infoLabel_10.setFont(font2)
+        self.infoLabel_10.setFont(font)
         self.infoLabel_10.setStyleSheet(u"background-color : transparent ; color : rgb(93, 0, 23) ;")
 
         self.verticalLayout_32.addWidget(self.infoLabel_10)
@@ -982,7 +982,7 @@ class Ui_MainWindow(object):
         self.cancelRegBtn_7.setObjectName(u"cancelRegBtn_7")
         self.cancelRegBtn_7.setMinimumSize(QSize(200, 30))
         self.cancelRegBtn_7.setMaximumSize(QSize(200, 30))
-        self.cancelRegBtn_7.setFont(font1)
+        self.cancelRegBtn_7.setFont(font)
         self.cancelRegBtn_7.setStyleSheet(u"")
 
         self.verticalLayout_32.addWidget(self.cancelRegBtn_7, 0, Qt.AlignHCenter)
@@ -1027,7 +1027,7 @@ class Ui_MainWindow(object):
         self.goLoginBtn_2.setObjectName(u"goLoginBtn_2")
         self.goLoginBtn_2.setMinimumSize(QSize(200, 30))
         self.goLoginBtn_2.setMaximumSize(QSize(200, 30))
-        self.goLoginBtn_2.setFont(font1)
+        self.goLoginBtn_2.setFont(font)
         self.goLoginBtn_2.setStyleSheet(u"")
 
         self.verticalLayout_35.addWidget(self.goLoginBtn_2, 0, Qt.AlignHCenter)
@@ -1396,9 +1396,7 @@ class Ui_MainWindow(object):
         self.lineEdit_5.setSizePolicy(sizePolicy2)
         self.lineEdit_5.setMinimumSize(QSize(0, 30))
         self.lineEdit_5.setMaximumSize(QSize(16777215, 30))
-        font3 = QFont()
-        font3.setPointSize(13)
-        self.lineEdit_5.setFont(font3)
+        self.lineEdit_5.setFont(font)
         self.lineEdit_5.setStyleSheet(u"")
         self.lineEdit_5.setClearButtonEnabled(False)
 
@@ -1522,12 +1520,23 @@ class Ui_MainWindow(object):
         palette.setBrush(QPalette.Active, QPalette.Button, brush)
         palette.setBrush(QPalette.Active, QPalette.Base, brush)
         palette.setBrush(QPalette.Active, QPalette.Window, brush)
+        brush1 = QBrush(QColor(255, 255, 255, 255))
+        brush1.setStyle(Qt.SolidPattern)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Active, QPalette.PlaceholderText, brush1)
+#endif
         palette.setBrush(QPalette.Inactive, QPalette.Button, brush)
         palette.setBrush(QPalette.Inactive, QPalette.Base, brush)
         palette.setBrush(QPalette.Inactive, QPalette.Window, brush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush1)
+#endif
         palette.setBrush(QPalette.Disabled, QPalette.Button, brush)
         palette.setBrush(QPalette.Disabled, QPalette.Base, brush)
         palette.setBrush(QPalette.Disabled, QPalette.Window, brush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush1)
+#endif
         self.designDocsStructureTreeWidget.setPalette(palette)
         self.designDocsStructureTreeWidget.setStyleSheet(u"#designDocsStructureTreeWidget{background-color: rgb(165, 165, 165)}\n"
 "#designDocsStructureTreeWidget{border-radius: 6px}\n"
@@ -1587,7 +1596,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_3 = QWidget()
         self.scrollAreaWidgetContents_3.setObjectName(u"scrollAreaWidgetContents_3")
-        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 101, 30))
+        self.scrollAreaWidgetContents_3.setGeometry(QRect(0, 0, 100, 30))
         self.scrollAreaWidgetContents_3.setStyleSheet(u"")
         self.verticalLayout_89 = QVBoxLayout(self.scrollAreaWidgetContents_3)
         self.verticalLayout_89.setSpacing(0)
@@ -1711,7 +1720,7 @@ class Ui_MainWindow(object):
         self.lineEdit_6.setSizePolicy(sizePolicy2)
         self.lineEdit_6.setMinimumSize(QSize(0, 30))
         self.lineEdit_6.setMaximumSize(QSize(16777215, 30))
-        self.lineEdit_6.setFont(font3)
+        self.lineEdit_6.setFont(font)
         self.lineEdit_6.setStyleSheet(u"")
         self.lineEdit_6.setClearButtonEnabled(False)
 
@@ -1844,7 +1853,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 101, 30))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 100, 30))
         self.verticalLayout_88 = QVBoxLayout(self.scrollAreaWidgetContents)
         self.verticalLayout_88.setSpacing(0)
         self.verticalLayout_88.setObjectName(u"verticalLayout_88")
@@ -1963,7 +1972,7 @@ class Ui_MainWindow(object):
         self.lineEdit_7.setSizePolicy(sizePolicy2)
         self.lineEdit_7.setMinimumSize(QSize(0, 30))
         self.lineEdit_7.setMaximumSize(QSize(16777215, 30))
-        self.lineEdit_7.setFont(font3)
+        self.lineEdit_7.setFont(font)
         self.lineEdit_7.setStyleSheet(u"")
         self.lineEdit_7.setClearButtonEnabled(False)
 
@@ -2074,12 +2083,21 @@ class Ui_MainWindow(object):
         palette1.setBrush(QPalette.Active, QPalette.Button, brush)
         palette1.setBrush(QPalette.Active, QPalette.Base, brush)
         palette1.setBrush(QPalette.Active, QPalette.Window, brush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette1.setBrush(QPalette.Active, QPalette.PlaceholderText, brush1)
+#endif
         palette1.setBrush(QPalette.Inactive, QPalette.Button, brush)
         palette1.setBrush(QPalette.Inactive, QPalette.Base, brush)
         palette1.setBrush(QPalette.Inactive, QPalette.Window, brush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette1.setBrush(QPalette.Inactive, QPalette.PlaceholderText, brush1)
+#endif
         palette1.setBrush(QPalette.Disabled, QPalette.Button, brush)
         palette1.setBrush(QPalette.Disabled, QPalette.Base, brush)
         palette1.setBrush(QPalette.Disabled, QPalette.Window, brush)
+#if QT_VERSION >= QT_VERSION_CHECK(5, 12, 0)
+        palette1.setBrush(QPalette.Disabled, QPalette.PlaceholderText, brush1)
+#endif
         self.initialPermitDocsStructureTreeWidget.setPalette(palette1)
         self.initialPermitDocsStructureTreeWidget.setStyleSheet(u"#initialPermitDocsStructureTreeWidget{background-color: rgb(165, 165, 165)}\n"
 "#initialPermitDocsStructureTreeWidget{border-radius: 6px}\n"
@@ -2133,7 +2151,7 @@ class Ui_MainWindow(object):
         self.scrollArea_4.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 101, 30))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 100, 30))
         self.verticalLayout_90 = QVBoxLayout(self.scrollAreaWidgetContents_4)
         self.verticalLayout_90.setSpacing(0)
         self.verticalLayout_90.setObjectName(u"verticalLayout_90")
@@ -2245,9 +2263,7 @@ class Ui_MainWindow(object):
         self.label_5.setSizePolicy(sizePolicy5)
         self.label_5.setMinimumSize(QSize(150, 40))
         self.label_5.setMaximumSize(QSize(150, 40))
-        font4 = QFont()
-        font4.setPointSize(20)
-        self.label_5.setFont(font4)
+        self.label_5.setFont(font)
         self.label_5.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_5.setAlignment(Qt.AlignCenter)
 
@@ -2277,7 +2293,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_53.setContentsMargins(0, 0, 0, 0)
         self.label_9 = QLabel(self.frame_10)
         self.label_9.setObjectName(u"label_9")
-        self.label_9.setFont(font2)
+        self.label_9.setFont(font)
 
         self.verticalLayout_53.addWidget(self.label_9)
 
@@ -2305,7 +2321,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_52.setContentsMargins(0, 0, 0, 0)
         self.label_8 = QLabel(self.frame_11)
         self.label_8.setObjectName(u"label_8")
-        self.label_8.setFont(font2)
+        self.label_8.setFont(font)
 
         self.verticalLayout_52.addWidget(self.label_8)
 
@@ -2332,7 +2348,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_50.setContentsMargins(0, 0, 0, 0)
         self.label_7 = QLabel(self.frame_8)
         self.label_7.setObjectName(u"label_7")
-        self.label_7.setFont(font2)
+        self.label_7.setFont(font)
 
         self.verticalLayout_50.addWidget(self.label_7)
 
@@ -2359,7 +2375,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_51.setContentsMargins(0, 0, 0, 0)
         self.label_6 = QLabel(self.frame_9)
         self.label_6.setObjectName(u"label_6")
-        self.label_6.setFont(font2)
+        self.label_6.setFont(font)
 
         self.verticalLayout_51.addWidget(self.label_6)
 
@@ -2386,7 +2402,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_56.setContentsMargins(0, 0, 0, 0)
         self.label_11 = QLabel(self.frame_12)
         self.label_11.setObjectName(u"label_11")
-        self.label_11.setFont(font2)
+        self.label_11.setFont(font)
 
         self.verticalLayout_56.addWidget(self.label_11)
 
@@ -2419,7 +2435,7 @@ class Ui_MainWindow(object):
         self.proceedNewProject.setObjectName(u"proceedNewProject")
         self.proceedNewProject.setMinimumSize(QSize(300, 30))
         self.proceedNewProject.setMaximumSize(QSize(300, 30))
-        self.proceedNewProject.setFont(font4)
+        self.proceedNewProject.setFont(font)
         self.proceedNewProject.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
 "	border-radius: 0px}")
@@ -2467,7 +2483,7 @@ class Ui_MainWindow(object):
         self.label_23.setSizePolicy(sizePolicy5)
         self.label_23.setMinimumSize(QSize(150, 40))
         self.label_23.setMaximumSize(QSize(150, 40))
-        self.label_23.setFont(font4)
+        self.label_23.setFont(font)
         self.label_23.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_23.setAlignment(Qt.AlignCenter)
 
@@ -2503,9 +2519,7 @@ class Ui_MainWindow(object):
         self.label_13.setSizePolicy(sizePolicy5)
         self.label_13.setMinimumSize(QSize(150, 40))
         self.label_13.setMaximumSize(QSize(150, 40))
-        font5 = QFont()
-        font5.setPointSize(16)
-        self.label_13.setFont(font5)
+        self.label_13.setFont(font)
         self.label_13.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_13.setAlignment(Qt.AlignCenter)
 
@@ -2535,7 +2549,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_67.setContentsMargins(0, 0, 0, 0)
         self.label_19 = QLabel(self.frame_21)
         self.label_19.setObjectName(u"label_19")
-        self.label_19.setFont(font2)
+        self.label_19.setFont(font)
 
         self.verticalLayout_67.addWidget(self.label_19)
 
@@ -2564,7 +2578,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_68.setContentsMargins(0, 0, 0, 0)
         self.label_20 = QLabel(self.frame_22)
         self.label_20.setObjectName(u"label_20")
-        self.label_20.setFont(font2)
+        self.label_20.setFont(font)
 
         self.verticalLayout_68.addWidget(self.label_20)
 
@@ -2593,7 +2607,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_69.setContentsMargins(0, 0, 0, 0)
         self.label_21 = QLabel(self.frame_23)
         self.label_21.setObjectName(u"label_21")
-        self.label_21.setFont(font2)
+        self.label_21.setFont(font)
 
         self.verticalLayout_69.addWidget(self.label_21)
 
@@ -2622,7 +2636,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_70.setContentsMargins(0, 0, 0, 0)
         self.label_22 = QLabel(self.frame_24)
         self.label_22.setObjectName(u"label_22")
-        self.label_22.setFont(font2)
+        self.label_22.setFont(font)
 
         self.verticalLayout_70.addWidget(self.label_22)
 
@@ -2664,7 +2678,7 @@ class Ui_MainWindow(object):
         self.label_12.setSizePolicy(sizePolicy5)
         self.label_12.setMinimumSize(QSize(150, 40))
         self.label_12.setMaximumSize(QSize(150, 40))
-        self.label_12.setFont(font5)
+        self.label_12.setFont(font)
         self.label_12.setStyleSheet(u"background-color : transparent ; color : black;")
         self.label_12.setAlignment(Qt.AlignCenter)
 
@@ -2694,7 +2708,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_62.setContentsMargins(0, 0, 0, 0)
         self.label_14 = QLabel(self.frame_16)
         self.label_14.setObjectName(u"label_14")
-        self.label_14.setFont(font2)
+        self.label_14.setFont(font)
 
         self.verticalLayout_62.addWidget(self.label_14)
 
@@ -2722,7 +2736,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_63.setContentsMargins(0, 0, 0, 0)
         self.label_15 = QLabel(self.frame_17)
         self.label_15.setObjectName(u"label_15")
-        self.label_15.setFont(font2)
+        self.label_15.setFont(font)
 
         self.verticalLayout_63.addWidget(self.label_15)
 
@@ -2750,7 +2764,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_64.setContentsMargins(0, 0, 0, 0)
         self.label_16 = QLabel(self.frame_18)
         self.label_16.setObjectName(u"label_16")
-        self.label_16.setFont(font2)
+        self.label_16.setFont(font)
 
         self.verticalLayout_64.addWidget(self.label_16)
 
@@ -2778,7 +2792,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_65.setContentsMargins(0, 0, 0, 0)
         self.label_17 = QLabel(self.frame_19)
         self.label_17.setObjectName(u"label_17")
-        self.label_17.setFont(font2)
+        self.label_17.setFont(font)
 
         self.verticalLayout_65.addWidget(self.label_17)
 
@@ -2808,7 +2822,7 @@ class Ui_MainWindow(object):
         self.createNewProject.setObjectName(u"createNewProject")
         self.createNewProject.setMinimumSize(QSize(300, 40))
         self.createNewProject.setMaximumSize(QSize(300, 40))
-        self.createNewProject.setFont(font4)
+        self.createNewProject.setFont(font)
         self.createNewProject.setStyleSheet(u"QPushButton:pressed {\n"
 "	background-color: rgb(120, 120, 120);\n"
 "	border-radius: 0px}")
@@ -2897,9 +2911,7 @@ class Ui_MainWindow(object):
         self.designDocsTableFrame = QFrame(self.designDocsTab)
         self.designDocsTableFrame.setObjectName(u"designDocsTableFrame")
         self.designDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        font6 = QFont()
-        font6.setPointSize(1)
-        self.designDocsTableFrame.setFont(font6)
+        self.designDocsTableFrame.setFont(font)
         self.designDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.designDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_85 = QVBoxLayout(self.designDocsTableFrame)
@@ -2968,7 +2980,7 @@ class Ui_MainWindow(object):
         self.searchDocsLine.setEnabled(True)
         self.searchDocsLine.setMinimumSize(QSize(0, 30))
         self.searchDocsLine.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsLine.setFont(font3)
+        self.searchDocsLine.setFont(font)
         self.searchDocsLine.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
 
@@ -3065,7 +3077,7 @@ class Ui_MainWindow(object):
         self.constructionDocsTableFrame = QFrame(self.constructionDocsTab)
         self.constructionDocsTableFrame.setObjectName(u"constructionDocsTableFrame")
         self.constructionDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        self.constructionDocsTableFrame.setFont(font6)
+        self.constructionDocsTableFrame.setFont(font)
         self.constructionDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.constructionDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_86 = QVBoxLayout(self.constructionDocsTableFrame)
@@ -3134,7 +3146,7 @@ class Ui_MainWindow(object):
         self.searchDocsLine_2.setEnabled(True)
         self.searchDocsLine_2.setMinimumSize(QSize(0, 30))
         self.searchDocsLine_2.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsLine_2.setFont(font3)
+        self.searchDocsLine_2.setFont(font)
         self.searchDocsLine_2.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
 
@@ -3227,7 +3239,7 @@ class Ui_MainWindow(object):
         self.initDocsTableFrame = QFrame(self.initDocsTab)
         self.initDocsTableFrame.setObjectName(u"initDocsTableFrame")
         self.initDocsTableFrame.setMaximumSize(QSize(16777215, 16777215))
-        self.initDocsTableFrame.setFont(font6)
+        self.initDocsTableFrame.setFont(font)
         self.initDocsTableFrame.setFrameShape(QFrame.StyledPanel)
         self.initDocsTableFrame.setFrameShadow(QFrame.Raised)
         self.verticalLayout_87 = QVBoxLayout(self.initDocsTableFrame)
@@ -3296,7 +3308,7 @@ class Ui_MainWindow(object):
         self.searchDocsLine_3.setEnabled(True)
         self.searchDocsLine_3.setMinimumSize(QSize(0, 30))
         self.searchDocsLine_3.setMaximumSize(QSize(16777215, 30))
-        self.searchDocsLine_3.setFont(font3)
+        self.searchDocsLine_3.setFont(font)
         self.searchDocsLine_3.setStyleSheet(u"background-color: rgb(166, 166, 166);\n"
 "border-radius: 6px")
 
@@ -3453,7 +3465,7 @@ class Ui_MainWindow(object):
         self.regStackedWidget.setCurrentIndex(0)
         self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_3.setCurrentIndex(1)
-        self.interfaceBodyStackedWidget.setCurrentIndex(1)
+        self.interfaceBodyStackedWidget.setCurrentIndex(2)
         self.newProjectStackedWidget.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)
 

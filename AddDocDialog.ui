@@ -26,7 +26,11 @@
    <string>Dialog</string>
   </property>
   <property name="styleSheet">
-   <string notr="true">#Dialog{
+   <string notr="true">* {color: white;
+  font-family: Arial;
+  font-size: 13px;
+  font-weight: Normal;}
+#Dialog{
 	border-radius: 10px}
 *{
 	border: none;
