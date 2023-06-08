@@ -1,7 +1,21 @@
 import mimetypes
 import concurrent.futures
-from PySide6.QtCore import QBuffer
+from concurrent.futures import wait
+from functools import partial
+import sys
+from random import randint as rand
+
+from PySide6 import QtCore
+from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread
+from PySide6.QtGui import Qt
 from PySide6.QtPdf import QPdfDocument
+from PySide6.QtPdfWidgets import QPdfView
+from PySide6.QtWidgets import QProgressBar
+
+from searchRow import Ui_Form as Row
+from ProjectWidget import Ui_Form
+from tqdm import tqdm
+from tqdm.utils import CallbackIOWrapper
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
