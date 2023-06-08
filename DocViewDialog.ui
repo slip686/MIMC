@@ -29,16 +29,14 @@
    <string notr="true">* {color: white;
   font-family: Arial;
   font-size: 13px;
-  font-weight: Normal;}
-#Dialog{
-	border-radius: 10px}
-*{
+  font-weight: Normal;
 	border: none;
-
 	padding: 0;
 	margin: 0;
-	background-color: transparent 
-}
+	background-color: transparent }
+#Dialog{
+	border-radius: 10px}
+
 #centralwidget 	{background-color: rgb(136, 136, 136);
 						border-radius: 10px;
 						
