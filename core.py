@@ -14,7 +14,6 @@ from PySide6.QtWidgets import QProgressBar
 
 from searchRow import Ui_Form as Row
 from ProjectWidget import Ui_Form
-
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
