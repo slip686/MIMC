@@ -1,21 +1,7 @@
 import mimetypes
 import concurrent.futures
-from concurrent.futures import wait
-from functools import partial
-import sys
-from random import randint as rand
-
-from PySide6 import QtCore
-from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread
-from PySide6.QtGui import Qt
+from PySide6.QtCore import QBuffer
 from PySide6.QtPdf import QPdfDocument
-from PySide6.QtPdfWidgets import QPdfView
-from PySide6.QtWidgets import QProgressBar
-
-from searchRow import Ui_Form as Row
-from ProjectWidget import Ui_Form
-from tqdm import tqdm
-from tqdm.utils import CallbackIOWrapper
 from datetime import datetime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -34,9 +20,7 @@ import os
 import platform
 import requests
 from requests.exceptions import ConnectionError, Timeout, ReadTimeout
-from requests_toolbelt import MultipartEncoder
 from threading import Thread
-import pathlib
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
@@ -44,7 +28,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from functools import wraps
-from seafileapi import exceptions
 import time
 
 
