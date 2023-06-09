@@ -1,3 +1,4 @@
+import asyncio
 import mimetypes
 import concurrent.futures
 from concurrent.futures import wait
@@ -92,14 +93,6 @@ def get_key(Email):
     text = Email.encode('UTF-8')
     encrypted_text = cipher.encrypt(text)
     return encrypted_text.decode('UTF-8')
-
-
-def get_file(URL):
-    # f = open(r'/Users/slip686/Desktop/Exon/temp/image', "wb")
-    # request = requests.get("https://site.ru/file.zip")
-    # f.write(request.content)
-    # f.close()
-    return URL
 
 
 def clear_json():
@@ -268,9 +261,12 @@ class user_connection:
         self.stop_checking = False
         self.status_label = status_label
         self.stop_download = False
+        self.message_wait_loop = None
 
     def set_stop_checking(self):
         self.stop_checking = True
+        # if self.message_wait_loop:
+        #     self.message_wait_loop.close()
 
     def session(self):
 
@@ -288,7 +284,9 @@ class user_connection:
                                              host=template["host"],
                                              port=template["port"],
                                              database=template["database"])
+                self.conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
                 self.cur = self.conn.cursor()
+                self.cur.execute(f'LISTEN "{self.email}_msg_channel";')
 
                 ##################################################
                 # CONNECT TO STASH
@@ -333,6 +331,22 @@ class user_connection:
                                                  name='check_conn')
                 connection_check_thread.start()
 
+                def handle_notify():
+                    self.conn.poll()
+                    for notify in self.conn.notifies:
+                        print(notify.payload)
+                    self.conn.notifies.clear()
+
+                self.message_wait_loop = asyncio.new_event_loop()
+                self.message_wait_loop.add_reader(self.conn, handle_notify)
+
+                def run_loop(loop):
+                    asyncio.set_event_loop(loop)
+                    loop.run_forever()
+
+                run_loop_thread = Thread(target=run_loop, args=(self.message_wait_loop,), name='message_wait_loop')
+                run_loop_thread.start()
+
                 return 'connected'
 
             except psycopg2.OperationalError as err:
@@ -375,6 +389,9 @@ class user_connection:
         self.connection_success = 0
         self.cur.close()
         self.conn.close()
+        self.set_stop_checking()
+        self.message_wait_loop.call_soon_threadsafe(self.message_wait_loop.stop)
+        self.message_wait_loop.stop()
 
     def download_process(self, repo_id=None, file_address=None, file_name=None, file_type=None, bytes_format=None,
                          pdf_document_view: QPdfDocument = None, buffer_device: QBuffer = None,
@@ -532,14 +549,15 @@ class push_user_data:
                                          database=template["database"])
             self.cur = self.conn.cursor()
             self.cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
-                            notification_table, tin) VALUES (%s, %s, %s, %s, %s, %s)""",
+                            notification_table, tin, ntfcn_channel) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
                              (self.email, self.name, self.last_name, self.company_name, self.email +
-                              '_notification', self.TIN))
+                              '_notification', self.TIN, self.email + '_msg_channel'))
 
             self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
                 sql.Identifier(self.email), sql.Literal(self.password)))
 
             self.cur.execute(create_notification_table(), (AsIs(self.email),))
+            self.cur.execute(*set_ntfcn_func_and_trigger(self.email))
             self.conn.commit()
 
             ##############################################################

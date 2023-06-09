@@ -344,3 +344,20 @@ def get_doc_info(project_name, doc_id):
     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" WHERE doc_id=%s) row)""",
                   (AsIs(project_name), doc_id)]
     return query_list
+
+def set_ntfcn_func_and_trigger(email):
+    query_list = ["""create function "%s_MESSAGE"() returns trigger
+                    language plpgsql
+                    as
+                    $$
+                    BEGIN
+                    PERFORM pg_notify('%s_msg_channel', NEW.ntfcn_id::text);
+                    RETURN NEW;
+                    END;
+                    $$;
+                
+                    CREATE TRIGGER "%s_MESSAGES_TRG"
+                    AFTER INSERT ON "%s_notification"
+                    FOR EACH ROW
+                    EXECUTE PROCEDURE "%s_MESSAGE"();""", (AsIs(email), AsIs(email), AsIs(email), AsIs(email), AsIs(email))]
+    return query_list

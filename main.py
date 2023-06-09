@@ -119,8 +119,8 @@ class MainWindow(QMainWindow):
         def stop():
             self.stop = True
 
+        self.ui.mainHeader.closeBtn.clicked.connect(lambda: self.session.close_session())
         self.ui.mainHeader.closeBtn.clicked.connect(lambda: stop())
-        self.ui.mainHeader.closeBtn.clicked.connect(lambda: self.session.set_stop_checking())
 
         def run(stop_thread):
             schedule.every(10).seconds.do(show_advice)
@@ -130,7 +130,7 @@ class MainWindow(QMainWindow):
                 if stop_thread():
                     break
 
-        thread = Thread(target=run, args=(lambda: self.stop,))
+        thread = Thread(target=run, args=(lambda: self.stop,), name='show_advice')
         thread.start()
 
         ############################################################################################
