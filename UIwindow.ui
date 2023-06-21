@@ -10,7 +10,7 @@
     <x>0</x>
     <y>0</y>
     <width>945</width>
-    <height>772</height>
+    <height>745</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -3194,7 +3194,7 @@ Successfully!</string>
              <property name="frameShadow">
               <enum>QFrame::Raised</enum>
              </property>
-             <layout class="QHBoxLayout" name="horizontalLayout_57" stretch="0,0">
+             <layout class="QHBoxLayout" name="horizontalLayout_57" stretch="0,0,0">
               <property name="spacing">
                <number>0</number>
               </property>
@@ -4265,9 +4265,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                                      </size>
                                     </property>
                                     <property name="styleSheet">
-                                     <string notr="true">QPushButton:pressed {
-	background-color: rgb(120, 120, 120);
-	border-radius: 6px}</string>
+                                     <string notr="true">QPushButton:pressed {background-color: rgb(120, 120, 120); border-radius: 6px}</string>
                                     </property>
                                     <property name="text">
                                      <string/>
@@ -7369,8 +7367,8 @@ QComboBox {background-color: rgb(184, 184, 184); color : black}
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>612</width>
-                          <height>701</height>
+                          <width>100</width>
+                          <height>30</height>
                          </rect>
                         </property>
                         <property name="sizePolicy">
@@ -7451,7 +7449,7 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
 </string>
                        </property>
                        <property name="currentIndex">
-                        <number>0</number>
+                        <number>2</number>
                        </property>
                        <widget class="QWidget" name="designDocsTab">
                         <property name="styleSheet">
@@ -8711,6 +8709,37 @@ border-radius: 6px</string>
                 </layout>
                </widget>
               </item>
+              <item>
+               <widget class="NotificationsSlideFrame" name="NotificationsMenu">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="maximumSize">
+                 <size>
+                  <width>600</width>
+                  <height>16777215</height>
+                 </size>
+                </property>
+                <property name="styleSheet">
+                 <string notr="true">#NotificationsMenu {background-color: transparent}</string>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::StyledPanel</enum>
+                </property>
+                <property name="frameShadow">
+                 <enum>QFrame::Raised</enum>
+                </property>
+               </widget>
+              </item>
              </layout>
             </widget>
            </item>
@@ -8813,6 +8842,30 @@ border-radius: 6px</string>
    <container>1</container>
   </customwidget>
   <customwidget>
+   <class>QCustomSlideFrame</class>
+   <extends>QFrame</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QCustomSlideFrame3</class>
+   <extends>QFrame</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CQScrollArea</class>
+   <extends>QScrollArea</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>CQWidget</class>
+   <extends>QWidget</extends>
+   <header location="global">CustomWidgets.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
    <class>CQLineEdit</class>
    <extends>QLineEdit</extends>
    <header location="global">CustomWidgets.h</header>
@@ -8846,33 +8899,15 @@ border-radius: 6px</string>
    <header location="global">CustomWidgets.h</header>
   </customwidget>
   <customwidget>
-   <class>QCustomSlideFrame</class>
-   <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
    <class>QFrameWithResizeSignal</class>
    <extends>QFrame</extends>
    <header location="global">CustomWidgets.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QCustomSlideFrame3</class>
+   <class>NotificationsSlideFrame</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CQScrollArea</class>
-   <extends>QScrollArea</extends>
-   <header location="global">CustomWidgets.h</header>
-   <container>1</container>
-  </customwidget>
-  <customwidget>
-   <class>CQWidget</class>
-   <extends>QWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header>CustomWidgets.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>

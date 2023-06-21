@@ -8,22 +8,40 @@ def user_data():
     return query
 
 
-def create_notification_table():
-    query = """CREATE TABLE IF NOT EXISTS "%s_notification"
+def create_notification_table(email):
+    query = ['''CREATE TABLE IF NOT EXISTS "%s_notification"
             (
             ntfcn_id serial PRIMARY KEY,
-            receiver_user_first_name varchar,
-            receiver_user_last_name varchar,
-            receiver_user_company_name varchar,
-            ntfcn_type varchar,
-            doc_link varchar,
-            sender_user_first_name varchar,
-            sender_user_last_name varchar,
-            sender_user_company_name varchar,
-            ntfcn_time varchar
-            )"""
+            project_id integer,
+            doc_id varchar,
+            sender_id integer,
+            type varchar,
+            comments varchar,
+            time_send varchar,
+            time_limit varchar,
+            receive_status bool,
+            FOREIGN KEY (sender_id) REFERENCES users (user_id),
+            FOREIGN KEY (project_id) REFERENCES projects (project_id)
+            );
+            GRANT SELECT, UPDATE, INSERT ON TABLE "%s_notification" TO "%s" ''', (AsIs(email), AsIs(email), AsIs(email))]
     return query
 
+
+def get_notifications(email):
+    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS null) row)""", (AsIs(email),)]
+    return query
+
+def get_old_notifications(email, start, end):
+    # query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true LIMIT 10 OFFSET %s) row)""", (AsIs(email), offset)]
+    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true AND ntfcn_id 
+    BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
+
+    return query
+
+def get_last_ten_notifications(email):
+    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" 
+                ORDER BY ntfcn_id DESC LIMIT 10) row)""", (AsIs(email), )]
+    return query
 
 def create_user_projects_access_table():
     query = """CREATE TABLE IF NOT EXISTS "%s_projects"
@@ -345,19 +363,30 @@ def get_doc_info(project_name, doc_id):
                   (AsIs(project_name), doc_id)]
     return query_list
 
+
 def set_ntfcn_func_and_trigger(email):
     query_list = ["""create function "%s_MESSAGE"() returns trigger
-                    language plpgsql
-                    as
-                    $$
-                    BEGIN
-                    PERFORM pg_notify('%s_msg_channel', NEW.ntfcn_id::text);
-                    RETURN NEW;
-                    END;
-                    $$;
-                
-                    CREATE TRIGGER "%s_MESSAGES_TRG"
-                    AFTER INSERT ON "%s_notification"
-                    FOR EACH ROW
-                    EXECUTE PROCEDURE "%s_MESSAGE"();""", (AsIs(email), AsIs(email), AsIs(email), AsIs(email), AsIs(email))]
+                        language plpgsql
+                        as
+                        $$
+                        DECLARE 
+                            payload text;
+                        BEGIN payload := json_build_object('project_id',NEW.project_id, 'doc_id', NEW.doc_id, 
+                            'sender_id', NEW.sender_id,'ntfcn_id', NEW.ntfcn_id, 'comments', NEW.comments, 
+                            'receive_status', NEW.receive_status, 'type', NEW.type, 'time_send', NEW.time_send, 
+                            'time_limit', NEW.time_limit);
+                        PERFORM pg_notify('%s_msg_channel', payload);
+                        RETURN NEW;
+                        END;$$;
+
+                        CREATE TRIGGER "%s_MESSAGES_TRG"
+                        AFTER INSERT ON "%s_notification"
+                        FOR EACH ROW
+                        EXECUTE PROCEDURE "%s_MESSAGE"();""", (AsIs(email), AsIs(email), AsIs(email), AsIs(email),
+                                                               AsIs(email))]
     return query_list
+
+def set_receive_status(email, ntfcn_id):
+    query = ["""UPDATE public."%s_notification" SET receive_status = true WHERE ntfcn_id = %s;""",
+             (AsIs(email), ntfcn_id)]
+    return(query)

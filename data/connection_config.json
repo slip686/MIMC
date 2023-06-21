@@ -4,5 +4,6 @@
   "host":"sliplab.net",
   "port":"5432",
   "database":"mimcprojects",
-  "stash_url": "https://cloud.sliplab.net"
+  "stash_url": "https://cloud.sliplab.net",
+  "msg_broker_url": "messages.sliplab.net"
 }

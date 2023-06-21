@@ -20,8 +20,8 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
     QTabWidget, QVBoxLayout, QWidget)
 
-from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, CQWidget, QCustomSlideFrame,
-    QCustomSlideFrame3, QCustomTitleBar)
+from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, CQScrollArea, CQWidget,
+    QCustomSlideFrame, QCustomSlideFrame3, QCustomTitleBar)
 import resources_rc_rc
 
 class Ui_Dialog(object):
@@ -347,19 +347,20 @@ class Ui_Dialog(object):
 "\n"
 "\n"
 "QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165, 165);}")
-        self.contentsTab = QWidget()
-        self.contentsTab.setObjectName(u"contentsTab")
-        self.verticalLayout_9 = QVBoxLayout(self.contentsTab)
+        self.actionsTab = QWidget()
+        self.actionsTab.setObjectName(u"actionsTab")
+        self.verticalLayout_9 = QVBoxLayout(self.actionsTab)
         self.verticalLayout_9.setSpacing(0)
         self.verticalLayout_9.setObjectName(u"verticalLayout_9")
         self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
-        self.contentsMainFrame = QFrame(self.contentsTab)
+        self.contentsMainFrame = QFrame(self.actionsTab)
         self.contentsMainFrame.setObjectName(u"contentsMainFrame")
         self.contentsMainFrame.setFrameShape(QFrame.StyledPanel)
         self.contentsMainFrame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.contentsMainFrame)
+        self.horizontalLayout_4.setSpacing(0)
         self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
-        self.horizontalLayout_4.setContentsMargins(0, 0, 0, -1)
+        self.horizontalLayout_4.setContentsMargins(0, 0, 0, 0)
         self.contentsStackedWidget = QStackedWidget(self.contentsMainFrame)
         self.contentsStackedWidget.setObjectName(u"contentsStackedWidget")
         self.page_3 = QWidget()
@@ -368,15 +369,23 @@ class Ui_Dialog(object):
         self.verticalLayout_6.setSpacing(0)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.frame_3 = QFrame(self.page_3)
-        self.frame_3.setObjectName(u"frame_3")
-        self.frame_3.setFrameShape(QFrame.StyledPanel)
-        self.frame_3.setFrameShadow(QFrame.Raised)
-        self.verticalLayout_35 = QVBoxLayout(self.frame_3)
-        self.verticalLayout_35.setSpacing(0)
-        self.verticalLayout_35.setObjectName(u"verticalLayout_35")
-        self.verticalLayout_35.setContentsMargins(0, 6, 0, 0)
-        self.dividerDownloadContents = QFrame(self.frame_3)
+        self.scrollArea = CQScrollArea(self.page_3)
+        self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setWidgetResizable(True)
+        self.scrollAreaWidgetContents_2 = QWidget()
+        self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 352, 614))
+        self.verticalLayout_32 = QVBoxLayout(self.scrollAreaWidgetContents_2)
+        self.verticalLayout_32.setSpacing(0)
+        self.verticalLayout_32.setObjectName(u"verticalLayout_32")
+        self.verticalLayout_32.setContentsMargins(10, 6, 0, 0)
+        self.widget = CQWidget(self.scrollAreaWidgetContents_2)
+        self.widget.setObjectName(u"widget")
+        self.verticalLayout_33 = QVBoxLayout(self.widget)
+        self.verticalLayout_33.setSpacing(0)
+        self.verticalLayout_33.setObjectName(u"verticalLayout_33")
+        self.verticalLayout_33.setContentsMargins(0, 0, 0, 0)
+        self.dividerDownloadContents = QFrame(self.widget)
         self.dividerDownloadContents.setObjectName(u"dividerDownloadContents")
         self.dividerDownloadContents.setMinimumSize(QSize(330, 25))
         self.dividerDownloadContents.setMaximumSize(QSize(330, 25))
@@ -414,9 +423,9 @@ class Ui_Dialog(object):
         self.verticalLayout_30.addWidget(self.line_4)
 
 
-        self.verticalLayout_35.addWidget(self.dividerDownloadContents)
+        self.verticalLayout_33.addWidget(self.dividerDownloadContents)
 
-        self.downloadFilesBtns = QCustomSlideFrame3(self.frame_3)
+        self.downloadFilesBtns = QCustomSlideFrame3(self.widget)
         self.downloadFilesBtns.setObjectName(u"downloadFilesBtns")
         self.downloadFilesBtns.setMinimumSize(QSize(330, 110))
         self.downloadFilesBtns.setMaximumSize(QSize(330, 110))
@@ -485,9 +494,9 @@ class Ui_Dialog(object):
         self.horizontalLayout_7.addWidget(self.frame_4)
 
 
-        self.verticalLayout_35.addWidget(self.downloadFilesBtns)
+        self.verticalLayout_33.addWidget(self.downloadFilesBtns)
 
-        self.dividerAddNewVersion = QFrame(self.frame_3)
+        self.dividerAddNewVersion = QFrame(self.widget)
         self.dividerAddNewVersion.setObjectName(u"dividerAddNewVersion")
         self.dividerAddNewVersion.setMinimumSize(QSize(330, 28))
         self.dividerAddNewVersion.setMaximumSize(QSize(330, 28))
@@ -525,9 +534,9 @@ class Ui_Dialog(object):
         self.verticalLayout_28.addWidget(self.line)
 
 
-        self.verticalLayout_35.addWidget(self.dividerAddNewVersion)
+        self.verticalLayout_33.addWidget(self.dividerAddNewVersion)
 
-        self.uploadNewVersionFrames = QCustomSlideFrame3(self.frame_3)
+        self.uploadNewVersionFrames = QCustomSlideFrame3(self.widget)
         self.uploadNewVersionFrames.setObjectName(u"uploadNewVersionFrames")
         self.uploadNewVersionFrames.setMinimumSize(QSize(330, 140))
         self.uploadNewVersionFrames.setMaximumSize(QSize(330, 140))
@@ -838,9 +847,9 @@ class Ui_Dialog(object):
         self.verticalLayout_36.addWidget(self.uploadNewVerBtn)
 
 
-        self.verticalLayout_35.addWidget(self.uploadNewVersionFrames)
+        self.verticalLayout_33.addWidget(self.uploadNewVersionFrames)
 
-        self.dividerAddNewRevision = QFrame(self.frame_3)
+        self.dividerAddNewRevision = QFrame(self.widget)
         self.dividerAddNewRevision.setObjectName(u"dividerAddNewRevision")
         self.dividerAddNewRevision.setMinimumSize(QSize(330, 28))
         self.dividerAddNewRevision.setMaximumSize(QSize(330, 28))
@@ -878,9 +887,9 @@ class Ui_Dialog(object):
         self.verticalLayout_31.addWidget(self.line_6)
 
 
-        self.verticalLayout_35.addWidget(self.dividerAddNewRevision)
+        self.verticalLayout_33.addWidget(self.dividerAddNewRevision)
 
-        self.uploadNewRevisionFrames = QCustomSlideFrame3(self.frame_3)
+        self.uploadNewRevisionFrames = QCustomSlideFrame3(self.widget)
         self.uploadNewRevisionFrames.setObjectName(u"uploadNewRevisionFrames")
         self.uploadNewRevisionFrames.setMinimumSize(QSize(330, 140))
         self.uploadNewRevisionFrames.setMaximumSize(QSize(330, 140))
@@ -1184,9 +1193,9 @@ class Ui_Dialog(object):
         self.verticalLayout_29.addWidget(self.uploadNewRevBtn)
 
 
-        self.verticalLayout_35.addWidget(self.uploadNewRevisionFrames)
+        self.verticalLayout_33.addWidget(self.uploadNewRevisionFrames)
 
-        self.dividerOtherActions = QFrame(self.frame_3)
+        self.dividerOtherActions = QFrame(self.widget)
         self.dividerOtherActions.setObjectName(u"dividerOtherActions")
         self.dividerOtherActions.setMinimumSize(QSize(330, 28))
         self.dividerOtherActions.setMaximumSize(QSize(330, 28))
@@ -1224,27 +1233,36 @@ class Ui_Dialog(object):
         self.verticalLayout_34.addWidget(self.line_8)
 
 
-        self.verticalLayout_35.addWidget(self.dividerOtherActions)
+        self.verticalLayout_33.addWidget(self.dividerOtherActions)
 
-        self.otherActionsFrame = QCustomSlideFrame3(self.frame_3)
+        self.otherActionsFrame = QCustomSlideFrame3(self.widget)
         self.otherActionsFrame.setObjectName(u"otherActionsFrame")
         self.otherActionsFrame.setMinimumSize(QSize(330, 50))
         self.otherActionsFrame.setMaximumSize(QSize(330, 50))
         self.otherActionsFrame.setFrameShape(QFrame.StyledPanel)
         self.otherActionsFrame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_19 = QHBoxLayout(self.otherActionsFrame)
-        self.horizontalLayout_19.setSpacing(10)
+        self.horizontalLayout_19.setSpacing(0)
         self.horizontalLayout_19.setObjectName(u"horizontalLayout_19")
-        self.horizontalLayout_19.setContentsMargins(0, 0, 0, 0)
+        self.horizontalLayout_19.setContentsMargins(0, 6, 0, 0)
+        self.actionsComboBox = QComboBox(self.otherActionsFrame)
+        self.actionsComboBox.setObjectName(u"actionsComboBox")
 
-        self.verticalLayout_35.addWidget(self.otherActionsFrame)
-
-        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
-
-        self.verticalLayout_35.addItem(self.verticalSpacer)
+        self.horizontalLayout_19.addWidget(self.actionsComboBox, 0, Qt.AlignTop)
 
 
-        self.verticalLayout_6.addWidget(self.frame_3, 0, Qt.AlignHCenter)
+        self.verticalLayout_33.addWidget(self.otherActionsFrame)
+
+        self.verticalSpacer = QSpacerItem(20, 56, QSizePolicy.Minimum, QSizePolicy.Expanding)
+
+        self.verticalLayout_33.addItem(self.verticalSpacer)
+
+
+        self.verticalLayout_32.addWidget(self.widget)
+
+        self.scrollArea.setWidget(self.scrollAreaWidgetContents_2)
+
+        self.verticalLayout_6.addWidget(self.scrollArea)
 
         self.contentsStackedWidget.addWidget(self.page_3)
         self.page_4 = QWidget()
@@ -1548,7 +1566,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_9.addWidget(self.contentsMainFrame)
 
-        self.worksTabWidget.addTab(self.contentsTab, "")
+        self.worksTabWidget.addTab(self.actionsTab, "")
         self.commentsTab = QWidget()
         self.commentsTab.setObjectName(u"commentsTab")
         self.verticalLayout_7 = QVBoxLayout(self.commentsTab)
@@ -1696,7 +1714,7 @@ class Ui_Dialog(object):
         self.deleteAdditionalDoc.setText("")
         self.checkBox.setText(QCoreApplication.translate("Dialog", u"Sign file", None))
         self.addFileBtn.setText(QCoreApplication.translate("Dialog", u"ADD FILE", None))
-        self.worksTabWidget.setTabText(self.worksTabWidget.indexOf(self.contentsTab), QCoreApplication.translate("Dialog", u"Actions", None))
+        self.worksTabWidget.setTabText(self.worksTabWidget.indexOf(self.actionsTab), QCoreApplication.translate("Dialog", u"Actions", None))
         self.worksTabWidget.setTabText(self.worksTabWidget.indexOf(self.commentsTab), QCoreApplication.translate("Dialog", u"Comments", None))
         self.worksTabWidget.setTabText(self.worksTabWidget.indexOf(self.flow), QCoreApplication.translate("Dialog", u"Flow", None))
         self.worksMenuBtn.setText("")

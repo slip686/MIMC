@@ -374,6 +374,7 @@ class DocViewDialog(QDialog):
         self.current_version = None
         self.dialog = ViewingDialog()
         self.dialog.setupUi(self)
+        self.dialog.scrollArea.correction = True
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.dialog.mainHeader.minimizeBtn.hide()
@@ -410,6 +411,11 @@ class DocViewDialog(QDialog):
         self.dialog.uploadNewRevisionFrames.value = 140
         self.dialog.uploadNewRevisionFrames.set_trigger(self.dialog.addNewRevisionBtn)
         self.dialog.uploadNewRevisionFrames.animation.setDuration(100)
+
+        self.dialog.otherActionsFrame.animation_direction = 'vertical'
+        self.dialog.otherActionsFrame.value = 140
+        self.dialog.otherActionsFrame.set_trigger(self.dialog.otherActionsBtn)
+        self.dialog.otherActionsFrame.animation.setDuration(100)
 
         self.dialog.supportDocFileAddressLabel.setFixedWidth(250)
         self.dialog.zippedArchiveFileAddressLabel.setFixedWidth(250)

@@ -20,31 +20,6 @@ class str2(str):
         return ''.join(('"', super().__repr__()[1:-1], '"'))
 
 
-# class TableUpdater(QThread):
-#     def __init__(self, window_object, document: ProjectDocument, parent_object):
-#         super(TableUpdater, self).__init__()
-#         self.window_object = window_object
-#         self.document = document
-#         self.parent_object = parent_object
-#
-#     def get_flag(self):
-#         flag = self.parent_object.uploading_finished
-#         print(flag)
-#         return flag
-#
-#     def update_table(self):
-#         while True:
-#             if self.get_flag():
-#                 if self.document.type == 'design':
-#                     self.window_object.fill_table(doc_type='design')
-#                 if self.document.type == 'construction':
-#                     self.window_object.fill_table(doc_type='construction')
-#                 if self.document.type == 'init_permit':
-#                     self.window_object.fill_table(doc_type='init_permit')
-#             else:
-#                 time.sleep(1)
-
-
 class MainWindow(QMainWindow):
 
     def __init__(self):
@@ -56,7 +31,7 @@ class MainWindow(QMainWindow):
         self.show()
         self.ui.mainMenuStack.setCurrentIndex(0)
         self.ui.regStackedWidget.setCurrentWidget(self.ui.loginPage)
-        self.session = user_connection(None, None, self.ui.statusLabel2)
+        self.session = user_connection(None, None, self.ui.statusLabel2, main_window_object=self)
         self.logged_user_data = None
         self.logged_user = User()
         self.projects_list = []
@@ -92,8 +67,11 @@ class MainWindow(QMainWindow):
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
         self.ui.initDocsTableWidget.main_table = True
-        self.notif_menu = QCustomSlideFrame2(self.ui.interfaceBodySubContainer)
-        self.notif_menu.hide()
+
+        self.ui.horizontalLayout_57.removeWidget(self.ui.NotificationsMenu)
+        self.ui.NotificationsMenu.setParent(self.ui.interfaceBodySubContainer)
+        self.ui.NotificationsMenu.hide()
+        self.ui.NotificationsMenu.session_object = self.session
 
         if get_platform() == 'win':
             self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
@@ -115,12 +93,6 @@ class MainWindow(QMainWindow):
             self.ui.statusLabel.setText(get_advice())
 
         self.stop = False
-
-        def stop():
-            self.stop = True
-
-        self.ui.mainHeader.closeBtn.clicked.connect(lambda: self.session.close_session())
-        self.ui.mainHeader.closeBtn.clicked.connect(lambda: stop())
 
         def run(stop_thread):
             schedule.every(10).seconds.do(show_advice)
@@ -200,9 +172,9 @@ class MainWindow(QMainWindow):
                                 break
                             if self.session.connection_success:
                                 picture_bytes = self.session.download_process(
-                                                                              repo_id=i.project_data_dict['repo_id'],
-                                                                              file_address=f'/{i.project_data_dict["picture"]}',
-                                                                              bytes_format=True)
+                                    repo_id=i.project_data_dict['repo_id'],
+                                    file_address=f'/{i.project_data_dict["picture"]}',
+                                    bytes_format=True)
                                 if picture_bytes:
                                     picture = QPixmap()
                                     picture.loadFromData(picture_bytes)
@@ -217,7 +189,8 @@ class MainWindow(QMainWindow):
                                     label.setPixmap(rounded)
                                     break
 
-                    new_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop), name=f'picture thread {i}')
+                    new_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop),
+                                        name=f'picture thread {i}')
                     new_thread.start()
                     # self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
                 # self.ui.flowlayout.contentsMargins().top()
@@ -259,6 +232,16 @@ class MainWindow(QMainWindow):
         self.new_user = Reg_data(None, None)
         self.json_process = Json_process(None, None)
         self.exist_user = Reg_data(None, None)
+
+        self.message_receiver = NotificationReceiver(mq_connection_object=self.session.conn_broker,
+                                                     session_object=self.session)
+        self.message_receiving_thread = QThread()
+        self.message_receiver.moveToThread(self.message_receiving_thread)
+        self.message_receiving_thread.started.connect(self.message_receiver.start_broker_loop)
+        self.message_receiver.got_message.connect(lambda: self.add_notification(ntfcn_dict=self.message_receiver.message))
+        for message in self.session.notifications:
+            self.ui.NotificationsMenu.insert_notification(ntfcn_dict=message)
+        self.message_receiving_thread.start()
 
         ########################################################################################################
         # _____________________________REGISTRATION, RECOVER, LOGIN PROCESSES___________________________________
@@ -874,8 +857,8 @@ class MainWindow(QMainWindow):
                         sql_string_values.append(f"'{k}'")
 
                     self.session.commit_query([insert_pattern(), (AsIs(docs_structure_tablename),
-                                                        AsIs(', '.join(sql_string_columns)), AsIs('doc_type'),
-                                                        AsIs(', '.join(sql_string_values)), docs_type)])
+                                                                  AsIs(', '.join(sql_string_columns)), AsIs('doc_type'),
+                                                                  AsIs(', '.join(sql_string_values)), docs_type)])
 
             #####################################################################################################
             # 5. Assign place_id_lists for new rows with query to database
@@ -1232,7 +1215,7 @@ class MainWindow(QMainWindow):
         self.ui.logOutBtn.clicked.connect(lambda: self.ui.statusLabel.setText(''))
         self.ui.logOutBtn.clicked.connect(self.clear_projects)
         self.ui.loginBtn.clicked.connect(lambda: self.ui.rememberCheckBox.setChecked(False))
-        self.ui.notificationsBtn.clicked.connect(lambda: self.notif_menu.hide_show_func())
+        self.ui.notificationsBtn.clicked.connect(lambda: self.ui.NotificationsMenu.hide_show_func())
 
         # new project creation
         self.ui.newProjectBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(0))
@@ -1501,6 +1484,8 @@ class MainWindow(QMainWindow):
         self.ui.designDocsTableWidget.setHorizontalHeaderLabels('        ')
         self.ui.constructionDocsTableWidget.setHorizontalHeaderLabels('        ')
         self.ui.initDocsTableWidget.setHorizontalHeaderLabels('        ')
+
+        self.ui.mainHeader.closeBtn.clicked.connect(lambda: self.close_app())
 
     def add_child(self, parent, name, place_id_list):
         child = RowElement(parent, window_object=self)
@@ -1842,6 +1827,15 @@ class MainWindow(QMainWindow):
         dlg = DocViewDialog(main_window=self, project_name=self.current_project_data_dict['project_name'],
                             doc_id=doc_id)
         dlg.exec()
+
+    def add_notification(self, ntfcn_dict=None):
+        self.ui.NotificationsMenu.insert_notification(ntfcn_dict=ntfcn_dict)
+
+    def close_app(self):
+        self.session.close_session()
+        self.stop = True
+        self.message_receiver.stop_broker_loop()
+        self.message_receiving_thread.terminate()
 
 
 if __name__ == "__main__":

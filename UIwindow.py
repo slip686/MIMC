@@ -23,8 +23,9 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QWidget)
 
 from CustomWidgets import (CQLineEdit, CQScrollArea, CQSizeGrip, CQSizeGrip2,
-    CQTreeWidget, CQWidget, QCustomSlideFrame, QCustomSlideFrame3,
-    QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar, QFrameWithResizeSignal)
+    CQTreeWidget, CQWidget, NotificationsSlideFrame, QCustomSlideFrame,
+    QCustomSlideFrame3, QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar,
+    QFrameWithResizeSignal)
 import resources_rc_rc
 import resources_rc_rc
 import resources_rc_rc
@@ -34,7 +35,7 @@ class Ui_MainWindow(object):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
         MainWindow.setEnabled(True)
-        MainWindow.resize(945, 772)
+        MainWindow.resize(945, 745)
         MainWindow.setMinimumSize(QSize(945, 745))
         MainWindow.setStyleSheet(u"* {color: white;\n"
 "  font-family: Arial;\n"
@@ -1696,9 +1697,7 @@ class Ui_MainWindow(object):
         self.searchBarBtn_2.setObjectName(u"searchBarBtn_2")
         self.searchBarBtn_2.setMinimumSize(QSize(30, 30))
         self.searchBarBtn_2.setMaximumSize(QSize(30, 30))
-        self.searchBarBtn_2.setStyleSheet(u"QPushButton:pressed {\n"
-"	background-color: rgb(120, 120, 120);\n"
-"	border-radius: 6px}")
+        self.searchBarBtn_2.setStyleSheet(u"QPushButton:pressed {background-color: rgb(120, 120, 120); border-radius: 6px}")
         self.searchBarBtn_2.setIcon(icon7)
         self.searchBarBtn_2.setIconSize(QSize(20, 20))
 
@@ -2862,7 +2861,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 612, 701))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 100, 30))
         sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents_2.setSizePolicy(sizePolicy)
         self.verticalLayout_46 = QVBoxLayout(self.scrollAreaWidgetContents_2)
@@ -3409,6 +3408,18 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_57.addWidget(self.interfaceBodyStackedWidgetFrame)
 
+        self.NotificationsMenu = NotificationsSlideFrame(self.interfaceBodySubContainer)
+        self.NotificationsMenu.setObjectName(u"NotificationsMenu")
+        sizePolicy1.setHeightForWidth(self.NotificationsMenu.sizePolicy().hasHeightForWidth())
+        self.NotificationsMenu.setSizePolicy(sizePolicy1)
+        self.NotificationsMenu.setMinimumSize(QSize(0, 0))
+        self.NotificationsMenu.setMaximumSize(QSize(600, 16777215))
+        self.NotificationsMenu.setStyleSheet(u"#NotificationsMenu {background-color: transparent}")
+        self.NotificationsMenu.setFrameShape(QFrame.StyledPanel)
+        self.NotificationsMenu.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_57.addWidget(self.NotificationsMenu)
+
 
         self.horizontalLayout_23.addWidget(self.interfaceBodySubContainer)
 
@@ -3467,7 +3478,7 @@ class Ui_MainWindow(object):
         self.stackedWidget_3.setCurrentIndex(1)
         self.interfaceBodyStackedWidget.setCurrentIndex(2)
         self.newProjectStackedWidget.setCurrentIndex(1)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

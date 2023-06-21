@@ -1,3 +1,4 @@
+import ast
 import asyncio
 import mimetypes
 import concurrent.futures
@@ -6,8 +7,10 @@ from functools import partial
 import sys
 from random import randint as rand
 
+import pika
+from pika.exceptions import StreamLostError, ChannelWrongStateError
 from PySide6 import QtCore
-from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread
+from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread, QObject, Signal
 from PySide6.QtGui import Qt
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
@@ -42,6 +45,7 @@ from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import TimeoutException
 from functools import wraps
 import time
+from pika.exceptions import AMQPError
 
 
 def timeit(func):
@@ -244,7 +248,8 @@ class Email_recover_sending:
 
 
 class user_connection:
-    def __init__(self, email, password, status_label):
+    def __init__(self, email, password, status_label, main_window_object=None):
+        self.main_window_object = main_window_object
         self.email = email
         self.password = password
         self.conn = None
@@ -254,6 +259,7 @@ class user_connection:
         self.stash_connection = None
         self.token = None
         self.stash_url = None
+        self.msg_broker_url = None
         self.os_login = get_paths()['os_login']
         self.uploaded_bytes_counter = 0
         self.total_uploading_bytes = 0
@@ -262,11 +268,12 @@ class user_connection:
         self.status_label = status_label
         self.stop_download = False
         self.message_wait_loop = None
+        self.notifications = []
+        self.conn_broker = None
+        self.channel_broker = None
 
     def set_stop_checking(self):
         self.stop_checking = True
-        # if self.message_wait_loop:
-        #     self.message_wait_loop.close()
 
     def session(self):
 
@@ -274,6 +281,7 @@ class user_connection:
             file_content = f.read()
             template = json.loads(file_content)
             self.stash_url = template["stash_url"]
+            self.msg_broker_url = template["msg_broker_url"]
             try:
                 ##################################################
                 # CONNECT TO DATABASE
@@ -286,7 +294,16 @@ class user_connection:
                                              database=template["database"])
                 self.conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
                 self.cur = self.conn.cursor()
-                self.cur.execute(f'LISTEN "{self.email}_msg_channel";')
+
+                ##################################################
+                # CONNECT TO MESSAGE BROKER
+                ##################################################
+
+                credentials = pika.PlainCredentials(self.email, self.password)
+                parameters = pika.ConnectionParameters(self.msg_broker_url, 5672, '/', credentials, heartbeat=10, )
+
+                self.conn_broker = pika.BlockingConnection(parameters)
+                # self.channel_broker = self.conn_broker.channel()
 
                 ##################################################
                 # CONNECT TO STASH
@@ -304,6 +321,18 @@ class user_connection:
                 self.token = response.json()['token']
 
                 self.connection_success = 1
+
+                #################################################################
+                # GET OFFLINE NOTIFICATIONS
+                #################################################################
+
+                offline_notifications = self.select_query(get_notifications(self.email), fetchall=True)[0][0]
+                self.notifications.extend(offline_notifications)
+                self.set_notification_receive_status()
+
+                #################################################################
+                # CHECKING CONNECTION ASYNC
+                #################################################################
 
                 def check_conn(stop):
                     while True:
@@ -331,22 +360,6 @@ class user_connection:
                                                  name='check_conn')
                 connection_check_thread.start()
 
-                def handle_notify():
-                    self.conn.poll()
-                    for notify in self.conn.notifies:
-                        print(notify.payload)
-                    self.conn.notifies.clear()
-
-                self.message_wait_loop = asyncio.new_event_loop()
-                self.message_wait_loop.add_reader(self.conn, handle_notify)
-
-                def run_loop(loop):
-                    asyncio.set_event_loop(loop)
-                    loop.run_forever()
-
-                run_loop_thread = Thread(target=run_loop, args=(self.message_wait_loop,), name='message_wait_loop')
-                run_loop_thread.start()
-
                 return 'connected'
 
             except psycopg2.OperationalError as err:
@@ -362,7 +375,7 @@ class user_connection:
         if self.connection_success:
             try:
                 self.cur.execute(*query)
-                self.conn.commit()
+                # self.conn.commit()
             except psycopg2.OperationalError as err:
                 print(err)
             except psycopg2.InterfaceError as err:
@@ -375,9 +388,27 @@ class user_connection:
             try:
                 self.cur.execute(*query)
                 if fetchall:
-                    return self.cur.fetchall()
+                    result = self.cur.fetchall()
+                    # self.conn.commit()
+                    return result
                 else:
-                    return self.cur.fetchone()
+                    result = self.cur.fetchone()
+                    # self.conn.commit()
+                    return result
+
+            except psycopg2.OperationalError as err:
+                print(err)
+            except psycopg2.InterfaceError as err:
+                print(err)
+            except psycopg2.DatabaseError as err:
+                print(err)
+
+    def set_notification_receive_status(self):
+        for ntfcn in self.notifications:
+            self.cur.execute(*set_receive_status(self.email, ntfcn['ntfcn_id']))
+        if self.connection_success:
+            try:
+                self.conn.commit()
             except psycopg2.OperationalError as err:
                 print(err)
             except psycopg2.InterfaceError as err:
@@ -387,11 +418,18 @@ class user_connection:
 
     def close_session(self):
         self.connection_success = 0
-        self.cur.close()
-        self.conn.close()
+        self.notifications.clear()
+        if self.conn_broker:
+            try:
+                self.conn_broker.close()
+            except StreamLostError:
+                pass
+            except ChannelWrongStateError:
+                pass
+        if self.cur:
+            self.cur.close()
+            self.conn.close()
         self.set_stop_checking()
-        self.message_wait_loop.call_soon_threadsafe(self.message_wait_loop.stop)
-        self.message_wait_loop.stop()
 
     def download_process(self, repo_id=None, file_address=None, file_name=None, file_type=None, bytes_format=None,
                          pdf_document_view: QPdfDocument = None, buffer_device: QBuffer = None,
@@ -414,7 +452,6 @@ class user_connection:
 
             for data in response.iter_content(chunk_size=chunk_size):
                 if not self.stop_download:
-                    time.sleep(0.01)
                     content += data
                     downloaded_bytes += chunk_size
                     val = round(int(downloaded_bytes) / int(total_length), 3)
@@ -528,6 +565,7 @@ class push_user_data:
         self.TIN = TIN
         self.successful_insertion = False
         self.stash_url = None
+        self.msg_broker_url = None
         self.conn = None
         self.cur = None
 
@@ -536,6 +574,7 @@ class push_user_data:
             file_content = f.read()
             template = json.loads(file_content)
             self.stash_url = template["stash_url"]
+            self.msg_broker_url = template["msg_broker_url"]
 
         ##############################################################
         # INSERT USER DATA TO DATABASE
@@ -556,7 +595,7 @@ class push_user_data:
             self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
                 sql.Identifier(self.email), sql.Literal(self.password)))
 
-            self.cur.execute(create_notification_table(), (AsIs(self.email),))
+            self.cur.execute(*create_notification_table(self.email))
             self.cur.execute(*set_ntfcn_func_and_trigger(self.email))
             self.conn.commit()
 
@@ -573,9 +612,23 @@ class push_user_data:
             data = f'email={self.email}&password={self.password}'
             requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
 
+            ##############################################################
+            # REGISTRATION ON MESSAGE BROKER
+            ##############################################################
+            headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+            data = {"password": self.password, "tags": "management"}
+            response = requests.put(f'http://{self.msg_broker_url}/api/users/{self.email}',
+                                    auth=('slip686', 'ddtlbnt yjdsq'),
+                                    json=data, headers=headers)
+            headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+            data = {"configure": ".*", "read": ".*", "write": ".*"}
+            response = requests.put(f'http://{self.msg_broker_url}/api/permissions/%2F/{self.email}',
+                                    auth=('slip686', 'ddtlbnt yjdsq'),
+                                    json=data, headers=headers)
+
             self.successful_insertion = True
         except (Exception, Error) as error:
-            print("Error while working with PostgreSQL", error)
+            print("Something wrong", error)
         finally:
             if self.conn:
                 self.cur.close()
@@ -898,13 +951,6 @@ class Support_File:
                     f'ver{self.main_file_object.version}-id{self.main_file_object.id}-{self.file_type}'
 
 
-class Action(User):
-    actions_list = ['receive', 'approve', 'decline', 'forward']
-
-    def __init__(self):
-        super().__init__()
-
-
 class Reg_data:
     def __init__(self, Email, Hash_key):
         self.Email = Email
@@ -934,3 +980,37 @@ def get_company(TIN):
         return {'status': 'OK', 'name': result, 'TIN': TIN}
     except TimeoutException as err:
         return {'status': 'NOT OK', 'err': err}
+
+
+class NotificationReceiver(QObject):
+    got_message = Signal()
+
+    def __init__(self, parent=None, mq_connection_object: pika.BlockingConnection = None,
+                 session_object: user_connection = None):
+        super().__init__(parent)
+        self.channel_broker = mq_connection_object.channel()
+        self.session_object = session_object
+        self.channel_broker.basic_consume(queue=f"{self.session_object.email}_msg_channel",
+                                          auto_ack=True,
+                                          on_message_callback=self.callback)
+        self.message = None
+
+    def callback(self, ch, method, properties, body):
+        raw_message = str(body.decode("utf-8"))
+        json_acceptable_string = raw_message.replace("'", "\"")
+        message_dict = json.loads(json_acceptable_string)
+        ids_list = [notification['ntfcn_id'] for notification in self.session_object.notifications]
+        if message_dict['ntfcn_id'] not in ids_list:
+            self.session_object.notifications.append(message_dict)
+            self.session_object.cur.execute(*set_receive_status(self.session_object.email, message_dict['ntfcn_id']))
+            self.message = message_dict
+            self.got_message.emit()
+
+    def start_broker_loop(self):
+        try:
+            self.channel_broker.start_consuming()
+        except AMQPError:
+            pass
+
+    def stop_broker_loop(self):
+        self.channel_broker.stop_consuming()

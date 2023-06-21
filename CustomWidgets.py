@@ -6,6 +6,7 @@ from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QM
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
     QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter, QScrollArea, QLayout, \
     QSpacerItem
+from Notification import Ui_Form as notif_widget
 from core import *
 
 
@@ -2043,6 +2044,42 @@ class CQSizeGrip2(QFrame):
         self.startPos = None
 
 
+class CQSizeGrip3(QFrame):
+    clicked = Signal()
+
+    def __init__(self, parent):
+        super(CQSizeGrip3, self).__init__(parent)
+        self.startPos = None
+        self.setCursor(QCursor(Qt.SizeHorCursor))
+        self.setMouseTracking(True)
+        self.setTabletTracking(False)
+        self.delta = None
+
+    def mousePressEvent(self, event):
+        if event.button() == Qt.LeftButton:
+            self.startPos = event.pos().x()
+            self.startWidth = self.parent().width()
+            return
+        super().mousePressEvent(event)
+
+    def mouseMoveEvent(self, event):
+        if self.startPos is not None:
+            self.delta = event.pos().x() - self.startPos
+            new_width = self.parent().width() - self.delta
+            if new_width < 200:
+                new_width = 200
+            if new_width > 600:
+                new_width = 600
+            self.parent().setGeometry(self.parent().parent().width() - new_width, 0,
+                                      new_width, self.parent().parent().height())
+            self.parent().stored_width_value = self.parent().width()
+        super().mouseMoveEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
+        self.startPos = None
+
+
 class CQLineEdit(QLineEdit):
     clicked = Signal()
 
@@ -2584,22 +2621,112 @@ class QFrameWithResizeSignal(QFrame):
         self.resized.emit()
 
 
-class QCustomSlideFrame2(QFrame):
+class NotificationsSlideFrame(QFrame):
     def __init__(self, parent: QFrameWithResizeSignal = None):
-        super(QCustomSlideFrame2, self).__init__(parent)
+        super(NotificationsSlideFrame, self).__init__(parent)
+        self.session_object = None
         self.parent_widget = parent
-        self.setStyleSheet(u'background-color: rgb(50,100,100)')
         self.animation = QPropertyAnimation(self, b"geometry")
         self.animation.setEasingCurve(QEasingCurve.Linear)
         self.animation.setDuration(150)
         self.animation.finished.connect(lambda: self.finished_animate())
         self.collapsed_width = 0
         self.expanded_width = 300
+        self.stored_width_value = None
         self.parent().resized.connect(lambda: self.correct_self_position())
-        if self.parent:
-            self.setGeometry(self.parent_widget.width() - self.collapsed_width, 0,
-                             self.expanded_width, self.parent_widget.height())
-            # self.hide()
+        self.setGeometry(self.parent_widget.width() - self.collapsed_width, 0,
+                         self.expanded_width, self.parent_widget.height())
+        self.setStyleSheet(u'background-color: transparent')
+        self.setMinimumSize(QSize(0, 0))
+        self.setMaximumSize(QSize(600, 16777215))
+        self.setFrameShape(QFrame.StyledPanel)
+        self.setFrameShadow(QFrame.Raised)
+        self.horizontalLayout_56 = QHBoxLayout(self)
+        self.horizontalLayout_56.setSpacing(2)
+        self.horizontalLayout_56.setObjectName(u"horizontalLayout_56")
+        self.horizontalLayout_56.setContentsMargins(0, 0, 0, 0)
+        self.notifMenuSizeGrip = CQSizeGrip3(self)
+        self.notifMenuSizeGrip.setObjectName(u"notifMenuSizeGrip")
+        self.notifMenuSizeGrip.setMinimumSize(QSize(3, 70))
+        self.notifMenuSizeGrip.setMaximumSize(QSize(3, 70))
+        self.notifMenuSizeGrip.setStyleSheet(u"#notifMenuSizeGrip {background-color: rgb(67, 67, 67);} \n"
+                                             "#notifMenuSizeGrip {border-radius: 1px}")
+        self.notifMenuSizeGrip.setFrameShape(QFrame.StyledPanel)
+        self.notifMenuSizeGrip.setFrameShadow(QFrame.Raised)
+
+        self.horizontalLayout_56.addWidget(self.notifMenuSizeGrip)
+
+        self.notifsMainFrame = QFrame(self)
+        self.notifsMainFrame.setObjectName(u"notifsMainFrame")
+        self.notifsMainFrame.setStyleSheet(u"#notifsMainFrame {background-color: rgb(100,100,100); \n"
+                                           "border-top: 2px solid rgb(67, 67, 67);\n"
+                                           "border-left: 2px solid rgb(67, 67, 67);\n"
+                                           "border-bottom: 2px solid rgb(67, 67, 67);\n"
+                                           "border-top-left-radius: 6px;\n"
+                                           "border-bottom-left-radius: 6px;}")
+        self.notifsMainFrame.setFrameShape(QFrame.StyledPanel)
+        self.notifsMainFrame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_44 = QVBoxLayout(self.notifsMainFrame)
+        self.verticalLayout_44.setSpacing(0)
+        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
+        self.verticalLayout_44.setContentsMargins(0, 3, 0, 0)
+        self.notifsLabel = QLabel(self.notifsMainFrame)
+        self.notifsLabel.setObjectName(u"notifsLabel")
+        self.notifsLabel.setStyleSheet(u"background-color: transparent")
+        self.notifsLabel.setAlignment(Qt.AlignCenter)
+        self.notifsLabel.setText('Notifications:')
+
+        self.verticalLayout_44.addWidget(self.notifsLabel)
+
+        self.notifInnerWidget = QFrameWithResizeSignal(self.notifsMainFrame)
+        self.notifInnerWidget.setStyleSheet(u'*{background-color: transparent}')
+        self.notifInnerWidget.setObjectName(u"notifInnerWidget")
+        self.verticalLayout_71 = QVBoxLayout(self.notifInnerWidget)
+        self.verticalLayout_71.setSpacing(0)
+        self.verticalLayout_71.setObjectName(u"verticalLayout_71")
+        self.verticalLayout_71.setContentsMargins(0, 3, 0, 0)
+        self.notifScrollArea = QScrollArea(self.notifInnerWidget)
+        self.notifScrollArea.setStyleSheet(u'background-color: transparent')
+        self.notifScrollArea.setObjectName(u"notifScrollArea")
+        self.notifScrollArea.setWidgetResizable(True)
+        self.notifScrollAreaWidgetContents = QWidget()
+        self.notifScrollAreaWidgetContents.setObjectName(u"notifScrollAreaWidgetContents")
+        self.notifScrollAreaWidgetContents.setGeometry(QRect(0, 0, 75, 629))
+        self.notifScrollAreaWidgetContents.setStyleSheet(u"background-color: transparent")
+        self.notificationsLayout = QVBoxLayout(self.notifScrollAreaWidgetContents)
+        self.notificationsLayout.setSpacing(0)
+        self.notificationsLayout.setObjectName(u"verticalLayout_43")
+        self.notificationsLayout.setContentsMargins(0, 0, 0, 0)
+        # self.notificationsLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        self.notificationsLayout.addItem(self.verticalSpacer)
+        self.notifScrollArea.setWidget(self.notifScrollAreaWidgetContents)
+        self.verticalLayout_71.addWidget(self.notifScrollArea)
+        self.verticalLayout_44.addWidget(self.notifInnerWidget)
+        self.loadMoreNotifsButton = QPushButton(self.notifsMainFrame)
+        self.loadMoreNotifsButton.setObjectName(u"loadMoreNotifsButton")
+        self.loadMoreNotifsButton.setMinimumSize(QSize(0, 20))
+        self.loadMoreNotifsButton.setMaximumSize(QSize(16777215, 20))
+        font1 = QFont()
+        font1.setFamilies([u"Arial"])
+        font1.setBold(False)
+        font1.setItalic(False)
+        self.loadMoreNotifsButton.setFont(font1)
+        self.loadMoreNotifsButton.setCursor(QCursor(Qt.PointingHandCursor))
+        self.loadMoreNotifsButton.setStyleSheet(
+            u"#loadMoreNotifsButton {background-color: transparent; color: white; font-size: 12px; border-radius: 0px; border-bottom-left-radius: 6px}\n"
+            "#loadMoreNotifsButton:pressed {background-color: rgb(145, 145, 145); border-radius: 0px; border-bottom-left-radius: 6px}\n"
+            "")
+        self.loadMoreNotifsButton.setText('load more')
+        self.verticalLayout_44.addWidget(self.loadMoreNotifsButton)
+        self.horizontalLayout_56.addWidget(self.notifsMainFrame)
+
+        self.loadMoreNotifsButton.clicked.connect(lambda: self.load_more())
+
+        self.offset = 0
+        self.start_value = None
+        self.end_value = None
+        self.old_notifications_list = None
 
     def correct_self_position(self):
         self.setGeometry(self.parent_widget.width() - self.width(), 0, self.width(), self.parent_widget.height())
@@ -2619,14 +2746,44 @@ class QCustomSlideFrame2(QFrame):
     def show_animate(self):
         self.show()
         self.animation.setStartValue(self.geometry())
-        end_rect = QRect(self.parent_widget.width() - self.expanded_width, 0,
-                         self.expanded_width, self.parent_widget.height())
+        end_rect = None
+        if not self.stored_width_value:
+            end_rect = QRect(self.parent_widget.width() - self.expanded_width, 0,
+                             self.expanded_width, self.parent_widget.height())
+        else:
+            end_rect = QRect(self.parent_widget.width() - self.stored_width_value, 0,
+                             self.stored_width_value, self.parent_widget.height())
         self.animation.setEndValue(end_rect)
         self.animation.start()
 
     def finished_animate(self):
         if self.width() < 5:
             self.hide()
+        print(self.notifScrollAreaWidgetContents.children())
+
+    def insert_notification(self, ntfcn_dict=None, show_new=True):
+        notification = NotificationWidget(ntfcn_dict=ntfcn_dict,)
+        print(notification.notifButton.text())
+        if show_new:
+            self.notificationsLayout.insertWidget(0, notification)
+        else:
+            self.notificationsLayout.insertWidget(self.notificationsLayout.count()-1, notification)
+
+    def load_more(self):
+        if self.notificationsLayout.count() > 1:
+            last_item = self.notificationsLayout.itemAt(self.notificationsLayout.count() - 2).widget()
+            self.end_value = last_item.ntfcn_id - 1
+            self.start_value = self.end_value - 9
+            self.old_notifications_list = reversed(self.session_object.select_query(get_old_notifications(
+                self.session_object.email,
+                self.start_value,
+                self.end_value))[0])
+        else:
+            self.old_notifications_list = self.session_object.select_query(
+                get_last_ten_notifications(self.session_object.email))[0]
+
+        for notification in self.old_notifications_list:
+            self.insert_notification(ntfcn_dict=notification, show_new=False)
 
 
 class QCustomSlideFrame3(QFrame):
@@ -2646,7 +2803,7 @@ class QCustomSlideFrame3(QFrame):
 
         self.animation_direction = 'horizontal'
 
-    def set_trigger(self, trigger_btn: QPushButton=None):
+    def set_trigger(self, trigger_btn: QPushButton = None):
         self.trigger_btn = trigger_btn
         self.trigger_btn.clicked.connect(lambda: self.hide_show_func())
 
@@ -2738,7 +2895,7 @@ class ExtendedComboBox(QComboBox):
 
 
 class CQScrollArea(QScrollArea):
-    def __init__(self, widget=None):
+    def __init__(self, widget=None, scroll_bar_geometry_correction=False):
         super(CQScrollArea, self).__init__()
         self.inner_contents_widget = None
         self.setParent(widget)
@@ -2751,9 +2908,14 @@ class CQScrollArea(QScrollArea):
             self.vertical_scroll_bar.scroll_bar.value()))
         self.current_value = 0
         self.setMouseTracking(True)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.correction = scroll_bar_geometry_correction
 
     def set_scroll_bar_parameters(self):
-        self.vertical_scroll_bar.setGeometry(self.geometry().width() - 16, 22, 16, self.geometry().height() - 22)
+        if not self.correction:
+            self.vertical_scroll_bar.setGeometry(self.geometry().width() - 16, 22, 16, self.geometry().height() - 22)
+        else:
+            self.vertical_scroll_bar.setGeometry(self.geometry().width() - 16, 0, 16, self.geometry().height())
         self.vertical_scroll_bar.scroll_bar.setPageStep(2000)
         self.vertical_scroll_bar.scroll_bar.setRange(0, self.inner_contents_widget.height() -
                                                      self.height() +
@@ -2791,14 +2953,6 @@ class CQScrollArea(QScrollArea):
 
 
 class FlowLayout(QLayout):
-    """A ``QLayout`` that aranges its child widgets horizontally and
-    vertically.
-
-    If enough horizontal space is available, it looks like an ``HBoxLayout``,
-    but if enough space is lacking, it automatically wraps its children into
-    multiple rows.
-
-    """
     heightChanged = Signal(int)
 
     def __init__(self, parent=None, margin=0, spacing=-1):
@@ -2906,4 +3060,14 @@ class CQLabel3(QLabel):
 
     def mouseReleaseEvent(self, event):
         self.clicked.emit()
+
+
+class NotificationWidget(notif_widget, QWidget):
+    def __init__(self, ntfcn_dict=None):
+        super().__init__()
+        self.setupUi(self)
+        self.notifButton.setText(str(ntfcn_dict['ntfcn_id']))
+        self.notification_type = ntfcn_dict['type']
+        self.ntfcn_id = ntfcn_dict['ntfcn_id']
+
 
