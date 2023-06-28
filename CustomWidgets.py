@@ -843,7 +843,7 @@ class HeaderCell(QWidget):
 
     def finished_animate(self):
         if get_platform() == 'mac':
-            if self.parent_table.columnWidth(self.logical_index) < 20:
+            if self.parent_table.columnWidth(self.logical_index) < 23:
                 self.parent_table.hideColumn(self.logical_index)
                 self.parent_table.horizontalHeader().fix_resize_mode()
                 self.parent_table.horizontalHeader().fixPositions()
@@ -1426,8 +1426,7 @@ class CQScrollBar2(QFrame):
                                           'border-bottom-left-radius: 6px;\n'
                                           'border-bottom-right-radius: 6px}'
                                           'QScrollBar::handle:horizontal {background-color: rgb(136,136,136);\n'
-                                          'border-radius: 4px;\n'
-                                          'margin: 3px}'
+                                          'border-radius: 4px; margin: 4px}'
                                           'QScrollBar::add-line:horizontal {border: none; background: none}'
                                           'QScrollBar::sub-line:horizontal {border: none; background: none}'
                                           'QScrollBar::sub-page:horizontal {background: transparent}'
@@ -1438,8 +1437,7 @@ class CQScrollBar2(QFrame):
                                           'border-top-right-radius: 0px;\n'
                                           'border-bottom-right-radius: 6px}'
                                           'QScrollBar::handle:vertical {background-color: rgb(65,65,65);\n'
-                                          'border-radius: 4px;\n'
-                                          'margin: 3px}'
+                                          'border-radius: 4px; margin: 4px}'
                                           'QScrollBar::add-line:vertical {border: none; background: none}'
                                           'QScrollBar::sub-line:vertical {border: none; background: none}'
                                           'QScrollBar::sub-page:vertical {background: transparent}'
@@ -2685,7 +2683,7 @@ class NotificationsSlideFrame(QFrame):
         self.verticalLayout_71.setSpacing(0)
         self.verticalLayout_71.setObjectName(u"verticalLayout_71")
         self.verticalLayout_71.setContentsMargins(0, 3, 0, 0)
-        self.notifScrollArea = QScrollArea(self.notifInnerWidget)
+        self.notifScrollArea = CQScrollArea(widget=self.notifInnerWidget, scroll_bar_geometry_correction=True)
         self.notifScrollArea.setStyleSheet(u'background-color: transparent')
         self.notifScrollArea.setObjectName(u"notifScrollArea")
         self.notifScrollArea.setWidgetResizable(True)
@@ -2693,11 +2691,16 @@ class NotificationsSlideFrame(QFrame):
         self.notifScrollAreaWidgetContents.setObjectName(u"notifScrollAreaWidgetContents")
         self.notifScrollAreaWidgetContents.setGeometry(QRect(0, 0, 75, 629))
         self.notifScrollAreaWidgetContents.setStyleSheet(u"background-color: transparent")
-        self.notificationsLayout = QVBoxLayout(self.notifScrollAreaWidgetContents)
+        self.notificationsOuterLayout = QVBoxLayout(self.notifScrollAreaWidgetContents)
+        self.notificationsOuterLayout.setSpacing(0)
+        self.notificationsOuterLayout.setObjectName(u"verticalLayout_43")
+        self.notificationsOuterLayout.setContentsMargins(0, 0, 0, 0)
+        self.innerContentsWidget = CQWidget()
+        self.notificationsOuterLayout.addWidget(self.innerContentsWidget)
+        self.notificationsLayout = QVBoxLayout(self.innerContentsWidget)
         self.notificationsLayout.setSpacing(0)
         self.notificationsLayout.setObjectName(u"verticalLayout_43")
         self.notificationsLayout.setContentsMargins(0, 0, 0, 0)
-        # self.notificationsLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.verticalSpacer = QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.notificationsLayout.addItem(self.verticalSpacer)
         self.notifScrollArea.setWidget(self.notifScrollAreaWidgetContents)
@@ -2707,6 +2710,8 @@ class NotificationsSlideFrame(QFrame):
         self.loadMoreNotifsButton.setObjectName(u"loadMoreNotifsButton")
         self.loadMoreNotifsButton.setMinimumSize(QSize(0, 20))
         self.loadMoreNotifsButton.setMaximumSize(QSize(16777215, 20))
+        self.notifScrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.notifScrollArea.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         font1 = QFont()
         font1.setFamilies([u"Arial"])
         font1.setBold(False)
@@ -2723,7 +2728,6 @@ class NotificationsSlideFrame(QFrame):
 
         self.loadMoreNotifsButton.clicked.connect(lambda: self.load_more())
 
-        self.offset = 0
         self.start_value = None
         self.end_value = None
         self.old_notifications_list = None
@@ -2759,11 +2763,9 @@ class NotificationsSlideFrame(QFrame):
     def finished_animate(self):
         if self.width() < 5:
             self.hide()
-        print(self.notifScrollAreaWidgetContents.children())
 
     def insert_notification(self, ntfcn_dict=None, show_new=True):
         notification = NotificationWidget(ntfcn_dict=ntfcn_dict,)
-        print(notification.notifButton.text())
         if show_new:
             self.notificationsLayout.insertWidget(0, notification)
         else:
@@ -2784,6 +2786,15 @@ class NotificationsSlideFrame(QFrame):
 
         for notification in self.old_notifications_list:
             self.insert_notification(ntfcn_dict=notification, show_new=False)
+
+    def clear_notifications(self):
+        for num in reversed(range(self.notificationsLayout.count())):
+            if self.notificationsLayout.itemAt(num):
+                widget = self.notificationsLayout.itemAt(num).widget()
+                if widget:
+                    widget.setParent(None)
+                    widget.deleteLater()
+
 
 
 class QCustomSlideFrame3(QFrame):
@@ -3062,6 +3073,10 @@ class CQLabel3(QLabel):
         self.clicked.emit()
 
 
+
+
+
+
 class NotificationWidget(notif_widget, QWidget):
     def __init__(self, ntfcn_dict=None):
         super().__init__()
@@ -3069,5 +3084,9 @@ class NotificationWidget(notif_widget, QWidget):
         self.notifButton.setText(str(ntfcn_dict['ntfcn_id']))
         self.notification_type = ntfcn_dict['type']
         self.ntfcn_id = ntfcn_dict['ntfcn_id']
+        self.setMouseTracking(True)
+        self.frame.setMouseTracking(True)
+        # if ntfcn_dict['read_status']:
+        #     self.Indicator.hide()
 
 
