@@ -62,16 +62,19 @@ class MainWindow(QMainWindow):
         self.current_init_permission_docs_folder = None
         self.current_init_permission_docs_folder_path = 'All Documents'
         self.users_data_from_db = None
-        self.table_updater = None
 
         self.ui.designDocsTableWidget.main_table = True
         self.ui.constructionDocsTableWidget.main_table = True
         self.ui.initDocsTableWidget.main_table = True
 
+        self.message_receiver = None
+        self.message_receiving_thread = None
+
         self.ui.horizontalLayout_57.removeWidget(self.ui.NotificationsMenu)
         self.ui.NotificationsMenu.setParent(self.ui.interfaceBodySubContainer)
         self.ui.NotificationsMenu.hide()
         self.ui.NotificationsMenu.session_object = self.session
+
 
         if get_platform() == 'win':
             self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
@@ -186,28 +189,42 @@ class MainWindow(QMainWindow):
                                     painter.setPen(Qt.NoPen)
                                     painter.drawRoundedRect(picture.rect(), 15, 15)
                                     painter.end()
-                                    label.setPixmap(rounded)
+                                    try:
+                                        label.setPixmap(rounded)
+                                    except RuntimeError:
+                                        pass
                                     break
 
                     new_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop),
                                         name=f'picture thread {i}')
                     new_thread.start()
-                    # self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
-                # self.ui.flowlayout.contentsMargins().top()
+
                 self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
 
             else:
                 self.ui.statusLabel.setText('No projects yet')
 
         def start_session(email, password):
+
             self.session.email = email
             self.session.password = password
             connection = self.session.session()
+
             if connection == 'connected':
                 self.ui.mainMenuStack.slideInIdx(1)
                 self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
                 self.ui.emailEntering.setText('')
                 self.ui.passEntering.setText('')
+                self.message_receiver = NotificationReceiver(mq_connection_object=self.session.conn_broker,
+                                                             session_object=self.session)
+                self.message_receiving_thread = QThread()
+                self.message_receiver.moveToThread(self.message_receiving_thread)
+                self.message_receiving_thread.started.connect(self.message_receiver.start_broker_loop)
+                self.message_receiver.got_message.connect(
+                    lambda: self.add_notification(ntfcn_dict=self.message_receiver.message))
+                for message in self.session.notifications:
+                    self.ui.NotificationsMenu.insert_notification(ntfcn_dict=message)
+                self.message_receiving_thread.start()
 
                 get_current_user_data()
                 get_project_cards()
@@ -233,15 +250,7 @@ class MainWindow(QMainWindow):
         self.json_process = Json_process(None, None)
         self.exist_user = Reg_data(None, None)
 
-        self.message_receiver = NotificationReceiver(mq_connection_object=self.session.conn_broker,
-                                                     session_object=self.session)
-        self.message_receiving_thread = QThread()
-        self.message_receiver.moveToThread(self.message_receiving_thread)
-        self.message_receiving_thread.started.connect(self.message_receiver.start_broker_loop)
-        self.message_receiver.got_message.connect(lambda: self.add_notification(ntfcn_dict=self.message_receiver.message))
-        for message in self.session.notifications:
-            self.ui.NotificationsMenu.insert_notification(ntfcn_dict=message)
-        self.message_receiving_thread.start()
+
 
         ########################################################################################################
         # _____________________________REGISTRATION, RECOVER, LOGIN PROCESSES___________________________________
@@ -1208,7 +1217,7 @@ class MainWindow(QMainWindow):
         self.ui.goLoginBtn_2.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
 
         # main_interface_sub_menu_buttons
-        self.ui.logOutBtn.clicked.connect(lambda: self.session.close_session())
+        self.ui.logOutBtn.clicked.connect(lambda: self.close_app(log_out=True))
         self.ui.logOutBtn.clicked.connect(lambda: clear_json())
         self.ui.logOutBtn.clicked.connect(lambda: self.ui.mainMenuStack.slideInIdx(0))
         self.ui.logOutBtn.clicked.connect(lambda: clear_widgets())
@@ -1437,7 +1446,7 @@ class MainWindow(QMainWindow):
 
         self.import_from_excel.triggered.connect(lambda: load_structure_from_file())
         # self.export_to_excel.triggered.connect(lambda: )
-        # self.download_template.triggered.connect(lambda: )
+        self.download_template.triggered.connect(lambda: download_template(self.session))
 
         self.ui.subMenuBtn.setMenu(self.context_menu)
         self.ui.subMenuBtn_2.setMenu(self.context_menu)
@@ -1831,11 +1840,18 @@ class MainWindow(QMainWindow):
     def add_notification(self, ntfcn_dict=None):
         self.ui.NotificationsMenu.insert_notification(ntfcn_dict=ntfcn_dict)
 
-    def close_app(self):
-        self.session.close_session()
-        self.stop = True
-        self.message_receiver.stop_broker_loop()
-        self.message_receiving_thread.terminate()
+    def close_app(self, log_out=False):
+        if self.session:
+            self.session.close_session()
+            if self.message_receiver:
+                self.message_receiver.stop_broker_loop()
+            if self.message_receiving_thread:
+                self.message_receiving_thread.terminate()
+            self.ui.NotificationsMenu.clear_notifications()
+            self.ui.NotificationsMenu.hide()
+        if not log_out:
+            self.stop = True
+
 
 
 if __name__ == "__main__":

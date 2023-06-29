@@ -8,7 +8,8 @@ import sys
 from random import randint as rand
 
 import pika
-from pika.exceptions import StreamLostError, ChannelWrongStateError
+from pika.exceptions import StreamLostError, ChannelWrongStateError, ConnectionWrongStateError, \
+    ProbableAuthenticationError
 from PySide6 import QtCore
 from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread, QObject, Signal
 from PySide6.QtGui import Qt
@@ -368,6 +369,8 @@ class user_connection:
                     return 'check connection'
                 elif 'authentication' in error_text:
                     return 'invalid credentials'
+                elif 'no' and 'password' in error_text:
+                    return 'invalid credentials'
             except requests.exceptions.RequestException:
                 return 'stash connection failed'
 
@@ -425,6 +428,8 @@ class user_connection:
             except StreamLostError:
                 pass
             except ChannelWrongStateError:
+                pass
+            except ConnectionWrongStateError:
                 pass
         if self.cur:
             self.cur.close()
@@ -980,6 +985,13 @@ def get_company(TIN):
         return {'status': 'OK', 'name': result, 'TIN': TIN}
     except TimeoutException as err:
         return {'status': 'NOT OK', 'err': err}
+
+def download_template(session_object: user_connection):
+    session_object.download_process(repo_id='1c087e20-21f8-42de-8d91-c6482a53721b',
+                                    file_address='/', file_name='template',
+                                    file_type='.pdf', bytes_format=None,
+                                    pdf_document_view=None,
+                                    buffer_device=None, window_instance=None)
 
 
 class NotificationReceiver(QObject):

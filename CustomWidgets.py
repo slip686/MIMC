@@ -3074,9 +3074,6 @@ class CQLabel3(QLabel):
 
 
 
-
-
-
 class NotificationWidget(notif_widget, QWidget):
     def __init__(self, ntfcn_dict=None):
         super().__init__()

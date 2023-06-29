@@ -2,8 +2,6 @@ from psycopg2.extensions import AsIs
 
 
 def user_data():
-    # query = """SELECT user_id, email, first_name, last_name, company_name, notification_table, ITN
-    #             FROM users WHERE email = %s"""
     query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM users WHERE email = %s) row)'''
     return query
 
@@ -20,28 +18,34 @@ def create_notification_table(email):
             time_send varchar,
             time_limit varchar,
             receive_status bool,
+            read_status bool,
             FOREIGN KEY (sender_id) REFERENCES users (user_id),
             FOREIGN KEY (project_id) REFERENCES projects (project_id)
             );
-            GRANT SELECT, UPDATE, INSERT ON TABLE "%s_notification" TO "%s" ''', (AsIs(email), AsIs(email), AsIs(email))]
+            GRANT SELECT, UPDATE, INSERT ON TABLE "%s_notification" TO "%s" ''',
+             (AsIs(email), AsIs(email), AsIs(email))]
     return query
 
 
 def get_notifications(email):
-    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS null) row)""", (AsIs(email),)]
+    query = [
+        """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS null) row)""",
+        (AsIs(email),)]
     return query
 
+
 def get_old_notifications(email, start, end):
-    # query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true LIMIT 10 OFFSET %s) row)""", (AsIs(email), offset)]
     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true AND ntfcn_id 
     BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
 
     return query
 
+
 def get_last_ten_notifications(email):
     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" 
-                ORDER BY ntfcn_id DESC LIMIT 10) row)""", (AsIs(email), )]
+                ORDER BY ntfcn_id DESC LIMIT 10) row)""", (AsIs(email),)]
     return query
+
 
 def create_user_projects_access_table():
     query = """CREATE TABLE IF NOT EXISTS "%s_projects"
@@ -51,12 +55,6 @@ def create_user_projects_access_table():
             FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE
             )"""
     return query
-
-
-# def insert_to_user_projects_access_table():
-#     query = """INSERT INTO "%s_projects"
-#             (project_id)"""
-#     return query
 
 
 def grant_privs_to_user():
@@ -85,15 +83,6 @@ def grant_seq_privs_to_project_engineer():
 
 
 def reg_new_project(picture, name, owner_id, address, time_limits, status, repo_id):
-    # query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status,
-    #                                         users_access_table, repo_id, docs_table, main_files_table,
-    #                                         support_files_table, doc_structure_table)
-    #                 VALUES (%s, %s, %s, %s, %s, %s, '%s users', %s, '%s docs', '%s main_files',
-    #                         '%s support_files', '%s docs_structure')""",
-    #               (picture, name, owner_id, address, time_limits, status, AsIs(name),
-    #                repo_id, AsIs(name), AsIs(name), AsIs(name), AsIs(name))]
-    # return query_list
-
     query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status, 
                                     repo_id, docs_table, main_files_table, support_files_table, doc_structure_table) 
                     VALUES (%s, %s, %s, %s, %s, %s, %s, '%s docs', '%s main_files', 
@@ -224,16 +213,7 @@ def retrieve_company_list():
     return query
 
 
-# def retrieve_company_users_list():
-#     query = """SELECT user_id, first_name, last_name FROM users WHERE company_name = %s AND job_title = %s"""
-#     return query
-
-# def retrieve_company_users_list():
-#     query = """SELECT json_agg(user_id, first_name, last_name) FROM users WHERE company_name = %s"""
-#     return query
-
 def retrieve_company_users_list():
-    # SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)
     query = """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)"""
     return query
 
@@ -250,7 +230,6 @@ def get_projects_ids():
 
 def get_project():
     query = """SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM projects WHERE project_id = %s) row)"""
-    # query = """SELECT * FROM projects WHERE project_id = %s"""
     return query
 
 
@@ -316,7 +295,6 @@ def add_doc(table, document_type, document_name, document_cypher, release_to_wor
 
 def get_docs():
     query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM "%s docs") row)'''
-    # query = """SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM projects WHERE project_id = %s) row)
     return query
 
 
@@ -347,6 +325,7 @@ def get_doc_and_file_info(project_name, doc_id):
                    doc_id)]
     return query_list
 
+
 def get_support_files_info(project_name):
     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s support_files") row)""",
                   (AsIs(project_name),)]
@@ -355,8 +334,9 @@ def get_support_files_info(project_name):
 
 def get_user_data_by_user_id(user_id):
     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM users WHERE user_id=%s) row)""",
-                  (user_id, )]
+                  (user_id,)]
     return query_list
+
 
 def get_doc_info(project_name, doc_id):
     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" WHERE doc_id=%s) row)""",
@@ -386,7 +366,8 @@ def set_ntfcn_func_and_trigger(email):
                                                                AsIs(email))]
     return query_list
 
+
 def set_receive_status(email, ntfcn_id):
     query = ["""UPDATE public."%s_notification" SET receive_status = true WHERE ntfcn_id = %s;""",
              (AsIs(email), ntfcn_id)]
-    return(query)
+    return (query)
