@@ -971,7 +971,7 @@ class QCustomTableWidget(QTableWidget):
         for k in (range(self.columnCount())):
             cell = self.cellWidget(row_num, k)
             if hasattr(cell, 'textLabel'):
-                cell.textLabel.setStyleSheet(u'background-color: rgb(136, 136, 136); border-radius: 0px')
+                cell.textLabel.setStyleSheet(u'background-color: transparent; border-radius: 0px')
 
     def scrollContentsBy(self, dx, dy):
         super(QCustomTableWidget, self).scrollContentsBy(dx, dy)
@@ -1206,6 +1206,7 @@ class QCustomTableWidget(QTableWidget):
 
 class CQLabel2(QLabel):
     clicked = Signal()
+    pressed = Signal()
     posChanged = Signal()
 
     def __init__(self, text):
@@ -1220,6 +1221,9 @@ class CQLabel2(QLabel):
 
     def mouseReleaseEvent(self, event):
         self.clicked.emit()
+
+    def mousePressEvent(self, event):
+        self.pressed.emit()
 
     def mouseMoveEvent(self, event):
         self.position = self.mapToParent(event.pos())
@@ -1247,6 +1251,8 @@ class DraggableCell(QWidget):
         self.textLabel.posChanged.connect(lambda: self.translate_cursor_pos(self.textLabel.position))
         self.layout.addWidget(self.textLabel)
         self.setLayout(self.layout)
+        # self.textLabel.pressed.connect(lambda: self.textLabel.setStyleSheet(u'background-color: rgb(136, 136, 136); '
+        #                                                                     u'border-radius: 0px'))
         self.textLabel.clicked.connect(lambda: self.parent().parent().row_select(self.row_num, self.doc_id))
         self.textLabel.clicked.connect(lambda: self.main_window.document_view_dialog(doc_id=self.doc_id))
 
@@ -2796,7 +2802,6 @@ class NotificationsSlideFrame(QFrame):
                     widget.deleteLater()
 
 
-
 class QCustomSlideFrame3(QFrame):
     def __init__(self, parent: QFrameWithResizeSignal = None, ):
         super(QCustomSlideFrame3, self).__init__(parent)
@@ -3071,7 +3076,6 @@ class CQLabel3(QLabel):
 
     def mouseReleaseEvent(self, event):
         self.clicked.emit()
-
 
 
 class NotificationWidget(notif_widget, QWidget):

@@ -36,6 +36,7 @@ import seafileapi
 import os
 import platform
 import requests
+import requests.utils
 from requests.exceptions import ConnectionError, Timeout, ReadTimeout
 from threading import Thread
 from selenium import webdriver
@@ -304,7 +305,6 @@ class user_connection:
                 parameters = pika.ConnectionParameters(self.msg_broker_url, 5672, '/', credentials, heartbeat=10, )
 
                 self.conn_broker = pika.BlockingConnection(parameters)
-                # self.channel_broker = self.conn_broker.channel()
 
                 ##################################################
                 # CONNECT TO STASH
@@ -436,6 +436,11 @@ class user_connection:
             self.conn.close()
         self.set_stop_checking()
 
+    def download_template(self):
+        content = requests.get('https://cloud.sliplab.net/f/1531d165b9074f2387ff/?dl=1')
+        with open(f'/Users/{self.os_login}/Downloads/template.xlsx', 'wb') as f:
+            f.write(content.content)
+
     def download_process(self, repo_id=None, file_address=None, file_name=None, file_type=None, bytes_format=None,
                          pdf_document_view: QPdfDocument = None, buffer_device: QBuffer = None,
                          window_instance=None):
@@ -495,7 +500,8 @@ class user_connection:
         request = requests.get(f'{self.stash_url}/api2/repos/{repo_id}/upload-link/?p={path_in_repo}', headers=headers)
         upload_link = request.text.strip('"')
         params = {'ret-json': '1'}
-        headers = {'Content-Disposition': f'attachment; filename="{uploaded_file_name}{ext}"'}
+        filename = requests.utils.quote(f'{uploaded_file_name}{ext}', safe='')
+        headers = {'Content-Disposition': f'''attachment; filename*=UTF-8''"{filename}"'''}
         index = 0
         with requests.Session() as session:
             with open(local_address, 'rb') as f:
@@ -505,7 +511,7 @@ class user_connection:
                     index = offset
                     files = {'file': chunk, 'parent_dir': (None, path_in_repo)}
                     try:
-                        session.post(upload_link, headers=headers, files=files, params=params, timeout=4)
+                        result = session.post(upload_link, headers=headers, files=files, params=params, timeout=10)
                         self.uploaded_bytes_counter += len(chunk) / (1024 * 1024)
                         self.show_uploading_status(self.uploaded_bytes_counter, self.total_uploading_bytes, info_object)
                     except (ConnectionError, Timeout, ReadTimeout):
@@ -908,7 +914,7 @@ class ProjectMainFile:
         self.status = status
         self.status_set_time = status_set_time
         self.loading_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
-        self.name = f'{self.cypher}-rev{self.revision}-ver{self.version}'
+        self.name = f"{self.cypher}-rev{self.revision}-ver{self.version}"
         self.project_name = project_name
         self.user_id = user_id
         self.id = None
@@ -985,13 +991,6 @@ def get_company(TIN):
         return {'status': 'OK', 'name': result, 'TIN': TIN}
     except TimeoutException as err:
         return {'status': 'NOT OK', 'err': err}
-
-def download_template(session_object: user_connection):
-    session_object.download_process(repo_id='1c087e20-21f8-42de-8d91-c6482a53721b',
-                                    file_address='/', file_name='template',
-                                    file_type='.pdf', bytes_format=None,
-                                    pdf_document_view=None,
-                                    buffer_device=None, window_instance=None)
 
 
 class NotificationReceiver(QObject):

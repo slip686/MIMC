@@ -751,13 +751,13 @@ class MainWindow(QMainWindow):
             database_cells_list = []
             for i in structure_list:
                 for num, value in enumerate(i[2:], 1):
-                    if value:
-                        database_cells_list.append([i[0], num, value])
+                    # if value:
+                    database_cells_list.append([i[0], num, value])
 
             for i in database_cells_list:
                 if [i[0], i[-1]] not in current_cells_list:
-                    self.session.update_structure_query(exclude_cell(), AsIs(f'"{docs_structure_tablename}"'),
-                                                        AsIs(f'"{i[1]}"'), AsIs('null'), AsIs(i[0]), docs_type)
+                    self.session.commit_query([exclude_cell(), (AsIs(f'"{docs_structure_tablename}"'),
+                                                        AsIs(f'"{i[1]}"'), AsIs('null'), AsIs(i[0]), docs_type)])
 
             structure_list = update_structure_list()
 
@@ -1045,11 +1045,13 @@ class MainWindow(QMainWindow):
 
                 self.logic_index = None
                 for i in range(len(work_rows)):
+                    # print(work_rows[i][0].value)
                     if work_rows[i][0].value:
                         if work_rows[i][1].value:
-                            self.logic_index = str(work_rows[i][0].value.strip()).split('.')
+                            text = ' '.join(work_rows[i][1].value.strip().replace('\n', ' ').split())
+                            self.logic_index = (str(work_rows[i][0].value).strip()).split('.')
                             structure_elements_to_add[tuple(self.logic_index)] = f"{'.'.join(self.logic_index)}. " \
-                                                                                 f"{work_rows[i][1].value.strip()}"
+                                                                                 f"{text}"
                         else:
                             doc_data = {'doc_name': work_rows[i][2].value, 'doc_cypher': work_rows[i][3].value.strip(),
                                         'ITN': work_rows[i][4].value.strip()}
@@ -1062,12 +1064,11 @@ class MainWindow(QMainWindow):
                         print('WRONG DATA')
                         structure_elements_to_add.clear()
                         docs_to_add.clear()
+                        break
 
                         ################################################################
                         # there should be information window about incorrect file loaded
                         ################################################################
-
-                        break
 
                 added_items = []
                 self.current_item = None
@@ -1135,6 +1136,7 @@ class MainWindow(QMainWindow):
                         new_key = collected_place_ids_and_logical_indexes.get(k)
                         new_value = v
                         push_data_dict[new_key] = new_value
+                    # print(push_data_dict)
 
                     add_doc_process = AddDocDialog(multiple_loading_dict=push_data_dict, window_object=self)
                     add_doc_process.add_document()
@@ -1446,7 +1448,7 @@ class MainWindow(QMainWindow):
 
         self.import_from_excel.triggered.connect(lambda: load_structure_from_file())
         # self.export_to_excel.triggered.connect(lambda: )
-        self.download_template.triggered.connect(lambda: download_template(self.session))
+        self.download_template.triggered.connect(lambda: self.session.download_template())
 
         self.ui.subMenuBtn.setMenu(self.context_menu)
         self.ui.subMenuBtn_2.setMenu(self.context_menu)

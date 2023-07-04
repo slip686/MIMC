@@ -249,6 +249,9 @@ class AddDocDialog(QDialog):
             valid_data = check_cypher_and_create_folders(self.window_object)
             if not valid_data:
                 return print('Cypher already exists')
+            else:
+                insert_data_to_db(window_object=self.window_object)
+
         else:
             valid_data = check_cypher_and_create_folders(self.parent())
             if valid_data:
@@ -519,14 +522,15 @@ class DocViewDialog(QDialog):
             self.dialog.docRevisionComboBox.setCurrentIndex(0)
             self.set_meta_info(self.latest_file)
 
-            for sup_file_info_dict in self.latest_file['sup_files_info']:
-                if sup_file_info_dict:
-                    if sup_file_info_dict['file_type'] == 'sup_doc':
-                        self.support_doc_to_download = self.prepare_sup_file_for_download(sup_file_info_dict, 'sup_doc')
-                    if sup_file_info_dict['file_type'] == 'sup_archive':
-                        self.support_archive_to_download = self.prepare_sup_file_for_download(sup_file_info_dict,
-                                                                                              'sup_archive')
-                self.control_dwnld_btns()
+            if self.latest_file['sup_files_info']:
+                for sup_file_info_dict in self.latest_file['sup_files_info']:
+                    if sup_file_info_dict:
+                        if sup_file_info_dict['file_type'] == 'sup_doc':
+                            self.support_doc_to_download = self.prepare_sup_file_for_download(sup_file_info_dict, 'sup_doc')
+                        if sup_file_info_dict['file_type'] == 'sup_archive':
+                            self.support_archive_to_download = self.prepare_sup_file_for_download(sup_file_info_dict,
+                                                                                                  'sup_archive')
+            self.control_dwnld_btns()
 
         else:
             self.dialog.mainFileViewStackedWidget.setCurrentIndex(2)
@@ -655,13 +659,15 @@ class DocViewDialog(QDialog):
                     for info in file_revisions:
                         if info['ver_num'] == version:
                             sorted_main_files_info.append(info)
-            if self.support_files_info:
-                for info in sorted_main_files_info:
+            for info in sorted_main_files_info:
+                if self.support_files_info:
                     sup_files = []
                     for sup_info in self.support_files_info:
                         if info['file_id'] == sup_info['main_file_id']:
                             sup_files.append(sup_info)
                     sorted_info.append({'main_file_info': info, 'sup_files_info': tuple(sup_files)})
+                else:
+                    sorted_info.append({'main_file_info': info, 'sup_files_info': None})
             return sorted_info
 
     def draw_progress(self, value):
@@ -870,10 +876,12 @@ class DocViewDialog(QDialog):
             self.dialog.dwnldDocBtn.setEnabled(True)
         else:
             self.dialog.dwnldDocBtn.setEnabled(False)
+            self.dialog.dwnldDocBtn.setText('No support doc')
         if self.support_archive_to_download:
             self.dialog.dwnldArchiveBtn.setEnabled(True)
         else:
             self.dialog.dwnldArchiveBtn.setEnabled(False)
+            self.dialog.dwnldArchiveBtn.setText('No support archive')
 
     def download_support_archive(self):
         if self.support_archive_to_download:
