@@ -3052,9 +3052,18 @@ class Ui_MainWindow(object):
         self.designDocsTableWidget.setObjectName(u"designDocsTableWidget")
         sizePolicy.setHeightForWidth(self.designDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.designDocsTableWidget.setSizePolicy(sizePolicy)
+        self.designDocsTableWidget.setMouseTracking(True)
         self.designDocsTableWidget.setStyleSheet(u"#designDocsTableWidget {\n"
 "	background-color: rgb(165, 165, 165);\n"
 "	border-radius: 6px}")
+        self.designDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.designDocsTableWidget.setProperty("showDropIndicator", False)
+        self.designDocsTableWidget.setDragEnabled(True)
+        self.designDocsTableWidget.setDragDropOverwriteMode(False)
+        self.designDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
+        self.designDocsTableWidget.setAlternatingRowColors(True)
+        self.designDocsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.designDocsTableWidget.setCornerButtonEnabled(False)
         self.designDocsTableWidget.horizontalHeader().setStretchLastSection(False)
 
         self.verticalLayout_91.addWidget(self.designDocsTableWidget)
@@ -3218,6 +3227,11 @@ class Ui_MainWindow(object):
         self.constructionDocsTableWidget.setStyleSheet(u"#constructionDocsTableWidget {\n"
 "	background-color: rgb(165, 165, 165);\n"
 "	border-radius: 6px}")
+        self.constructionDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.constructionDocsTableWidget.setDragEnabled(True)
+        self.constructionDocsTableWidget.setDragDropOverwriteMode(False)
+        self.constructionDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
+        self.constructionDocsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.verticalLayout_92.addWidget(self.constructionDocsTableWidget)
 
@@ -3380,6 +3394,11 @@ class Ui_MainWindow(object):
         self.initDocsTableWidget.setStyleSheet(u"#initDocsTableWidget {\n"
 "	background-color: rgb(165, 165, 165);\n"
 "	border-radius: 6px}")
+        self.initDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.initDocsTableWidget.setDragEnabled(True)
+        self.initDocsTableWidget.setDragDropOverwriteMode(False)
+        self.initDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
+        self.initDocsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
 
         self.verticalLayout_93.addWidget(self.initDocsTableWidget)
 

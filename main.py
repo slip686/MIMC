@@ -34,11 +34,12 @@ class MainWindow(QMainWindow):
         self.session = user_connection(None, None, self.ui.statusLabel2, main_window_object=self)
         self.logged_user_data = None
         self.logged_user = User()
-        self.projects_list = []
+        self.projects_ids_and_roles_list = []
         self.current_project_id = None
         self.structure_table_names = None
         self.current_project_data_dict = None
         self.current_project_docs_dicts_list = None
+        self.current_project_users_data = None
         self.received_notifications = None
         self.project_widget_list = []
         self.ui.designDocsStructureTreeWidget.patterns_list = []
@@ -74,7 +75,7 @@ class MainWindow(QMainWindow):
         self.ui.NotificationsMenu.setParent(self.ui.interfaceBodySubContainer)
         self.ui.NotificationsMenu.hide()
         self.ui.NotificationsMenu.session_object = self.session
-
+        self.ui.NotificationsMenu.main_window = self
 
         if get_platform() == 'win':
             self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
@@ -148,15 +149,16 @@ class MainWindow(QMainWindow):
         def get_project_cards():
             clear_widgets()
             self.project_widget_list.clear()
-            self.projects_list = [_[0] for _ in
-                                  self.session.select_query([get_projects_ids(), (self.logged_user.user_id,)],
-                                                            fetchall=True)]
-            if self.projects_list:
-                for _ in self.projects_list:
-                    project_data_dict = self.session.select_query([get_project(), (_,)], fetchall=True)[0][0][0]
+            self.projects_ids_and_roles_list = {k: v for (k, v) in self.session.select_query(
+                [get_projects_ids_and_roles(), (self.logged_user.user_id,)], fetchall=True)}
+            if self.projects_ids_and_roles_list:
+                for key in self.projects_ids_and_roles_list:
+                    project_data_dict = self.session.select_query([get_project(), (key,)], fetchall=True)[0][0][0]
                     project_owner = self.session.select_query([get_user_data(), (project_data_dict['owner_id'],)],
                                                               fetchall=True)
-                    self.project_widget = ProjectCard(project_data_dict, self)
+                    self.project_widget = ProjectCard(data_dict=project_data_dict,
+                                                      main_window=self,
+                                                      role=self.projects_ids_and_roles_list[key])
                     self.project_widget.project_id = project_data_dict['project_id']
                     self.project_widget.projectName.setText(project_data_dict['project_name'])
                     self.project_widget.Owner.setText(f'Owner: {project_owner[0][1]} {project_owner[0][2]}')
@@ -195,9 +197,9 @@ class MainWindow(QMainWindow):
                                         pass
                                     break
 
-                    new_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop),
-                                        name=f'picture thread {i}')
-                    new_thread.start()
+                    set_picture_thread = Thread(target=set_picture, args=(i.label, lambda: self.stop),
+                                                name=f'picture thread {i}')
+                    set_picture_thread.start()
 
                 self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
 
@@ -249,8 +251,6 @@ class MainWindow(QMainWindow):
         self.new_user = Reg_data(None, None)
         self.json_process = Json_process(None, None)
         self.exist_user = Reg_data(None, None)
-
-
 
         ########################################################################################################
         # _____________________________REGISTRATION, RECOVER, LOGIN PROCESSES___________________________________
@@ -757,7 +757,8 @@ class MainWindow(QMainWindow):
             for i in database_cells_list:
                 if [i[0], i[-1]] not in current_cells_list:
                     self.session.commit_query([exclude_cell(), (AsIs(f'"{docs_structure_tablename}"'),
-                                                        AsIs(f'"{i[1]}"'), AsIs('null'), AsIs(i[0]), docs_type)])
+                                                                AsIs(f'"{i[1]}"'), AsIs('null'), AsIs(i[0]),
+                                                                docs_type)])
 
             structure_list = update_structure_list()
 
@@ -1705,6 +1706,7 @@ class MainWindow(QMainWindow):
             [get_docs(), (AsIs(self.current_project_data_dict['project_name']),)], fetchall=True)[0][0]
 
     def clear_tables(self):
+        self.current_project_id = None
         self.ui.folderNameLabel.setText('All Documents')
         self.current_design_docs_folder = None
         self.current_design_docs_folder_path = 'All Documents'
@@ -1754,69 +1756,149 @@ class MainWindow(QMainWindow):
                                 row_num += 1
                                 docs_to_show.append(doc_dict)
             table.setRowCount(row_num)
+            for row in range(table.rowCount()):
+                table.setRowHeight(row, 40)
             #######################################################################
             # FILL ROWS IN MAIN TABLE
             row = 0
             for doc in docs_to_show:
                 if table == self.ui.designDocsTableWidget:
+                    place_id_list = None
                     if doc['place_id'] != 'None':
                         place = ast.literal_eval(doc['place_id'])[-1]
-                        table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
-
+                        place_id_list = ast.literal_eval(doc['place_id'])[0:-1]
+                        item = QTableWidgetItem(place)
+                        item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                                doc['document_type']))
+                        table.setItem(row, 0, item)
                     else:
-                        table.setCellWidget(row, 0,
-                                            DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1,
-                                        DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2,
-                                        DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6,
-                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7,
-                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8,
-                                        DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'],
-                                                      row=row))
-                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'],
-                                                              row=row))
+                        item = QTableWidgetItem('All documents')
+                        item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                                doc['document_type']))
+                        table.setItem(row, 0, item)
+
+                    item = QTableWidgetItem(doc['document_cypher'])
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 1, item)
+
+                    item = QTableWidgetItem(doc['document_name'])
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 2, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 3, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 4, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 5, item)
+
+                    item = QTableWidgetItem('No result exam yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 6, item)
+
+                    item = QTableWidgetItem('No result exam yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 7, item)
+
+                    item = QTableWidgetItem('start_develop_date')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 8, item)
+
+                    item = QTableWidgetItem('end_develop_date')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 9, item)
+
                     row += 1
 
                 if table == self.ui.constructionDocsTableWidget:
-                    if doc['place_id']:
+                    place_id_list = None
+                    if doc['place_id'] != 'None':
                         place = ast.literal_eval(doc['place_id'])[-1]
-                        table.setCellWidget(row, 0, DraggableCell(self, text=place, doc_id=doc['doc_id'], row=row))
+                        place_id_list = ast.literal_eval(doc['place_id'])[0:-1]
+                        item = QTableWidgetItem(place)
+                        item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher']))
+                        table.setItem(row, 0, item)
                     else:
-                        table.setCellWidget(row, 0,
-                                            DraggableCell(self, text='All documents', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 1,
-                                        DraggableCell(self, text=doc['document_cypher'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 2,
-                                        DraggableCell(self, text=doc['document_name'], doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 3, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 4, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 5, DraggableCell(self, text='No file yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 6,
-                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 7,
-                                        DraggableCell(self, text='No result exam yet', doc_id=doc['doc_id'], row=row))
-                    table.setCellWidget(row, 8,
-                                        DraggableCell(self, text=doc['start_develop_date'], doc_id=doc['doc_id'],
-                                                      row=row))
-                    table.setCellWidget(row, 9, DraggableCell(self, text=doc['end_develop_date'], doc_id=doc['doc_id'],
-                                                              row=row))
+                        item = QTableWidgetItem('All documents')
+                        item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher']))
+                        table.setItem(row, 0, item)
+
+                    item = QTableWidgetItem(doc['document_cypher'])
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 1, item)
+
+                    item = QTableWidgetItem(doc['document_name'])
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 2, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 3, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 4, item)
+
+                    item = QTableWidgetItem('No file yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 5, item)
+
+                    item = QTableWidgetItem('No result exam yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 6, item)
+
+                    item = QTableWidgetItem('No result exam yet')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 7, item)
+
+                    item = QTableWidgetItem('start_develop_date')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 8, item)
+
+                    item = QTableWidgetItem('end_develop_date')
+                    item.setData(Qt.ItemDataRole.UserRole, (doc['doc_id'], place_id_list, doc['document_cypher'],
+                                                            doc['document_type']))
+                    table.setItem(row, 9, item)
+
                     row += 1
 
                 if table == self.ui.initDocsTableWidget:
                     pass
 
+            def prepare_table(table_object: QCustomTableWidget):
+                table_object.horizontalHeader().show_hide_scrollbars()
+                table_object.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                                           u'border-bottom-right-radius: 6px;\n'
+                                           u'border-bottom-left-radius: 6px;\n'
+                                           u'gridline-color: rgb(136, 136, 136)')
+                table_object.get_region()
+
             if self.ui.interfaceBodyStackedWidget.anim_group:
-                self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: table.correct_row_heights())
-                self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: table.get_region())
+                self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: prepare_table(table))
             else:
-                QTimer.singleShot(0, table.correct_row_heights)
+                prepare_table(table)
 
             #######################################################################
             # FILL ROWS IN SIDE TABLES IF SUCH TABLES EXISTS
@@ -1853,7 +1935,6 @@ class MainWindow(QMainWindow):
             self.ui.NotificationsMenu.hide()
         if not log_out:
             self.stop = True
-
 
 
 if __name__ == "__main__":

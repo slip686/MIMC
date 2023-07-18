@@ -511,7 +511,7 @@ class user_connection:
                     index = offset
                     files = {'file': chunk, 'parent_dir': (None, path_in_repo)}
                     try:
-                        result = session.post(upload_link, headers=headers, files=files, params=params, timeout=10)
+                        session.post(upload_link, headers=headers, files=files, params=params, timeout=10)
                         self.uploaded_bytes_counter += len(chunk) / (1024 * 1024)
                         self.show_uploading_status(self.uploaded_bytes_counter, self.total_uploading_bytes, info_object)
                     except (ConnectionError, Timeout, ReadTimeout):
@@ -1012,6 +1012,7 @@ class NotificationReceiver(QObject):
         message_dict = json.loads(json_acceptable_string)
         ids_list = [notification['ntfcn_id'] for notification in self.session_object.notifications]
         if message_dict['ntfcn_id'] not in ids_list:
+            print(message_dict)
             self.session_object.notifications.append(message_dict)
             self.session_object.cur.execute(*set_receive_status(self.session_object.email, message_dict['ntfcn_id']))
             self.message = message_dict
@@ -1025,3 +1026,46 @@ class NotificationReceiver(QObject):
 
     def stop_broker_loop(self):
         self.channel_broker.stop_consuming()
+
+
+class Ntfcn_types:
+    DOC_FOLDER_CHANGE = 'DOC_FOLDER_CHANGE'
+    NEW_PROJECT_INVITATION = 'NEW_PROJECT_INVITATION'
+    FOLDER_ADDED = 'FOLDER_ADDED'
+    FOLDER_REMOVED = 'FOLDER_REMOVED'
+    FOLDER_RENAMED = 'FOLDER_RENAMED'
+    DOC_ADDED = 'DOC_ADDED'
+    DOC_REMOVED = 'DOC_REMOVED'
+
+
+class Notification:
+    Types = Ntfcn_types
+
+    def __init__(self, ntfcn_type: Ntfcn_types = None, project_id=None,
+                 doc_id=None, sender_id=None, receiver_ntfcn_table=None, comments=None, time_limit=None, text=None,
+                 window_object=None, doc_type=None, place_id_list=None):
+        self.ntfcn_type = ntfcn_type
+        self.project_id = project_id
+        self.doc_id = doc_id
+        self.doc_type = doc_type
+        self.sender_id = sender_id
+        self.receiver_ntfcn_table = receiver_ntfcn_table
+        self.time_send = datetime.now()
+        self.comments = comments
+        self.text = text
+        self.place_id_list = place_id_list
+        self.time_limit = time_limit
+
+        if self.ntfcn_type == Notification.Types.DOC_FOLDER_CHANGE:
+            self.time_limit = None
+            self.comments = None
+
+        self.query = send_notification(receiver_ntfcn_table=self.receiver_ntfcn_table, project_id=self.project_id,
+                                       doc_id=self.doc_id, sender_id=self.sender_id, type=self.ntfcn_type,
+                                       comments=self.comments, time_send=self.time_send, time_limit=self.time_limit,
+                                       text=self.text, doc_type=self.doc_type, place_id=self.place_id_list)
+
+        self.window_object = window_object
+
+    def send(self):
+        self.window_object.session.commit_query(self.query)

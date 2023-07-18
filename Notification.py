@@ -15,14 +15,17 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QPushButton,
-    QSizePolicy, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QFrame, QHBoxLayout, QSizePolicy,
+    QVBoxLayout, QWidget)
+
+from CustomWidgets import NotificationLabel
 
 class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
         Form.resize(399, 30)
+        Form.setMaximumSize(QSize(16777215, 16777215))
         self.verticalLayout = QVBoxLayout(Form)
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -35,16 +38,20 @@ class Ui_Form(object):
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.horizontalLayout.setContentsMargins(6, 0, 16, 0)
-        self.notifButton = QPushButton(self.frame)
-        self.notifButton.setObjectName(u"notifButton")
-        self.notifButton.setMinimumSize(QSize(0, 25))
-        self.notifButton.setMaximumSize(QSize(16777215, 25))
-        self.notifButton.setStyleSheet(u"QPushButton {background-color: transparent; color: white; border-radius: 6px; text-align: left; padding-left: 5px}\n"
-"QPushButton:pressed {background-color: rgb(145,145,145); color: white; border-radius: 6px; text-align: left; padding-left: 5px}\n"
-"\n"
-"")
+        self.label = NotificationLabel(self.frame)
+        self.label.setObjectName(u"label")
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.label.sizePolicy().hasHeightForWidth())
+        self.label.setSizePolicy(sizePolicy)
+        self.label.setMinimumSize(QSize(0, 25))
+        self.label.setMaximumSize(QSize(400, 25))
+        self.label.setTextFormat(Qt.PlainText)
+        self.label.setScaledContents(False)
+        self.label.setTextInteractionFlags(Qt.NoTextInteraction)
 
-        self.horizontalLayout.addWidget(self.notifButton)
+        self.horizontalLayout.addWidget(self.label)
 
         self.Indicator = QWidget(self.frame)
         self.Indicator.setObjectName(u"Indicator")
@@ -54,7 +61,6 @@ class Ui_Form(object):
 
         self.horizontalLayout.addWidget(self.Indicator, 0, Qt.AlignRight)
 
-        self.horizontalLayout.setStretch(0, 1)
 
         self.verticalLayout.addWidget(self.frame)
 
@@ -66,6 +72,6 @@ class Ui_Form(object):
 
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Form", None))
-        self.notifButton.setText(QCoreApplication.translate("Form", u"PushButton", None))
+        self.label.setText(QCoreApplication.translate("Form", u"TextLabel", None))
     # retranslateUi
 

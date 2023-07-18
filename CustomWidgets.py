@@ -1,12 +1,12 @@
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent
-from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption
+    QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent, QModelIndex, qDebug
+from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption, QPen, QDropEvent, QPainter, \
+    QFontMetrics, QTextDocument, QTextCursor
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
     QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter, QScrollArea, QLayout, \
-    QSpacerItem
-from Notification import Ui_Form as notif_widget
+    QSpacerItem, QTableWidgetItem, QMainWindow
 from core import *
 
 
@@ -251,14 +251,17 @@ class Header(QHeaderView):
                                 i.pin_column(i.logical_index, 'right')
                                 break
         else:
-            if self.parent().header_dragging_from[0] == self.parent().header_dragging_to[-1]:
-                self.swapSections(self.parent().dragging_cell_index[0], self.parent().cell_to_drop_in_index[-1])
-                self.fixPositions()
-                self.fix_resize_mode()
-                self.reset_cells_visual_indexes()
-                self.parent().clear_swap_data()
-            else:
-                self.parent().clear_swap_data()
+            try:
+                if self.parent().header_dragging_from[0] == self.parent().header_dragging_to[-1]:
+                    self.swapSections(self.parent().dragging_cell_index[0], self.parent().cell_to_drop_in_index[-1])
+                    self.fixPositions()
+                    self.fix_resize_mode()
+                    self.reset_cells_visual_indexes()
+                    self.parent().clear_swap_data()
+                else:
+                    self.parent().clear_swap_data()
+            except IndexError:
+                pass
 
     def showEvent(self, event):
         if not self.cells:
@@ -455,7 +458,8 @@ class HeaderCell(QWidget):
                 self.parent_table.left_pinned_table.reference_table = self.parent_table
                 self.parent_table.left_pinned_table.setObjectName('left_table')
                 self.parent_table.left_pinned_table.setStyleSheet(u'background-color: rgb(165,165,165);\n'
-                                                                  u'border-bottom-left-radius: 6px')
+                                                                  u'border-bottom-left-radius: 6px;\n'
+                                                                  u'gridline-color: rgb(136, 136, 136)')
                 self.parent_table.inner_left_table_frame_layout.addWidget(self.parent_table.left_pinned_table)
                 self.parent_table.inner_left_table_frame_layout.setContentsMargins(0, 0, 3, 0)
                 self.parent_table.left_pinned_table.pinned_table = True
@@ -471,7 +475,8 @@ class HeaderCell(QWidget):
 
                 if not self.parent_table.splitter:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
-                                                    u'border-bottom-right-radius: 6px')
+                                                    u'border-bottom-right-radius: 6px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
                     self.parent_table.splitter.setHandleWidth(3)
                     self.parent_table.outer_layout.addWidget(self.parent_table.splitter)
@@ -487,7 +492,8 @@ class HeaderCell(QWidget):
                     self.parent_table.splitter.setStretchFactor(1, 1)
                 else:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
-                                                    u'border-radius: 0px')
+                                                    u'border-radius: 0px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
                     self.parent_table.splitter.insertWidget(0, self.parent_table.inner_left_table_frame)
 
@@ -504,11 +510,13 @@ class HeaderCell(QWidget):
                 if not self.right_table:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                     u'border-bottom-right-radius: 6px;\n'
-                                                    u'border-bottom-left-radius: 0px')
+                                                    u'border-bottom-left-radius: 0px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                 else:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
-                                                    u'border-bottom-left-radius: 0px')
+                                                    u'border-bottom-left-radius: 0px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
 
                 self.parent_table.splitter.insertWidget(0, self.parent_table.inner_left_table_frame)
                 self.parent_table.left_pinned_table.pinned_table = True
@@ -538,7 +546,8 @@ class HeaderCell(QWidget):
                 self.parent_table.right_pinned_table.reference_table = self.parent_table
                 self.parent_table.right_pinned_table.setObjectName('right_table')
                 self.parent_table.right_pinned_table.setStyleSheet(u'background-color: rgb(165,165,165);\n'
-                                                                   u'border-bottom-right-radius: 6px')
+                                                                   u'border-bottom-right-radius: 6px;\n'
+                                                                   u'gridline-color: rgb(136, 136, 136)')
                 self.parent_table.inner_right_table_frame_layout.addWidget(self.parent_table.right_pinned_table)
                 self.parent_table.inner_right_table_frame_layout.setContentsMargins(3, 0, 0, 0)
                 self.parent_table.right_pinned_table.pinned_table = True
@@ -553,7 +562,8 @@ class HeaderCell(QWidget):
                     parent=self.parent_table.right_pinned_table)
                 if not self.parent_table.splitter:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
-                                                    u'border-bottom-left-radius: 6px')
+                                                    u'border-bottom-left-radius: 6px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
                     self.parent_table.splitter.setHandleWidth(3)
                     self.parent_table.outer_layout.addWidget(self.parent_table.splitter)
@@ -566,7 +576,8 @@ class HeaderCell(QWidget):
                     self.parent_table.splitter.setStretchFactor(0, 1)
                 else:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
-                                                    u'border-radius: 0px')
+                                                    u'border-radius: 0px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
                     self.parent_table.splitter.insertWidget(2, self.parent_table.inner_right_table_frame)
             else:
@@ -582,11 +593,13 @@ class HeaderCell(QWidget):
                 if not self.left_table:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
-                                                    u'border-bottom-left-radius: 6px')
+                                                    u'border-bottom-left-radius: 6px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
                 else:
                     self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
-                                                    u'border-bottom-left-radius: 0px')
+                                                    u'border-bottom-left-radius: 0px;\n'
+                                                    u'gridline-color: rgb(136, 136, 136)')
 
                 self.parent_table.splitter.insertWidget(2, self.parent_table.inner_right_table_frame)
                 self.parent_table.right_pinned_table.pinned_table = True
@@ -701,12 +714,14 @@ class HeaderCell(QWidget):
                 if not self.right_table:
                     self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
-                                                       u'border-bottom-left-radius: 6px')
+                                                       u'border-bottom-left-radius: 6px;\n'
+                                                       u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
                     self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                        u'border-bottom-right-radius: 0px;\n'
-                                                       u'border-bottom-left-radius: 6px')
+                                                       u'border-bottom-left-radius: 6px;\n'
+                                                       u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 3, 0)
 
             elif self.parent_table.objectName() == 'right_table':
@@ -726,12 +741,14 @@ class HeaderCell(QWidget):
                 if not self.left_table:
                     self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
-                                                       u'border-bottom-left-radius: 6px')
+                                                       u'border-bottom-left-radius: 6px;\n'
+                                                       u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
                     self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
-                                                       u'border-bottom-left-radius: 0px')
+                                                       u'border-bottom-left-radius: 0px;\n'
+                                                       u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 0, 0)
 
     def show_columns_selection_menu(self):
@@ -852,14 +869,14 @@ class HeaderCell(QWidget):
                 self.parent_table.hideColumn(self.logical_index)
                 self.parent_table.horizontalHeader().fix_resize_mode()
                 self.parent_table.horizontalHeader().fixPositions()
-        else:
-            self.parent_table.correct_row_heights()
+        # else:
+        #     self.parent_table.correct_row_heights()
 
     #####################################################
     #####################################################
 
-    def resizeEvent(self, event):
-        self.parent_table.correct_row_heights()
+    # def resizeEvent(self, event):
+    #     self.parent_table.correct_row_heights()
 
 
 class QCustomTableWidget(QTableWidget):
@@ -867,11 +884,13 @@ class QCustomTableWidget(QTableWidget):
     resized = Signal()
 
     def __init__(self, *args, **kwargs):
-        super(QCustomTableWidget, self).__init__(*args, **kwargs)
-        self.setMouseTracking(True)
+        super().__init__(*args, **kwargs)
+        self.setDragEnabled(True)
+        self.setSelectionBehavior(QAbstractItemView.SelectRows)
+
         self.new_row_height = None
-        self.setShowGrid(False)
-        self.setSelectionMode(QAbstractItemView.SelectionMode.NoSelection)
+        self.setStyleSheet(u'gridline-color: rgb(136, 136, 136)')
+
         self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
                                                'border-top-right-radius: 6px;\n'
                                                'border-bottom-right-radius: 6px}'
@@ -945,33 +964,8 @@ class QCustomTableWidget(QTableWidget):
         self.delta_y = 0
 
         self.region = QRect()
-
-    def row_select(self, row_num, doc_id):
-        if self.main_table:
-            self.row_select_process(row_num, doc_id)
-        if self.left_pinned_table:
-            self.left_pinned_table.row_select_process(row_num, doc_id)
-        if self.right_pinned_table:
-            self.right_pinned_table.row_select_process(row_num, doc_id)
-        if self.pinned_table:
-            self.parent_table.row_select_process(row_num, doc_id)
-            if self.parent_table.left_pinned_table:
-                self.parent_table.left_pinned_table.row_select_process(row_num, doc_id)
-            if self.parent_table.right_pinned_table:
-                self.parent_table.right_pinned_table.row_select_process(row_num, doc_id)
-
-    def row_select_process(self, row_num, doc_id):
-        if self.selected_row_num == 0 or self.selected_row_num:
-            for k in (range(self.columnCount())):
-                cell = self.cellWidget(self.selected_row_num, k)
-                if hasattr(cell, 'textLabel'):
-                    cell.textLabel.setStyleSheet(u'background-color: transparent; border-radius: 0px')
-        self.selected_row_num = row_num
-        self.selected_doc_id = doc_id
-        for k in (range(self.columnCount())):
-            cell = self.cellWidget(row_num, k)
-            if hasattr(cell, 'textLabel'):
-                cell.textLabel.setStyleSheet(u'background-color: transparent; border-radius: 0px')
+        self.click_signal_connection = None
+        self.main_window = None
 
     def scrollContentsBy(self, dx, dy):
         super(QCustomTableWidget, self).scrollContentsBy(dx, dy)
@@ -995,7 +989,7 @@ class QCustomTableWidget(QTableWidget):
                 last_section_width = self.width() - previous_sections_width
                 self.setColumnWidth(self.columnCount() - 1, last_section_width)
         super(QCustomTableWidget, self).resizeEvent(event)
-        self.correct_row_heights()
+        # self.correct_row_heights()
         self.resized.emit()
 
     def clear_swap_data(self):
@@ -1031,78 +1025,11 @@ class QCustomTableWidget(QTableWidget):
             if self.parent_table.vertical_scroll_bar:
                 self.parent_table.vertical_scroll_bar.scroll_bar.setValue(value)
 
-    # def mouseMoveEvent(self, e):
-    #     if e.buttons() == Qt.LeftButton:
-    #         if not self.selected_row_data_to_drag:
-    #             self.start_drag.emit()
-    #     if not e.buttons():
-    #         self.selected_row_data_to_drag = None
-
-    def set_cell_data_on_start_drag(self):
-        if self.main_table:
-            self.selectRow(self.selectedItems()[0].row())
-            self.selected_row_data_to_drag = self.selectedItems()[0].doc_id
-            print(self.selected_row_data_to_drag)
-
-    def correct_row_heights(self):
-
-        def get_row_height(table: QCustomTableWidget, row_num: int):
-            current_table_row_height = 0
-            for k in range(table.columnCount()):
-                if not table.isColumnHidden(k):
-                    table_cell = table.cellWidget(row_num, k)
-                    if hasattr(table_cell, 'textLabel'):
-                        row_height = table_cell.textLabel.heightForWidth(table_cell.width())
-                        if row_height > current_table_row_height:
-                            current_table_row_height = row_height
-
-            return current_table_row_height
-
-        for i in range(self.rowCount()):
-
-            self.new_row_height = 0
-
-            if self.parent_table:
-                if self.parent_table.has_left_pinned:
-                    left_pinned_table_row_height = get_row_height(self.parent_table.left_pinned_table, i)
-                    if left_pinned_table_row_height > self.new_row_height:
-                        self.new_row_height = left_pinned_table_row_height
-                if self.parent_table.has_right_pinned:
-                    right_pinned_table_row_height = get_row_height(self.parent_table.right_pinned_table, i)
-                    if right_pinned_table_row_height > self.new_row_height:
-                        self.new_row_height = right_pinned_table_row_height
-                parent_table_row_height = get_row_height(self.parent_table, i)
-                if parent_table_row_height > self.new_row_height:
-                    self.new_row_height = parent_table_row_height
-
-            else:
-                if self.has_left_pinned:
-                    left_pinned_table_row_height = get_row_height(self.left_pinned_table, i)
-                    if left_pinned_table_row_height > self.new_row_height:
-                        self.new_row_height = left_pinned_table_row_height
-                if self.has_right_pinned:
-                    right_pinned_table_row_height = get_row_height(self.right_pinned_table, i)
-                    if right_pinned_table_row_height > self.new_row_height:
-                        self.new_row_height = right_pinned_table_row_height
-                parent_table_row_height = get_row_height(self, i)
-                if parent_table_row_height > self.new_row_height:
-                    self.new_row_height = parent_table_row_height
-
-            if self.pinned_table:
-                self.parent_table.setRowHeight(i, self.new_row_height)
-                if self.parent_table.right_pinned_table:
-                    self.parent_table.right_pinned_table.setRowHeight(i, self.new_row_height)
-                if self.parent_table.left_pinned_table:
-                    self.parent_table.left_pinned_table.setRowHeight(i, self.new_row_height)
-            else:
-                self.setRowHeight(i, self.new_row_height)
-                # self.resizeRowToContents(i)
-                if self.has_left_pinned:
-                    self.left_pinned_table.setRowHeight(i, self.new_row_height)
-                if self.has_right_pinned:
-                    self.right_pinned_table.setRowHeight(i, self.new_row_height)
-
-            # print(self.new_row_height)
+    # def set_cell_data_on_start_drag(self):
+    #     if self.main_table:
+    #         self.selectRow(self.selectedItems()[0].row())
+    #         self.selected_row_data_to_drag = self.selectedItems()[0].doc_id
+    #         print(self.selected_row_data_to_drag)
 
     def enterEvent(self, event):
         self.cursor_over_table = True
@@ -1191,17 +1118,48 @@ class QCustomTableWidget(QTableWidget):
         self.region.setRect(self.x(), self.height() - 8, self.width(), 8)
 
     def mouseMoveEvent(self, event):
+        if event.buttons() == Qt.LeftButton:
+            item = self.itemAt(event.pos())
+            mimeData = QtCore.QMimeData()
+            if item:
+                data_dict = {'doc_id': item.data(Qt.ItemDataRole.UserRole)[0],
+                             'place_id_list': item.data(Qt.ItemDataRole.UserRole)[1],
+                             'cypher': item.data(Qt.ItemDataRole.UserRole)[2],
+                             'doc_type': item.data(Qt.ItemDataRole.UserRole)[3]}
+                bytes_json_object = json.dumps(data_dict).encode('utf-8')
+                mimeData.setData('json', bytes_json_object)
+                drag = QtGui.QDrag(self)
+                drag.setMimeData(mimeData)
+                drag.exec(Qt.MoveAction)
         if self.horizontal_scroll_bar:
             if self.horizontal_scroll_bar.isHidden():
                 if event.pos().x() > 0:
                     if self.viewport().rect().height() - 14 < event.pos().y() < self.viewport().rect().height():
                         self.horizontal_scroll_bar.show_animate()
+        super(QCustomTableWidget, self).mouseMoveEvent(event)
 
     def showEvent(self, event):
-        self.correct_row_heights()
+        self.find_main_window()
+        self.func_mappingSignal()
         if self.pinned_table:
             if hasattr(self.horizontalHeader(), 'show_hide_scrollbars'):
                 self.horizontalHeader().show_hide_scrollbars()
+
+    def func_mappingSignal(self):
+        if self.click_signal_connection:
+            self.disconnect(self.click_signal_connection)
+        self.click_signal_connection = self.clicked.connect(self.open_view_dialog)
+
+    def open_view_dialog(self, item):
+        self.main_window.document_view_dialog(item.data(Qt.ItemDataRole.UserRole)[0])
+
+    def find_main_window(self):
+        self.main_window = self.parent()
+        while True:
+            if issubclass(type(self.main_window), QMainWindow):
+                break
+            else:
+                self.main_window = self.main_window.parent()
 
 
 class CQLabel2(QLabel):
@@ -2126,7 +2084,7 @@ class CQLineEdit2(QTextEdit):
     resized = Signal()
     dropped = Signal
 
-    def __init__(self, parent):
+    def __init__(self, parent, main_window_object):
         super(CQLineEdit2, self).__init__(parent)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setMouseTracking(True)
@@ -2135,6 +2093,7 @@ class CQLineEdit2(QTextEdit):
         self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
         self.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditorInteraction)
         self.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditable)
+        self.window_object = main_window_object
 
     def focusOutEvent(self, event):
         self.setReadOnly(True)
@@ -2164,6 +2123,60 @@ class CQLineEdit2(QTextEdit):
 
     def dragEnterEvent(self, event):
         self.setStyleSheet(u"border-radius: 6px; border: 2px solid rgb(136,136,136)")
+        event.accept()
+
+    def dragMoveEvent(self, event):
+        event.accept()
+
+    def dragLeaveEvent(self, event):
+        self.setStyleSheet(u"")
+        event.accept()
+
+    def dropEvent(self, event):
+        ##########################
+        # CHANGE DOCUMENT PLACE ID
+        ##########################
+        treeWidget = self.parent().parent().parent().parent()
+        iterator = QTreeWidgetItemIterator(treeWidget)
+        new_place_id_list = None
+        new_folder_name = None
+        while iterator.value():
+            item = iterator.value()
+            if isinstance(item, RowElement):
+                if item.lineEdit.toPlainText() == self.toPlainText():
+                    self.setStyleSheet(u"")
+                    new_folder_name = item.lineEdit.toPlainText()
+                    new_place_id_list = [item.place_id_list, new_folder_name]
+
+            iterator += 1
+        doc_to_move_info = json.loads(str(event.mimeData().data('json'), 'utf-8'))
+        doc_id = doc_to_move_info['doc_id']
+        doc_cypher = doc_to_move_info['cypher']
+        doc_type = doc_to_move_info['doc_type']
+
+        queries_list = []
+
+        set_new_folder_query = move_to_folder(project_name=self.window_object.current_project_data_dict['project_name'],
+                                              doc_id=doc_id, new_folder_place_id=str(new_place_id_list))
+        queries_list.append(set_new_folder_query)
+        project_users_notification_tables = [info['notification_table'] for info in
+                                             self.window_object.current_project_users_data]
+
+        for ntfcn_table in project_users_notification_tables:
+            notification = Notification(ntfcn_type=Notification.Types.DOC_FOLDER_CHANGE,
+                                        project_id=self.window_object.current_project_id,
+                                        doc_id=doc_id, sender_id=self.window_object.logged_user.user_id,
+                                        receiver_ntfcn_table=ntfcn_table,
+                                        text=f'{datetime.now().strftime("%d-%m-%Y %H:%M")} '
+                                             f'Document "{doc_cypher}" moved to folder "{new_folder_name}" on project '
+                                             f'{self.window_object.current_project_data_dict["project_name"]}',
+                                        doc_type=doc_type, place_id_list=new_place_id_list[0])
+            queries_list.append(notification.query)
+
+        for query in queries_list:
+            self.window_object.session.commit_query(query)
+
+        event.accept()
 
 
 class RowElement(QTreeWidgetItem):
@@ -2210,7 +2223,7 @@ class RowElement(QTreeWidgetItem):
         self.horizontalLayout_3.setSpacing(0)
         self.horizontalLayout_3.setObjectName(u"horizontalLayout_3")
         self.horizontalLayout_3.setContentsMargins(0, 0, 0, 0)
-        self.lineEdit = CQLineEdit2(self.frame_2)
+        self.lineEdit = CQLineEdit2(self.frame_2, main_window_object=self.window_object)
         self.lineEdit.setWordWrapMode(QTextOption.WrapMode.WordWrap)
         self.lineEdit.setObjectName(u"lineEdit")
         self.lineEdit.setEnabled(True)
@@ -2571,23 +2584,30 @@ class SearchResult(Row, QWidget):
 class ProjectCard(Ui_Form, QWidget):
     clicked = Signal()
 
-    def __init__(self, data_dict=None, main_window=None):
+    def __init__(self, data_dict=None, role=None, main_window=None):
         super().__init__()
         self.setupUi(self)
+        self.main_window = main_window
         self.project_id = None
         self.project_picture = None
         self.project_data_dict = data_dict
-        self.main_window = main_window
+        self.user_role = role
+        self.project_users_dict = None
 
     def mousePressEvent(self, event):
         self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid black}")
 
     def mouseReleaseEvent(self, event):
+        self.load_project()
+        self.clicked.emit()
+
+    def load_project(self):
         self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid transparent}")
         if self.main_window.session.connection_success:
             self.main_window.ui.interfaceBodyStackedWidget.slideInIdx(2)
             self.main_window.current_project_id = self.project_id
             self.main_window.current_project_data_dict = self.project_data_dict
+            # print(self.main_window.current_project_data_dict)
             self.main_window.ui.homeBtn.show()
             self.main_window.ui.leftSideMenuBtn.show()
             self.main_window.ui.folderNameLabel.setText('All Documents')
@@ -2597,22 +2617,26 @@ class ProjectCard(Ui_Form, QWidget):
                 self.main_window.session.select_query([get_docs(),
                                                        (AsIs(self.project_data_dict['project_name']),)], fetchall=True)[
                     0][0]
+            self.project_users_dict = self.main_window.session.select_query(get_users_data_on_project(self.project_id),
+                                                                            fetchall=True)[0][0]
+            self.main_window.current_project_users_data = self.project_users_dict
+            # print(self.main_window.current_project_users_data)
             self.main_window.get_project_structure()
-
             for i in ['design', 'construction', 'init_permit']:
                 self.main_window.fill_table(doc_type=i)
-        self.clicked.emit()
 
 
 def iterate_row(parent_table: QCustomTableWidget, parent_column_logical_index: int,
                 child_table: QCustomTableWidget, child_column_logical_index: int):
     child_table.setRowCount(parent_table.rowCount())
     for row_num in range(parent_table.rowCount()):
-        item = parent_table.cellWidget(row_num, parent_column_logical_index)
+        child_table.setRowHeight(row_num, 40)
+        item = parent_table.item(row_num, parent_column_logical_index)
         if item:
-            child_table.setCellWidget(row_num, child_column_logical_index,
-                                      DraggableCell(main_window=item.main_window, text=item.text,
-                                                    doc_id=item.doc_id, row=item.row_num))
+            data = item.data(Qt.ItemDataRole.UserRole)
+            copy_item = QTableWidgetItem(item.text())
+            copy_item.setData(Qt.ItemDataRole.UserRole, data)
+            child_table.setItem(row_num, child_column_logical_index, copy_item)
 
 
 class QFrameWithResizeSignal(QFrame):
@@ -2628,6 +2652,7 @@ class QFrameWithResizeSignal(QFrame):
 class NotificationsSlideFrame(QFrame):
     def __init__(self, parent: QFrameWithResizeSignal = None):
         super(NotificationsSlideFrame, self).__init__(parent)
+        self.main_window = None
         self.session_object = None
         self.parent_widget = parent
         self.animation = QPropertyAnimation(self, b"geometry")
@@ -2642,7 +2667,7 @@ class NotificationsSlideFrame(QFrame):
                          self.expanded_width, self.parent_widget.height())
         self.setStyleSheet(u'background-color: transparent')
         self.setMinimumSize(QSize(0, 0))
-        self.setMaximumSize(QSize(600, 16777215))
+        self.setMaximumSize(QSize(900, 16777215))
         self.setFrameShape(QFrame.StyledPanel)
         self.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_56 = QHBoxLayout(self)
@@ -2771,11 +2796,11 @@ class NotificationsSlideFrame(QFrame):
             self.hide()
 
     def insert_notification(self, ntfcn_dict=None, show_new=True):
-        notification = NotificationWidget(ntfcn_dict=ntfcn_dict,)
+        notification = NotificationWidget(ntfcn_dict=ntfcn_dict, main_window=self.main_window)
         if show_new:
             self.notificationsLayout.insertWidget(0, notification)
         else:
-            self.notificationsLayout.insertWidget(self.notificationsLayout.count()-1, notification)
+            self.notificationsLayout.insertWidget(self.notificationsLayout.count() - 1, notification)
 
     def load_more(self):
         if self.notificationsLayout.count() > 1:
@@ -3067,27 +3092,152 @@ class FlowLayout(QLayout):
         return new_height
 
 
-class CQLabel3(QLabel):
+class NotificationLabel(QTextEdit):
     clicked = Signal()
 
-    def __init__(self):
-        super(CQLabel3, self).__init__()
+    def __init__(self, text):
+        super(NotificationLabel, self).__init__()
         self.expanded = False
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.setSizePolicy(sizePolicy)
+        self.setWordWrapMode(QTextOption.WrapMode.NoWrap)
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setReadOnly(True)
+        self.setContextMenuPolicy(Qt.NoContextMenu)
+        self.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
+        self.viewport().setCursor(QCursor(Qt.PointingHandCursor))
+        self.full_text = text
+        self.elide()
+
+    def mousePressEvent(self, event):
+        self.setStyleSheet(u'background-color: rgb(145, 145, 145); '
+                           u'color: white; border-radius: 6px; '
+                           u'text-align: left;')
 
     def mouseReleaseEvent(self, event):
+        self.setStyleSheet(u'background-color: transparent; '
+                           u'color: white; border-radius: 6px; '
+                           u'text-align: left;')
         self.clicked.emit()
 
+    def resizeEvent(self, event):
+        if self.isVisible():
+            self.elide()
+        super().resizeEvent(event)
 
-class NotificationWidget(notif_widget, QWidget):
-    def __init__(self, ntfcn_dict=None):
+    def elide(self):
+        self.setText(self.full_text)
+        cursor = QTextCursor(self.document())
+        cursor.setPosition(0)
+        end_position = self.cursorForPosition(QPoint(self.viewport().width(), 10)).position()
+        cursor.movePosition(
+            QtGui.QTextCursor.MoveOperation.Right,
+            QtGui.QTextCursor.MoveMode.KeepAnchor,
+            end_position)
+        difference = len(self.full_text) - len(cursor.selectedText())
+        if difference:
+            visible_text = self.full_text[0:(len(self.full_text) - difference - 3)] + '...'
+            self.setText(visible_text)
+            self.setToolTip(self.full_text)
+        else:
+            self.setText(self.full_text)
+            self.setToolTip('')
+
+    def showEvent(self, event):
+        self.elide()
+
+
+class NotificationWidget(QWidget):
+    def __init__(self, ntfcn_dict=None, main_window=None):
         super().__init__()
-        self.setupUi(self)
-        self.notifButton.setText(str(ntfcn_dict['ntfcn_id']))
+        self.tree_widget = None
+        self.main_window = main_window
+        self.setMinimumWidth(180)
+        self.verticalLayout = QVBoxLayout()
+        self.setLayout(self.verticalLayout)
+        self.verticalLayout.setSpacing(0)
+        self.verticalLayout.setContentsMargins(0, 0, 0, 0)
+        self.frame = QFrame()
+        sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
+        self.frame.setSizePolicy(sizePolicy)
+        self.horizontalLayout = QHBoxLayout(self.frame)
+        self.horizontalLayout.setSpacing(4)
+        self.horizontalLayout.setContentsMargins(6, 0, 16, 0)
+        self.label = NotificationLabel(str(ntfcn_dict['text']))
+
+        self.label.setMinimumSize(QSize(0, 25))
+        self.label.setMaximumSize(QSize(1000, 25))
+
+        self.horizontalLayout.addWidget(self.label)
+        self.Indicator = QWidget(self.frame)
+        self.Indicator.setMinimumSize(QSize(6, 6))
+        self.Indicator.setMaximumSize(QSize(6, 6))
+        self.Indicator.setStyleSheet(u"QWidget {background-color: rgb(237, 138, 52); border-radius: 3px}")
+
+        self.horizontalLayout.addWidget(self.Indicator, 0, Qt.AlignRight)
+        self.verticalLayout.addWidget(self.frame)
+
+        self.label.setText(str(ntfcn_dict['text']))
         self.notification_type = ntfcn_dict['type']
         self.ntfcn_id = ntfcn_dict['ntfcn_id']
         self.setMouseTracking(True)
         self.frame.setMouseTracking(True)
-        # if ntfcn_dict['read_status']:
-        #     self.Indicator.hide()
+
+        if self.notification_type == Notification.Types.DOC_FOLDER_CHANGE:
+            if not ntfcn_dict['receive_status']:
+                if ntfcn_dict['project_id'] == self.main_window.current_project_id:
+                    self.main_window.get_current_project_docs_dicts_list()
+                    self.main_window.fill_table(doc_type=ntfcn_dict['doc_type'])
+            self.label.clicked.connect(lambda: self.go_to_folder_if_DOC_FOLDER_CHANGE_type(ntfcn_dict))
+
+        if ntfcn_dict['read_status']:
+            self.Indicator.hide()
+
+    def set_read(self, notif_dict=None):
+        if self.Indicator.isVisible():
+            if not notif_dict['read_status']:
+                self.main_window.session.commit_query(set_read_status(self.main_window.session.email, self.ntfcn_id))
+                self.Indicator.hide()
+
+    def go_to_folder_if_DOC_FOLDER_CHANGE_type(self, notif_dict=None):
+        self.tree_widget = None
+
+        def set_tab():
+            if notif_dict['doc_type'] == 'design':
+                self.tree_widget = self.main_window.ui.designDocsStructureTreeWidget
+                if self.main_window.ui.tabWidget.currentIndex() != 0:
+                    self.main_window.ui.tabWidget.setCurrentIndex(0)
+            if notif_dict['doc_type'] == 'construction':
+                self.tree_widget = self.main_window.ui.constructionDocsStructureTreeWidget
+                if self.main_window.ui.tabWidget.currentIndex() != 1:
+                    self.main_window.ui.tabWidget.setCurrentIndex(1)
+            if notif_dict['doc_type'] == 'init_permit':
+                self.tree_widget = self.main_window.ui.initialPermitDocsStructureTreeWidget
+                if self.main_window.ui.tabWidget.currentIndex() != 2:
+                    self.main_window.ui.tabWidget.setCurrentIndex(2)
+
+        def search_tree_row(tree, place_id):
+            iterator = QTreeWidgetItemIterator(tree)
+            while iterator.value():
+                item = iterator.value()
+                if isinstance(item, RowElement):
+                    if item.place_id_list == ast.literal_eval(place_id):
+                        return item
+                iterator += 1
+
+        if notif_dict['project_id'] != self.main_window.current_project_id or self.main_window.current_project_id is None:
+            for project_widget in self.main_window.project_widget_list:
+                if project_widget.project_id == notif_dict['project_id']:
+                    project_widget.load_project()
+                    set_tab()
+                    tree_row = search_tree_row(self.tree_widget, notif_dict['place_id'])
+                    tree_row.select_row()
+        else:
+            set_tab()
+            tree_row = search_tree_row(self.tree_widget, notif_dict['place_id'])
+            tree_row.select_row()
+
+        self.set_read(notif_dict=notif_dict)
 
 

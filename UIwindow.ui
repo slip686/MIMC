@@ -7848,10 +7848,37 @@ border-radius: 6px</string>
                                    <verstretch>0</verstretch>
                                   </sizepolicy>
                                  </property>
+                                 <property name="mouseTracking">
+                                  <bool>true</bool>
+                                 </property>
                                  <property name="styleSheet">
                                   <string notr="true">#designDocsTableWidget {
 	background-color: rgb(165, 165, 165);
 	border-radius: 6px}</string>
+                                 </property>
+                                 <property name="editTriggers">
+                                  <set>QAbstractItemView::NoEditTriggers</set>
+                                 </property>
+                                 <property name="showDropIndicator" stdset="0">
+                                  <bool>false</bool>
+                                 </property>
+                                 <property name="dragEnabled">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="dragDropOverwriteMode">
+                                  <bool>false</bool>
+                                 </property>
+                                 <property name="dragDropMode">
+                                  <enum>QAbstractItemView::DragOnly</enum>
+                                 </property>
+                                 <property name="alternatingRowColors">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="selectionBehavior">
+                                  <enum>QAbstractItemView::SelectRows</enum>
+                                 </property>
+                                 <property name="cornerButtonEnabled">
+                                  <bool>false</bool>
                                  </property>
                                  <attribute name="horizontalHeaderStretchLastSection">
                                   <bool>false</bool>
@@ -8262,6 +8289,21 @@ border-radius: 6px</string>
 	background-color: rgb(165, 165, 165);
 	border-radius: 6px}</string>
                                  </property>
+                                 <property name="editTriggers">
+                                  <set>QAbstractItemView::NoEditTriggers</set>
+                                 </property>
+                                 <property name="dragEnabled">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="dragDropOverwriteMode">
+                                  <bool>false</bool>
+                                 </property>
+                                 <property name="dragDropMode">
+                                  <enum>QAbstractItemView::DragOnly</enum>
+                                 </property>
+                                 <property name="selectionBehavior">
+                                  <enum>QAbstractItemView::SelectRows</enum>
+                                 </property>
                                 </widget>
                                </item>
                               </layout>
@@ -8667,6 +8709,21 @@ border-radius: 6px</string>
                                   <string notr="true">#initDocsTableWidget {
 	background-color: rgb(165, 165, 165);
 	border-radius: 6px}</string>
+                                 </property>
+                                 <property name="editTriggers">
+                                  <set>QAbstractItemView::NoEditTriggers</set>
+                                 </property>
+                                 <property name="dragEnabled">
+                                  <bool>true</bool>
+                                 </property>
+                                 <property name="dragDropOverwriteMode">
+                                  <bool>false</bool>
+                                 </property>
+                                 <property name="dragDropMode">
+                                  <enum>QAbstractItemView::DragOnly</enum>
+                                 </property>
+                                 <property name="selectionBehavior">
+                                  <enum>QAbstractItemView::SelectRows</enum>
                                  </property>
                                 </widget>
                                </item>

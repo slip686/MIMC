@@ -15,10 +15,13 @@ def create_notification_table(email):
             sender_id integer,
             type varchar,
             comments varchar,
+            text varchar,
             time_send varchar,
             time_limit varchar,
             receive_status bool,
             read_status bool,
+            doc_type varchar,
+            place_id varchar,
             FOREIGN KEY (sender_id) REFERENCES users (user_id),
             FOREIGN KEY (project_id) REFERENCES projects (project_id)
             );
@@ -223,8 +226,8 @@ def get_user_data():
     return query
 
 
-def get_projects_ids():
-    query = """SELECT project_id FROM users_projects_party WHERE user_id = %s"""
+def get_projects_ids_and_roles():
+    query = """SELECT project_id, job_title FROM users_projects_party WHERE user_id = %s"""
     return query
 
 
@@ -354,7 +357,8 @@ def set_ntfcn_func_and_trigger(email):
                         BEGIN payload := json_build_object('project_id',NEW.project_id, 'doc_id', NEW.doc_id, 
                             'sender_id', NEW.sender_id,'ntfcn_id', NEW.ntfcn_id, 'comments', NEW.comments, 
                             'receive_status', NEW.receive_status, 'type', NEW.type, 'time_send', NEW.time_send, 
-                            'time_limit', NEW.time_limit);
+                            'time_limit', NEW.time_limit, 'text', NEW.text, 'doc_type', NEW.doc_type, 
+                            'place_id', NEW.place_id);
                         PERFORM pg_notify('%s_msg_channel', payload);
                         RETURN NEW;
                         END;$$;
@@ -370,4 +374,32 @@ def set_ntfcn_func_and_trigger(email):
 def set_receive_status(email, ntfcn_id):
     query = ["""UPDATE public."%s_notification" SET receive_status = true WHERE ntfcn_id = %s;""",
              (AsIs(email), ntfcn_id)]
-    return (query)
+    return query
+
+def set_read_status(email, ntfcn_id):
+    query = ["""UPDATE public."%s_notification" SET read_status = true WHERE ntfcn_id = %s;""",
+             (AsIs(email), ntfcn_id)]
+    return query
+
+
+def move_to_folder(project_name, doc_id, new_folder_place_id):
+    query = ["""UPDATE "%s docs" SET place_id = %s WHERE doc_id = %s""",
+             (AsIs(project_name), new_folder_place_id, doc_id)]
+    return query
+
+def get_all_users_ntfcn_tables(project_id):
+    query = ["""SELECT notification_table FROM users """]
+    return query
+
+def get_users_data_on_project(project_id):
+    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users_projects_party 
+    INNER JOIN users ON users_projects_party.user_id = users.user_id WHERE project_id = %s) row)""", (project_id,)]
+    return query
+
+
+def send_notification(receiver_ntfcn_table, project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, place_id):
+    query = ["""INSERT INTO "%s" (project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, place_id) 
+    VALUES (%s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s')""", (AsIs(receiver_ntfcn_table), project_id, doc_id, sender_id,
+                                                           AsIs(type), AsIs(comments), AsIs(time_send),
+                                                           AsIs(time_limit), AsIs(text), AsIs(doc_type), AsIs(place_id))]
+    return query

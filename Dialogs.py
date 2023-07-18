@@ -4,7 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Thread
 
-from PySide6.QtCore import Qt, QBuffer, QRect, QSize, QThread, QObject, Slot, Signal
+from PySide6.QtCore import Qt, QBuffer, QRect, QSize, QThread, QObject, Slot, Signal, QDate
 import resources_rc_rc
 from PySide6.QtGui import QMovie, QIcon, QPixmap, QPainter, QColor
 from PySide6.QtPdf import QPdfDocument
@@ -86,7 +86,15 @@ class AddDocDialog(QDialog):
         self.dialog.releaseToWorkDateEdit.dateChanged.connect(lambda: self.set_release_to_work_date())
         self.dialog.startDevelopDateEdit.dateChanged.connect(lambda: self.set_start_develop_date())
         self.dialog.endDevelopDateEdit.dateChanged.connect(lambda: self.set_end_develop_date())
+
         self.dialog.addDocBtn.clicked.connect(lambda: self.add_document())
+        # self.dialog.addDocBtn.clicked.connect(lambda: dates(self.document.release_to_work_date,
+        #                                                     self.document.start_develop_date,
+        #                                                     self.document.end_develop_date))
+        #
+        # def dates(date1: QDate, date2: QDate, date3: QDate):
+        #     print(type(date1), date2, date3)
+
         self.dialog.deleteEditableArchive.clicked.connect(lambda: self.delete_zipped_archive_file_path())
         self.dialog.deleteAdditionalDoc.clicked.connect(lambda: self.delete_support_doc_file_path())
 
@@ -116,8 +124,6 @@ class AddDocDialog(QDialog):
 
         if self.multiple_documents:
             set_doc_type(self.window_object)
-        # else:
-        #     set_doc_type(self.parent())
 
         new_folder = None
         folder_exists = True
@@ -129,7 +135,6 @@ class AddDocDialog(QDialog):
         return new_folder
 
     def set_doc_sub_folder_name(self):
-
         if not self.multiple_documents:
             self.document.file_folder = self.create_folder_name()
         else:
@@ -209,13 +214,13 @@ class AddDocDialog(QDialog):
         self.dialog.label_16.setText('Drop file here')
 
     def set_release_to_work_date(self):
-        self.document.release_to_work_date = str(self.dialog.releaseToWorkDateEdit.date())
+        self.document.release_to_work_date = self.dialog.releaseToWorkDateEdit.date().toPython().strftime('%d-%m-%Y')
 
     def set_start_develop_date(self):
-        self.document.start_develop_date = str(self.dialog.startDevelopDateEdit.date())
+        self.document.start_develop_date = self.dialog.startDevelopDateEdit.date().toPython().strftime('%d-%m-%Y')
 
     def set_end_develop_date(self):
-        self.document.end_develop_date = str(self.dialog.endDevelopDateEdit.date())
+        self.document.end_develop_date = self.dialog.endDevelopDateEdit.date().toPython().strftime('%d-%m-%Y')
 
     def add_document_function(self, document: ProjectDocument):
         def check_cypher_and_create_folders(window_object):
