@@ -1641,7 +1641,7 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
 
         self.mainFileViewStackedWidget.setCurrentIndex(0)
-        self.worksTabWidget.setCurrentIndex(2)
+        self.worksTabWidget.setCurrentIndex(0)
         self.contentsStackedWidget.setCurrentIndex(0)
         self.addNewMainFileVersionStack.setCurrentIndex(0)
         self.addNewMainVersionSupArchiveStack.setCurrentIndex(0)

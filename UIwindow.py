@@ -3061,7 +3061,7 @@ class Ui_MainWindow(object):
         self.designDocsTableWidget.setDragEnabled(True)
         self.designDocsTableWidget.setDragDropOverwriteMode(False)
         self.designDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
-        self.designDocsTableWidget.setAlternatingRowColors(True)
+        self.designDocsTableWidget.setAlternatingRowColors(False)
         self.designDocsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.designDocsTableWidget.setCornerButtonEnabled(False)
         self.designDocsTableWidget.horizontalHeader().setStretchLastSection(False)
@@ -3228,6 +3228,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(165, 165, 165);\n"
 "	border-radius: 6px}")
         self.constructionDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.constructionDocsTableWidget.setProperty("showDropIndicator", False)
         self.constructionDocsTableWidget.setDragEnabled(True)
         self.constructionDocsTableWidget.setDragDropOverwriteMode(False)
         self.constructionDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
@@ -3395,6 +3396,7 @@ class Ui_MainWindow(object):
 "	background-color: rgb(165, 165, 165);\n"
 "	border-radius: 6px}")
         self.initDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
+        self.initDocsTableWidget.setProperty("showDropIndicator", False)
         self.initDocsTableWidget.setDragEnabled(True)
         self.initDocsTableWidget.setDragDropOverwriteMode(False)
         self.initDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
@@ -3494,7 +3496,7 @@ class Ui_MainWindow(object):
         self.mainMenuStack.setCurrentIndex(1)
         self.regStackedWidget.setCurrentIndex(0)
         self.stackedWidget.setCurrentIndex(0)
-        self.stackedWidget_3.setCurrentIndex(1)
+        self.stackedWidget_3.setCurrentIndex(2)
         self.interfaceBodyStackedWidget.setCurrentIndex(2)
         self.newProjectStackedWidget.setCurrentIndex(1)
         self.tabWidget.setCurrentIndex(0)

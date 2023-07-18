@@ -2,7 +2,7 @@ from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
     QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent, QModelIndex, qDebug
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption, QPen, QDropEvent, QPainter, \
-    QFontMetrics, QTextDocument, QTextCursor
+    QFontMetrics, QTextDocument, QTextCursor, QPalette, QColor
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
     QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter, QScrollArea, QLayout, \
@@ -901,6 +901,13 @@ class QCustomTableWidget(QTableWidget):
                                                'QScrollBar::sub-line:vertical {border: none; background: none}')
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.setAlternatingRowColors(True)
+        # self.color1 = QColor(100,120,56)
+        # self.color2 = QColor(100, 120, 100)
+        # self.colors = self.palette()
+        # self.colors.setColor(QPalette.Base, self.color1)
+        # self.colors.setColor(QPalette.AlternateBase, self.color2)
+        # self.setPalette(self.colors)
 
         self.current_Width = None
         self.current_Column = None

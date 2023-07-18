@@ -731,7 +731,7 @@ QPushButton:pressed {
 QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165, 165);}</string>
                  </property>
                  <property name="currentIndex">
-                  <number>2</number>
+                  <number>0</number>
                  </property>
                  <widget class="QWidget" name="actionsTab">
                   <attribute name="title">
