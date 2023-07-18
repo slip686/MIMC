@@ -731,7 +731,7 @@ QPushButton:pressed {
 QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165, 165);}</string>
                  </property>
                  <property name="currentIndex">
-                  <number>0</number>
+                  <number>2</number>
                  </property>
                  <widget class="QWidget" name="actionsTab">
                   <attribute name="title">
@@ -755,6 +755,9 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
                    </property>
                    <item>
                     <widget class="QFrame" name="contentsMainFrame">
+                     <property name="styleSheet">
+                      <string notr="true">background-color: rgb(136,136,136)</string>
+                     </property>
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
                      </property>
@@ -3779,6 +3782,9 @@ border-radius: 3px</string>
                    </property>
                    <item>
                     <widget class="QFrame" name="commentsFrame">
+                     <property name="styleSheet">
+                      <string notr="true">background-color: rgb(136,136,136)</string>
+                     </property>
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
                      </property>
@@ -3811,6 +3817,9 @@ border-radius: 3px</string>
                    </property>
                    <item>
                     <widget class="QFrame" name="flowFrame">
+                     <property name="styleSheet">
+                      <string notr="true">background-color: rgb(136,136,136)</string>
+                     </property>
                      <property name="frameShape">
                       <enum>QFrame::StyledPanel</enum>
                      </property>

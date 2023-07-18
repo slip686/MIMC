@@ -355,6 +355,7 @@ class Ui_Dialog(object):
         self.verticalLayout_9.setContentsMargins(0, 0, 0, 0)
         self.contentsMainFrame = QFrame(self.actionsTab)
         self.contentsMainFrame.setObjectName(u"contentsMainFrame")
+        self.contentsMainFrame.setStyleSheet(u"background-color: rgb(136,136,136)")
         self.contentsMainFrame.setFrameShape(QFrame.StyledPanel)
         self.contentsMainFrame.setFrameShadow(QFrame.Raised)
         self.horizontalLayout_4 = QHBoxLayout(self.contentsMainFrame)
@@ -1575,6 +1576,7 @@ class Ui_Dialog(object):
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
         self.commentsFrame = QFrame(self.commentsTab)
         self.commentsFrame.setObjectName(u"commentsFrame")
+        self.commentsFrame.setStyleSheet(u"background-color: rgb(136,136,136)")
         self.commentsFrame.setFrameShape(QFrame.StyledPanel)
         self.commentsFrame.setFrameShadow(QFrame.Raised)
 
@@ -1589,6 +1591,7 @@ class Ui_Dialog(object):
         self.verticalLayout_8.setContentsMargins(0, 0, 0, 0)
         self.flowFrame = QFrame(self.flow)
         self.flowFrame.setObjectName(u"flowFrame")
+        self.flowFrame.setStyleSheet(u"background-color: rgb(136,136,136)")
         self.flowFrame.setFrameShape(QFrame.StyledPanel)
         self.flowFrame.setFrameShadow(QFrame.Raised)
 
@@ -1638,7 +1641,7 @@ class Ui_Dialog(object):
         self.retranslateUi(Dialog)
 
         self.mainFileViewStackedWidget.setCurrentIndex(0)
-        self.worksTabWidget.setCurrentIndex(0)
+        self.worksTabWidget.setCurrentIndex(2)
         self.contentsStackedWidget.setCurrentIndex(0)
         self.addNewMainFileVersionStack.setCurrentIndex(0)
         self.addNewMainVersionSupArchiveStack.setCurrentIndex(0)
