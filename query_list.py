@@ -358,7 +358,7 @@ def set_ntfcn_func_and_trigger(email):
                             'sender_id', NEW.sender_id,'ntfcn_id', NEW.ntfcn_id, 'comments', NEW.comments, 
                             'receive_status', NEW.receive_status, 'type', NEW.type, 'time_send', NEW.time_send, 
                             'time_limit', NEW.time_limit, 'text', NEW.text, 'doc_type', NEW.doc_type, 
-                            'place_id', NEW.place_id);
+                            'place_id', NEW.place_id, 'read_status', NEW.read_status);
                         PERFORM pg_notify('%s_msg_channel', payload);
                         RETURN NEW;
                         END;$$;
