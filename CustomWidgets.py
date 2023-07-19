@@ -1,8 +1,8 @@
 from PySide6 import QtWidgets, QtCore, QtGui
 from PySide6.QtCore import Qt, QPoint, QSize, QVariantAnimation, Signal, QRect, QTimer, QPropertyAnimation, QEventLoop, \
-    QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent, QModelIndex, qDebug
+    QMimeData, QEasingCurve, QSortFilterProxyModel, QEvent, QModelIndex, qDebug, QRectF
 from PySide6.QtGui import QIcon, QCursor, QAction, QPixmap, QDrag, QFont, QTextOption, QPen, QDropEvent, QPainter, \
-    QFontMetrics, QTextDocument, QTextCursor, QPalette, QColor
+    QFontMetrics, QTextDocument, QTextCursor, QPalette, QColor, QRegion, QPainterPath
 from PySide6.QtWidgets import QHeaderView, QWidget, QPushButton, QHBoxLayout, QMenu, QSplitter, QFrame, QVBoxLayout, \
     QLabel, QCheckBox, QTableWidget, QAbstractItemView, QScrollBar, QGraphicsOpacityEffect, QTreeWidget, QSizePolicy, \
     QLineEdit, QTextEdit, QTreeWidgetItem, QTreeWidgetItemIterator, QComboBox, QCompleter, QScrollArea, QLayout, \
@@ -16,7 +16,7 @@ class Header(QHeaderView):
         self.setSectionsMovable(True)
         self.setStyleSheet(u'QHeaderView::section {background-color: rgb(136,136,136);'
                            u'border-style:none;'
-                           u'border-right: 3px solid rgb(165, 165, 165)}')
+                           u'border-right: 2px solid rgb(165, 165, 165)}')
         self.cells = []
         self.names_list = columns_names_list
         self.logical_indexes_list = logical_indexes_list
@@ -380,7 +380,7 @@ class HeaderCell(QWidget):
         self.contextBtn.setIcon(icon)
         self.setStyleSheet(u"QPushButton:pressed {background-color: rgb(120, 120, 120); border-radius: 4px}\n"
                            "QPushButton::menu-indicator{width:0px;}"
-                           "QWidget {background-color: rgb(136,136,136)}")
+                           "QWidget {background-color: rgb(136,136,136);}")
         self.label.setProperty("cursor", QCursor(Qt.ArrowCursor))
         self.contextBtn.setProperty("cursor", QCursor(Qt.ArrowCursor))
 
@@ -463,9 +463,12 @@ class HeaderCell(QWidget):
                     u'background-color: rgb(160, 160, 160);\n'
                     u'selection-background-color: rgb(110, 110, 110);\n'
                     u'border-bottom-left-radius: 6px;\n'
+                    u'border-bottom-right-radius: 0px;\n'
                     u'gridline-color: rgb(136, 136, 136)')
+                # self.parent_table.left_pinned_table.set_mask('L')
+
                 self.parent_table.inner_left_table_frame_layout.addWidget(self.parent_table.left_pinned_table)
-                self.parent_table.inner_left_table_frame_layout.setContentsMargins(0, 0, 3, 0)
+                self.parent_table.inner_left_table_frame_layout.setContentsMargins(0, 0, 2, 0)
                 self.parent_table.left_pinned_table.pinned_table = True
                 self.parent_table.left_pinned_table.verticalHeader().setVisible(False)
 
@@ -481,8 +484,10 @@ class HeaderCell(QWidget):
                     self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
                                                     u'background-color: rgb(160, 160, 160);\n'
                                                     u'selection-background-color: rgb(110, 110, 110);\n'
+                                                    u'border-bottom-left-radius: 0px;\n'
                                                     u'border-bottom-right-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask('R')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
                     self.parent_table.splitter.setHandleWidth(3)
                     self.parent_table.outer_layout.addWidget(self.parent_table.splitter)
@@ -495,6 +500,7 @@ class HeaderCell(QWidget):
                     self.parent_table.inner_middle_table_frame_layout.addWidget(self.parent_table)
                     self.parent_table.inner_middle_table_frame_layout.setStretch(0, 1)
                     self.parent_table.inner_middle_table_frame.setParent(self.parent_table.splitter)
+                    # self.parent_table.set_mask('R')
                     self.parent_table.splitter.setStretchFactor(1, 1)
                 else:
                     self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
@@ -502,6 +508,7 @@ class HeaderCell(QWidget):
                                                     u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask(None)
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
                     self.parent_table.splitter.insertWidget(0, self.parent_table.inner_left_table_frame)
 
@@ -522,6 +529,7 @@ class HeaderCell(QWidget):
                                                     u'border-bottom-right-radius: 6px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask('R')
                 else:
                     self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
                                                     u'background-color: rgb(160, 160, 160);\n'
@@ -529,6 +537,7 @@ class HeaderCell(QWidget):
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask(None)
 
                 self.parent_table.splitter.insertWidget(0, self.parent_table.inner_left_table_frame)
                 self.parent_table.left_pinned_table.pinned_table = True
@@ -562,6 +571,7 @@ class HeaderCell(QWidget):
                     u'selection-background-color: rgb(110, 110, 110);\n'
                     u'border-bottom-right-radius: 6px;\n '
                     u'gridline-color: rgb(136, 136, 136)')
+                # self.parent_table.right_pinned_table.set_mask('R')
                 self.parent_table.inner_right_table_frame_layout.addWidget(self.parent_table.right_pinned_table)
                 self.parent_table.inner_right_table_frame_layout.setContentsMargins(3, 0, 0, 0)
                 self.parent_table.right_pinned_table.pinned_table = True
@@ -580,12 +590,13 @@ class HeaderCell(QWidget):
                                                     u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-left-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask('L')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
                     self.parent_table.splitter.setHandleWidth(3)
                     self.parent_table.outer_layout.addWidget(self.parent_table.splitter)
                     self.parent_table.setParent(self.parent_table.inner_middle_table_frame)
                     self.parent_table.inner_middle_table_frame_layout.addWidget(self.parent_table)
-                    self.parent_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 3, 0)
+                    self.parent_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 2, 0)
                     self.parent_table.inner_middle_table_frame_layout.setSpacing(0)
                     self.parent_table.inner_middle_table_frame.setParent(self.parent_table.splitter)
                     self.parent_table.splitter.insertWidget(1, self.parent_table.inner_right_table_frame)
@@ -596,6 +607,7 @@ class HeaderCell(QWidget):
                                                     u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask(None)
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
                     self.parent_table.splitter.insertWidget(2, self.parent_table.inner_right_table_frame)
             else:
@@ -615,6 +627,7 @@ class HeaderCell(QWidget):
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask('L')
                 else:
                     self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
                                                     u'background-color: rgb(160, 160, 160);\n'
@@ -622,6 +635,7 @@ class HeaderCell(QWidget):
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
+                    # self.parent_table.set_mask(None)
 
                 self.parent_table.splitter.insertWidget(2, self.parent_table.inner_right_table_frame)
                 self.parent_table.right_pinned_table.pinned_table = True
@@ -739,6 +753,7 @@ class HeaderCell(QWidget):
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
+                    # self.reference_table.set_mask('LR')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
                     self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
@@ -747,6 +762,7 @@ class HeaderCell(QWidget):
                                                        u'border-bottom-right-radius: 0px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
+                    # self.reference_table.set_mask('L')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 3, 0)
 
             elif self.parent_table.objectName() == 'right_table':
@@ -770,6 +786,7 @@ class HeaderCell(QWidget):
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
+                    # self.reference_table.set_mask('LR')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
                     self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
@@ -778,6 +795,7 @@ class HeaderCell(QWidget):
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 0px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
+                    # self.reference_table.set_mask('R')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 0, 0)
 
     def show_columns_selection_menu(self):
@@ -931,6 +949,8 @@ class QCustomTableWidget(QTableWidget):
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
 
+        self.current_mask = None
+
         self.current_Width = None
         self.current_Column = None
         self.horizontalHeader().setStretchLastSection(True)
@@ -998,12 +1018,21 @@ class QCustomTableWidget(QTableWidget):
 
         self.itemSelectionChanged.connect(lambda: self.set_selected_row_num())
 
+        self.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                           u'background-color: rgb(160, 160, 160);\n'
+                           u'selection-background-color: rgb(110, 110, 110);\n'
+                           u'border-bottom-left-radius: 6px;\n'
+                           u'border-bottom-right-radius: 6px;\n'
+                           u'gridline-color: rgb(136, 136, 136)')
+
     def scrollContentsBy(self, dx, dy):
         super(QCustomTableWidget, self).scrollContentsBy(dx, dy)
         if dx != 0:
             self.horizontalHeader().fixPositions()
 
     def resizeEvent(self, event):
+        # if self.current_mask:
+        #     self.set_mask(self.current_mask)
         self.get_region()
         if self.horizontal_scroll_bar:
             self.correct_scroll_bar_position()
@@ -1020,7 +1049,6 @@ class QCustomTableWidget(QTableWidget):
                 last_section_width = self.width() - previous_sections_width
                 self.setColumnWidth(self.columnCount() - 1, last_section_width)
         super(QCustomTableWidget, self).resizeEvent(event)
-        # self.correct_row_heights()
         self.resized.emit()
 
     def clear_swap_data(self):
@@ -1206,6 +1234,63 @@ class QCustomTableWidget(QTableWidget):
 
     def row_select(self, row_num):
         self.selectRow(row_num)
+
+    # def set_mask(self, corners):
+    #     self.current_mask = corners
+    #     radius = 7
+    #     path = None
+    #     if corners == 'LR':
+    #         path = QPainterPath()
+    #         # path.setFillRule(Qt.WindingFill)
+    #         path.moveTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - radius)
+    #         path.arcTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - 2 * radius,
+    #                    2 * radius, 2 * radius, 180.0, 90.0)
+    #         path.lineTo(self.geometry().x() + self.geometry().width() - radius,
+    #                     self.geometry().y() + self.geometry().height())
+    #         path.arcTo(self.geometry().x() + self.geometry().width() - 2 * radius,
+    #                    self.geometry().y() + self.geometry().height() - 2 * radius,
+    #                    2 * radius, 2 * radius, 270.0, 90.0)
+    #         path.lineTo(self.geometry().x() + self.geometry().width(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - 6)
+    #
+    #     if corners == 'L':
+    #         path = QPainterPath()
+    #         path.setFillRule(Qt.WindingFill)
+    #         path.moveTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - radius)
+    #         path.arcTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - 2 * radius,
+    #                    2 * radius, 2 * radius, 180.0, 90.0)
+    #         path.lineTo(self.geometry().x() + self.geometry().width(),
+    #                     self.geometry().y() + self.geometry().height())
+    #         path.lineTo(self.geometry().x() + self.geometry().width(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y() + self.geometry().height() - radius)
+    #
+    #     if corners == 'R':
+    #         path = QPainterPath()
+    #         path.setFillRule(Qt.WindingFill)
+    #         path.moveTo(self.geometry().x(), self.geometry().y() + self.geometry().height())
+    #         path.lineTo(self.geometry().x() + self.geometry().width() - radius,
+    #                     self.geometry().y() + self.geometry().height())
+    #         path.arcTo(self.geometry().x() + self.geometry().width() - 2 * radius,
+    #                    self.geometry().y() + self.geometry().height() - 2 * radius,
+    #                    2 * radius, 2 * radius, 270.0, 90.0)
+    #         path.lineTo(self.geometry().x() + self.geometry().width(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y() + self.geometry().height())
+    #
+    #     if not corners:
+    #         path = QPainterPath()
+    #         path.setFillRule(Qt.WindingFill)
+    #         path.moveTo(self.geometry().x(), self.geometry().y() + self.geometry().height())
+    #         path.lineTo(self.geometry().x() + self.geometry().width(),
+    #                     self.geometry().y() + self.geometry().height())
+    #         path.lineTo(self.geometry().x() + self.geometry().width(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y())
+    #         path.lineTo(self.geometry().x(), self.geometry().y() + self.geometry().height())
+    #
+    #     mask = QRegion(path.toFillPolygon().toPolygon())
+    #     self.setMask(mask)
 
 
 class CQLabel2(QLabel):

@@ -1890,6 +1890,7 @@ class MainWindow(QMainWindow):
             def prepare_table(table_object: QCustomTableWidget):
                 table_object.horizontalHeader().show_hide_scrollbars()
                 table_object.get_region()
+                # table_object.set_mask(corners='LR')
 
             if self.ui.interfaceBodyStackedWidget.anim_group:
                 self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: prepare_table(table))

@@ -7852,14 +7852,13 @@ border-radius: 6px</string>
                                   <bool>true</bool>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">
-background-color: rgb(160,160,160);
+                                  <string notr="true">background-color: rgb(160,160,160);
+border-style: outset;
 selection-background-color: rgb(110, 110, 110);
 gridline-color: rgb(136, 136, 136);
-border: 0px solid;
-border-bottom-right-radius: 6px;
-border-bottom-left-radius: 6px;
 alternate-background-color: rgb(148, 148, 148);
+border-bottom-left-radius: 6px;
+border-bottom-right-radius: 6px;
 </string>
                                  </property>
                                  <property name="editTriggers">
@@ -8291,12 +8290,10 @@ border-radius: 6px</string>
                                   </sizepolicy>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">alternate-background-color: rgb(148, 148, 148);
-background-color: rgb(160,160,160);
+                                  <string notr="true">background-color: rgb(160,160,160);
 selection-background-color: rgb(110, 110, 110);
-border-bottom-right-radius: 6px;
-border-bottom-left-radius: 6px;
-gridline-color: rgb(136, 136, 136)</string>
+gridline-color: rgb(136, 136, 136);
+alternate-background-color: rgb(148, 148, 148);</string>
                                  </property>
                                  <property name="editTriggers">
                                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -8718,12 +8715,10 @@ border-radius: 6px</string>
                                   </sizepolicy>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">alternate-background-color: rgb(148, 148, 148);
-background-color: rgb(160,160,160);
+                                  <string notr="true">background-color: rgb(160,160,160);
 selection-background-color: rgb(110, 110, 110);
-border-bottom-right-radius: 6px;
-border-bottom-left-radius: 6px;
-gridline-color: rgb(136, 136, 136)</string>
+gridline-color: rgb(136, 136, 136);
+alternate-background-color: rgb(148, 148, 148);</string>
                                  </property>
                                  <property name="editTriggers">
                                   <set>QAbstractItemView::NoEditTriggers</set>
