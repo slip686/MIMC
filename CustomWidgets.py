@@ -1021,6 +1021,7 @@ class QCustomTableWidget(QTableWidget):
         self.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
                            u'background-color: rgb(160, 160, 160);\n'
                            u'selection-background-color: rgb(110, 110, 110);\n'
+                           u'selection-color: white;\n'
                            u'border-bottom-left-radius: 6px;\n'
                            u'border-bottom-right-radius: 6px;\n'
                            u'gridline-color: rgb(136, 136, 136)')
@@ -1692,14 +1693,16 @@ class CQTreeWidget(QTreeWidget):
         super(CQTreeWidget, self).__init__(parent)
         self.current_folder = None
         self.current_folder_path = None
-        self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
-                                               'border-top-right-radius: 6px;\n'
-                                               'border-bottom-right-radius: 6px}'
-                                               'QScrollBar::handle:vertical {background-color: rgb(136,136,136);\n'
-                                               'border-radius: 4px;\n'
-                                               'margin: 3px}'
-                                               'QScrollBar::add-line:vertical {border: none; background: none}'
-                                               'QScrollBar::sub-line:vertical {border: none; background: none}')
+        self.verticalScrollBar().setStyleSheet(u'QScrollBar {background: rgb(165,165,165);\n'
+                                               u'border-top-right-radius: 6px;\n'
+                                               u'border-bottom-right-radius: 6px;}\n'
+                                               u'QScrollBar::handle {background-color: rgb(136,136,136);\n'
+                                               u'border-radius: 4px;\n'
+                                               u'margin: 4px}'
+                                               u'QScrollBar::add-line {border: none; background: none}'
+                                               u'QScrollBar::sub-line {border: none; background: none}'
+                                               u'QScrollBar::add-page {background: none}'
+                                               u'QScrollBar::sub-page {background: none}')
 
 
 class CQFramePDFFile(QFrame):
