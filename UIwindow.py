@@ -3053,15 +3053,21 @@ class Ui_MainWindow(object):
         sizePolicy.setHeightForWidth(self.designDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.designDocsTableWidget.setSizePolicy(sizePolicy)
         self.designDocsTableWidget.setMouseTracking(True)
-        self.designDocsTableWidget.setStyleSheet(u"#designDocsTableWidget {\n"
-"	background-color: rgb(165, 165, 165);\n"
-"	border-radius: 6px}")
+        self.designDocsTableWidget.setStyleSheet(u"\n"
+"background-color: rgb(160,160,160);\n"
+"selection-background-color: rgb(110, 110, 110);\n"
+"gridline-color: rgb(136, 136, 136);\n"
+"border: 0px solid;\n"
+"border-bottom-right-radius: 6px;\n"
+"border-bottom-left-radius: 6px;\n"
+"alternate-background-color: rgb(148, 148, 148);\n"
+"")
         self.designDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.designDocsTableWidget.setProperty("showDropIndicator", False)
         self.designDocsTableWidget.setDragEnabled(True)
         self.designDocsTableWidget.setDragDropOverwriteMode(False)
         self.designDocsTableWidget.setDragDropMode(QAbstractItemView.DragOnly)
-        self.designDocsTableWidget.setAlternatingRowColors(False)
+        self.designDocsTableWidget.setAlternatingRowColors(True)
         self.designDocsTableWidget.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.designDocsTableWidget.setCornerButtonEnabled(False)
         self.designDocsTableWidget.horizontalHeader().setStretchLastSection(False)
@@ -3224,9 +3230,12 @@ class Ui_MainWindow(object):
         self.constructionDocsTableWidget.setObjectName(u"constructionDocsTableWidget")
         sizePolicy.setHeightForWidth(self.constructionDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.constructionDocsTableWidget.setSizePolicy(sizePolicy)
-        self.constructionDocsTableWidget.setStyleSheet(u"#constructionDocsTableWidget {\n"
-"	background-color: rgb(165, 165, 165);\n"
-"	border-radius: 6px}")
+        self.constructionDocsTableWidget.setStyleSheet(u"alternate-background-color: rgb(148, 148, 148);\n"
+"background-color: rgb(160,160,160);\n"
+"selection-background-color: rgb(110, 110, 110);\n"
+"border-bottom-right-radius: 6px;\n"
+"border-bottom-left-radius: 6px;\n"
+"gridline-color: rgb(136, 136, 136)")
         self.constructionDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.constructionDocsTableWidget.setProperty("showDropIndicator", False)
         self.constructionDocsTableWidget.setDragEnabled(True)
@@ -3392,9 +3401,12 @@ class Ui_MainWindow(object):
         self.initDocsTableWidget.setObjectName(u"initDocsTableWidget")
         sizePolicy.setHeightForWidth(self.initDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.initDocsTableWidget.setSizePolicy(sizePolicy)
-        self.initDocsTableWidget.setStyleSheet(u"#initDocsTableWidget {\n"
-"	background-color: rgb(165, 165, 165);\n"
-"	border-radius: 6px}")
+        self.initDocsTableWidget.setStyleSheet(u"alternate-background-color: rgb(148, 148, 148);\n"
+"background-color: rgb(160,160,160);\n"
+"selection-background-color: rgb(110, 110, 110);\n"
+"border-bottom-right-radius: 6px;\n"
+"border-bottom-left-radius: 6px;\n"
+"gridline-color: rgb(136, 136, 136)")
         self.initDocsTableWidget.setEditTriggers(QAbstractItemView.NoEditTriggers)
         self.initDocsTableWidget.setProperty("showDropIndicator", False)
         self.initDocsTableWidget.setDragEnabled(True)

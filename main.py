@@ -1889,12 +1889,6 @@ class MainWindow(QMainWindow):
 
             def prepare_table(table_object: QCustomTableWidget):
                 table_object.horizontalHeader().show_hide_scrollbars()
-                table_object.setStyleSheet(u'QCustomTableWidget{background-color: rgb(165, 165, 165);\n'
-                                           u'selection-background-color: rgb(136, 136, 136)};\n'
-                                           u'QCustomTableWidget{alternate-background-color: blue};'
-                                           u'border-bottom-right-radius: 6px;\n'
-                                           u'border-bottom-left-radius: 6px;\n'
-                                           u'gridline-color: rgb(136, 136, 136)')
                 table_object.get_region()
 
             if self.ui.interfaceBodyStackedWidget.anim_group:

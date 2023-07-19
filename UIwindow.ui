@@ -7852,9 +7852,15 @@ border-radius: 6px</string>
                                   <bool>true</bool>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">#designDocsTableWidget {
-	background-color: rgb(165, 165, 165);
-	border-radius: 6px}</string>
+                                  <string notr="true">
+background-color: rgb(160,160,160);
+selection-background-color: rgb(110, 110, 110);
+gridline-color: rgb(136, 136, 136);
+border: 0px solid;
+border-bottom-right-radius: 6px;
+border-bottom-left-radius: 6px;
+alternate-background-color: rgb(148, 148, 148);
+</string>
                                  </property>
                                  <property name="editTriggers">
                                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -7872,7 +7878,7 @@ border-radius: 6px</string>
                                   <enum>QAbstractItemView::DragOnly</enum>
                                  </property>
                                  <property name="alternatingRowColors">
-                                  <bool>false</bool>
+                                  <bool>true</bool>
                                  </property>
                                  <property name="selectionBehavior">
                                   <enum>QAbstractItemView::SelectRows</enum>
@@ -8285,9 +8291,12 @@ border-radius: 6px</string>
                                   </sizepolicy>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">#constructionDocsTableWidget {
-	background-color: rgb(165, 165, 165);
-	border-radius: 6px}</string>
+                                  <string notr="true">alternate-background-color: rgb(148, 148, 148);
+background-color: rgb(160,160,160);
+selection-background-color: rgb(110, 110, 110);
+border-bottom-right-radius: 6px;
+border-bottom-left-radius: 6px;
+gridline-color: rgb(136, 136, 136)</string>
                                  </property>
                                  <property name="editTriggers">
                                   <set>QAbstractItemView::NoEditTriggers</set>
@@ -8709,9 +8718,12 @@ border-radius: 6px</string>
                                   </sizepolicy>
                                  </property>
                                  <property name="styleSheet">
-                                  <string notr="true">#initDocsTableWidget {
-	background-color: rgb(165, 165, 165);
-	border-radius: 6px}</string>
+                                  <string notr="true">alternate-background-color: rgb(148, 148, 148);
+background-color: rgb(160,160,160);
+selection-background-color: rgb(110, 110, 110);
+border-bottom-right-radius: 6px;
+border-bottom-left-radius: 6px;
+gridline-color: rgb(136, 136, 136)</string>
                                  </property>
                                  <property name="editTriggers">
                                   <set>QAbstractItemView::NoEditTriggers</set>

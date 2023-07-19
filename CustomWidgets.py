@@ -457,9 +457,13 @@ class HeaderCell(QWidget):
 
                 self.parent_table.left_pinned_table.reference_table = self.parent_table
                 self.parent_table.left_pinned_table.setObjectName('left_table')
-                self.parent_table.left_pinned_table.setStyleSheet(u'background-color: rgb(165,165,165);\n'
-                                                                  u'border-bottom-left-radius: 6px;\n'
-                                                                  u'gridline-color: rgb(136, 136, 136)')
+
+                self.parent_table.left_pinned_table.setStyleSheet(
+                    u'alternate-background-color: rgb(148, 148, 148);\n'
+                    u'background-color: rgb(160, 160, 160);\n'
+                    u'selection-background-color: rgb(110, 110, 110);\n'
+                    u'border-bottom-left-radius: 6px;\n'
+                    u'gridline-color: rgb(136, 136, 136)')
                 self.parent_table.inner_left_table_frame_layout.addWidget(self.parent_table.left_pinned_table)
                 self.parent_table.inner_left_table_frame_layout.setContentsMargins(0, 0, 3, 0)
                 self.parent_table.left_pinned_table.pinned_table = True
@@ -474,7 +478,9 @@ class HeaderCell(QWidget):
                     parent=self.parent_table.left_pinned_table)
 
                 if not self.parent_table.splitter:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-right-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
@@ -491,7 +497,9 @@ class HeaderCell(QWidget):
                     self.parent_table.inner_middle_table_frame.setParent(self.parent_table.splitter)
                     self.parent_table.splitter.setStretchFactor(1, 1)
                 else:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
@@ -508,12 +516,16 @@ class HeaderCell(QWidget):
                             if k.objectName() == 'left_table':
                                 self.left_table = k
                 if not self.right_table:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-right-radius: 6px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                 else:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
@@ -532,8 +544,7 @@ class HeaderCell(QWidget):
             iterate_row(self.parent_table, column_num_logical_index, self.parent_table.left_pinned_table,
                         self.parent_table.left_pinned_table.columnCount() - 1)
             if self.parent_table.selected_row_num == 0 or self.parent_table.selected_row_num:
-                self.parent_table.left_pinned_table.row_select(self.parent_table.selected_row_num,
-                                                               self.parent_table.selected_doc_id)
+                self.parent_table.left_pinned_table.row_select(self.parent_table.selected_row_num)
 
         if position == 'right':
             if not self.parent_table.has_right_pinned:
@@ -545,9 +556,12 @@ class HeaderCell(QWidget):
 
                 self.parent_table.right_pinned_table.reference_table = self.parent_table
                 self.parent_table.right_pinned_table.setObjectName('right_table')
-                self.parent_table.right_pinned_table.setStyleSheet(u'background-color: rgb(165,165,165);\n'
-                                                                   u'border-bottom-right-radius: 6px;\n'
-                                                                   u'gridline-color: rgb(136, 136, 136)')
+                self.parent_table.right_pinned_table.setStyleSheet(
+                    u'alternate-background-color: rgb(148, 148, 148);\n'
+                    u'background-color: rgb(160, 160, 160);\n'
+                    u'selection-background-color: rgb(110, 110, 110);\n'
+                    u'border-bottom-right-radius: 6px;\n '
+                    u'gridline-color: rgb(136, 136, 136)')
                 self.parent_table.inner_right_table_frame_layout.addWidget(self.parent_table.right_pinned_table)
                 self.parent_table.inner_right_table_frame_layout.setContentsMargins(3, 0, 0, 0)
                 self.parent_table.right_pinned_table.pinned_table = True
@@ -561,7 +575,9 @@ class HeaderCell(QWidget):
                     reference_table=self.parent_table,
                     parent=self.parent_table.right_pinned_table)
                 if not self.parent_table.splitter:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-left-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.splitter = QSplitter(Qt.Horizontal)
@@ -575,7 +591,9 @@ class HeaderCell(QWidget):
                     self.parent_table.splitter.insertWidget(1, self.parent_table.inner_right_table_frame)
                     self.parent_table.splitter.setStretchFactor(0, 1)
                 else:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                     self.parent_table.inner_middle_table_frame_layout.setContentsMargins(3, 0, 3, 0)
@@ -591,12 +609,16 @@ class HeaderCell(QWidget):
                             if k.objectName() == 'left_table':
                                 self.left_table = k
                 if not self.left_table:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 6px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
                 else:
-                    self.parent_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.parent_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                    u'background-color: rgb(160, 160, 160);\n'
+                                                    u'selection-background-color: rgb(110, 110, 110);\n'
                                                     u'border-bottom-right-radius: 0px;\n'
                                                     u'border-bottom-left-radius: 0px;\n'
                                                     u'gridline-color: rgb(136, 136, 136)')
@@ -615,8 +637,7 @@ class HeaderCell(QWidget):
             iterate_row(self.parent_table, column_num_logical_index, self.parent_table.right_pinned_table,
                         self.parent_table.right_pinned_table.columnCount() - 1)
             if self.parent_table.selected_row_num == 0 or self.parent_table.selected_row_num:
-                self.parent_table.right_pinned_table.row_select(self.parent_table.selected_row_num,
-                                                                self.parent_table.selected_doc_id)
+                self.parent_table.right_pinned_table.row_select(self.parent_table.selected_row_num)
 
         self.parent_table.horizontalHeader().cells[column_num_logical_index].hide_column_animate()
         self.parent_table.horizontalHeader().cells[column_num_logical_index].has_pinned_column = True
@@ -712,13 +733,17 @@ class HeaderCell(QWidget):
                             if k.objectName() == 'left_table':
                                 self.left_table = k
                 if not self.right_table:
-                    self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                       u'background-color: rgb(160, 160, 160);\n'
+                                                       u'selection-background-color: rgb(110, 110, 110);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
-                    self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                       u'background-color: rgb(160, 160, 160);\n'
+                                                       u'selection-background-color: rgb(110, 110, 110);\n'
                                                        u'border-bottom-right-radius: 0px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
@@ -739,13 +764,17 @@ class HeaderCell(QWidget):
                             if k.objectName() == 'left_table':
                                 self.left_table = k
                 if not self.left_table:
-                    self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                       u'background-color: rgb(160, 160, 160);\n'
+                                                       u'selection-background-color: rgb(110, 110, 110);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 6px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
                     self.reference_table.inner_middle_table_frame_layout.setContentsMargins(0, 0, 0, 0)
                 else:
-                    self.reference_table.setStyleSheet(u'background-color: rgb(165, 165, 165);\n'
+                    self.reference_table.setStyleSheet(u'alternate-background-color: rgb(148, 148, 148);\n'
+                                                       u'background-color: rgb(160, 160, 160);\n'
+                                                       u'selection-background-color: rgb(110, 110, 110);\n'
                                                        u'border-bottom-right-radius: 6px;\n'
                                                        u'border-bottom-left-radius: 0px;\n'
                                                        u'gridline-color: rgb(136, 136, 136)')
@@ -887,9 +916,8 @@ class QCustomTableWidget(QTableWidget):
         super().__init__(*args, **kwargs)
         self.setDragEnabled(True)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
-
         self.new_row_height = None
-        self.setStyleSheet(u'gridline-color: rgb(136, 136, 136)')
+        self.setAlternatingRowColors(True)
 
         self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
                                                'border-top-right-radius: 6px;\n'
@@ -899,15 +927,9 @@ class QCustomTableWidget(QTableWidget):
                                                'margin: 3px}'
                                                'QScrollBar::add-line:vertical {border: none; background: none}'
                                                'QScrollBar::sub-line:vertical {border: none; background: none}')
+
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        self.setAlternatingRowColors(True)
-        # self.color1 = QColor(100,120,56)
-        # self.color2 = QColor(100, 120, 100)
-        # self.colors = self.palette()
-        # self.colors.setColor(QPalette.Base, self.color1)
-        # self.colors.setColor(QPalette.AlternateBase, self.color2)
-        # self.setPalette(self.colors)
 
         self.current_Width = None
         self.current_Column = None
@@ -974,6 +996,8 @@ class QCustomTableWidget(QTableWidget):
         self.click_signal_connection = None
         self.main_window = None
 
+        self.itemSelectionChanged.connect(lambda: self.set_selected_row_num())
+
     def scrollContentsBy(self, dx, dy):
         super(QCustomTableWidget, self).scrollContentsBy(dx, dy)
         if dx != 0:
@@ -1031,12 +1055,6 @@ class QCustomTableWidget(QTableWidget):
         if self.parent_table:
             if self.parent_table.vertical_scroll_bar:
                 self.parent_table.vertical_scroll_bar.scroll_bar.setValue(value)
-
-    # def set_cell_data_on_start_drag(self):
-    #     if self.main_table:
-    #         self.selectRow(self.selectedItems()[0].row())
-    #         self.selected_row_data_to_drag = self.selectedItems()[0].doc_id
-    #         print(self.selected_row_data_to_drag)
 
     def enterEvent(self, event):
         self.cursor_over_table = True
@@ -1167,6 +1185,27 @@ class QCustomTableWidget(QTableWidget):
                 break
             else:
                 self.main_window = self.main_window.parent()
+
+    def set_selected_row_num(self):
+        if self.selectedIndexes():
+            self.selected_row_num = self.selectedIndexes()[0].row()
+
+            if self.has_right_pinned:
+                self.right_pinned_table.selectRow(self.selected_row_num)
+            if self.has_left_pinned:
+                self.left_pinned_table.selectRow(self.selected_row_num)
+
+            if self.objectName() == 'left_table':
+                self.parent_table.selectRow(self.selected_row_num)
+                if self.parent_table.has_right_pinned:
+                    self.parent_table.right_pinned_table.selectRow(self.selected_row_num)
+            if self.objectName() == 'right_table':
+                self.parent_table.selectRow(self.selected_row_num)
+                if self.parent_table.has_left_pinned:
+                    self.parent_table.left_pinned_table.selectRow(self.selected_row_num)
+
+    def row_select(self, row_num):
+        self.selectRow(row_num)
 
 
 class CQLabel2(QLabel):
@@ -1350,7 +1389,6 @@ class CQScrollBar(QFrame):
     def enterEvent(self, event):
         self.cursor_in = True
         self.mouse_entered.emit()
-        # print(self.cursor_in)
 
     def leaveEvent(self, event):
         self.cursor_in = False
@@ -3233,7 +3271,8 @@ class NotificationWidget(QWidget):
                         return item
                 iterator += 1
 
-        if notif_dict['project_id'] != self.main_window.current_project_id or self.main_window.current_project_id is None:
+        if notif_dict[
+            'project_id'] != self.main_window.current_project_id or self.main_window.current_project_id is None:
             for project_widget in self.main_window.project_widget_list:
                 if project_widget.project_id == notif_dict['project_id']:
                     project_widget.load_project()
@@ -3246,5 +3285,3 @@ class NotificationWidget(QWidget):
             tree_row.select_row()
 
         self.set_read(notif_dict=notif_dict)
-
-
