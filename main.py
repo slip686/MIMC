@@ -1392,6 +1392,12 @@ class MainWindow(QMainWindow):
         self.ui.searchDocsBtn.clicked.connect(lambda: self.ui.searchDocsFrame.hide_show_func())
         self.ui.searchDocsBtn_2.clicked.connect(lambda: self.ui.searchDocsFrame_2.hide_show_func())
         self.ui.searchDocsBtn_3.clicked.connect(lambda: self.ui.searchDocsFrame_3.hide_show_func())
+        self.ui.searchDocsLine.textChanged.connect(lambda: self.fill_table(doc_type='design', search_mode=True,
+                                                                           text_to_search=self.ui.searchDocsLine.text()))
+        self.ui.searchDocsLine_2.textChanged.connect(lambda: self.fill_table(doc_type='construction', search_mode=True,
+                                                                             text_to_search=self.ui.searchDocsLine_2.text()))
+        self.ui.searchDocsLine_3.textChanged.connect(lambda: self.fill_table(doc_type='construction', search_mode=True,
+                                                                             text_to_search=self.ui.searchDocsLine_3.text()))
 
         self.ui.releaseBtn.hide()
         self.ui.searchDocsLine.clearFocus()
@@ -1727,7 +1733,7 @@ class MainWindow(QMainWindow):
     def clear_projects(self):
         self.project_widget_list = []
 
-    def fill_table(self, doc_type: str = None):
+    def fill_table(self, doc_type: str = None, search_mode: bool = None, text_to_search: str = None):
         table = None
         current_folder = None
         if doc_type == 'design':
@@ -1745,16 +1751,24 @@ class MainWindow(QMainWindow):
             docs_to_show = []
             #######################################################################
             # SET ROWS NUMBER FOR TABLE
-            for doc_dict in self.current_project_docs_dicts_list:
-                if doc_dict['document_type'] == doc_type:
-                    if not current_folder:
-                        row_num += 1
-                        docs_to_show.append(doc_dict)
-                    else:
-                        if doc_dict['place_id'] != 'None':
-                            if set(ast.literal_eval(doc_dict['place_id'])[0]).issubset(set(current_folder[0])):
-                                row_num += 1
-                                docs_to_show.append(doc_dict)
+            if not search_mode:
+                for doc_dict in self.current_project_docs_dicts_list:
+                    if doc_dict['document_type'] == doc_type:
+                        if not current_folder:
+                            row_num += 1
+                            docs_to_show.append(doc_dict)
+                        else:
+                            if doc_dict['place_id'] != 'None':
+                                if set(ast.literal_eval(doc_dict['place_id'])[0]).issubset(set(current_folder[0])):
+                                    row_num += 1
+                                    docs_to_show.append(doc_dict)
+            else:
+                for doc_dict in self.current_project_docs_dicts_list:
+                    if doc_dict['document_type'] == doc_type:
+                        if doc_dict['document_name'].find(text_to_search) >= 0 or \
+                                doc_dict['document_cypher'].find(text_to_search) >= 0:
+                            docs_to_show.append(doc_dict)
+                            row_num += 1
             table.setRowCount(row_num)
             for row in range(table.rowCount()):
                 table.setRowHeight(row, 40)
