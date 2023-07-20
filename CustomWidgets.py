@@ -124,6 +124,9 @@ class Header(QHeaderView):
                                          w=self.parent().geometry().width(),
                                          h=16, orientation='h')
                 self.parent().horizontal_scroll_bar = scroll_bar
+                self.parent().standard_horizontal_scroll_bar.valueChanged.connect(lambda:
+                                                                                self.parent().horizontal_scroll_bar.scroll_bar.setValue(self.parent().standard_horizontal_scroll_bar.value())                                                      )
+
             else:
                 if self.parent().parent() != self.parent().horizontal_scroll_bar.parent():
                     self.parent().horizontal_scroll_bar.setParent(self.parent().parent())
@@ -144,6 +147,8 @@ class Header(QHeaderView):
                                          w=16,
                                          h=self.parent().geometry().height() - 22, orientation='v')
                 self.parent().vertical_scroll_bar = scroll_bar
+                self.parent().standard_vertical_scroll_bar.valueChanged.connect(lambda:
+                                                                                self.parent().vertical_scroll_bar.scroll_bar.setValue(self.parent().standard_vertical_scroll_bar.value())                                                      )
                 ADD_SIDE_TABLES_OR_MAIN_TABLE_vertical_scroll_bars()
                 self.parent().correct_scroll_bar_position()
                 if self.parent().pinned_table:
@@ -217,6 +222,7 @@ class Header(QHeaderView):
 
             if self.parent().horizontal_scroll_bar:
                 self.parent().horizontal_scroll_bar.set_scroll_bar_parameters('h')
+                print('poop')
             if self.parent().vertical_scroll_bar:
                 self.parent().vertical_scroll_bar.set_scroll_bar_parameters('v')
 
@@ -932,22 +938,28 @@ class QCustomTableWidget(QTableWidget):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.platform = get_platform()
         self.setDragEnabled(True)
         self.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.new_row_height = None
         self.setAlternatingRowColors(True)
 
-        self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
-                                               'border-top-right-radius: 6px;\n'
-                                               'border-bottom-right-radius: 6px}'
-                                               'QScrollBar::handle:vertical {background-color: rgb(136,136,136);\n'
-                                               'border-radius: 4px;\n'
-                                               'margin: 3px}'
-                                               'QScrollBar::add-line:vertical {border: none; background: none}'
-                                               'QScrollBar::sub-line:vertical {border: none; background: none}')
+        # self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(165,165,165);\n'
+        #                                        'border-top-right-radius: 6px;\n'
+        #                                        'border-bottom-right-radius: 6px}'
+        #                                        'QScrollBar::handle:vertical {background-color: rgb(136,136,136);\n'
+        #                                        'border-radius: 4px;\n'
+        #                                        'margin: 3px}'
+        #                                        'QScrollBar::add-line:vertical {border: none; background: none}'
+        #                                        'QScrollBar::sub-line:vertical {border: none; background: none}')
 
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+
+        self.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.verticalScrollBar().setSingleStep(20)
+        self.setHorizontalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.horizontalScrollBar().setSingleStep(20)
 
         self.current_mask = None
 
@@ -993,6 +1005,8 @@ class QCustomTableWidget(QTableWidget):
         self.header_dragging_to = []
 
         self.standard_vertical_scroll_bar = self.verticalScrollBar()
+        self.standard_horizontal_scroll_bar = self.horizontalScrollBar()
+
         self.left_table_vertical_scroll = None
         self.right_table_vertical_scroll = None
 
@@ -1032,8 +1046,8 @@ class QCustomTableWidget(QTableWidget):
             self.horizontalHeader().fixPositions()
 
     def resizeEvent(self, event):
-        # if self.current_mask:
-        #     self.set_mask(self.current_mask)
+        # # if self.current_mask:
+        # #     self.set_mask(self.current_mask)
         self.get_region()
         if self.horizontal_scroll_bar:
             self.correct_scroll_bar_position()
@@ -1148,25 +1162,15 @@ class QCustomTableWidget(QTableWidget):
     def wheelEvent(self, event):
         if self.cursor_over_table:
             if event.angleDelta().x():
-                if event.phase().ScrollUpdate:
-                    self.delta_x += event.angleDelta().x()
-                    if self.horizontal_scroll_bar:
-                        if self.horizontal_scroll_bar.isHidden():
-                            self.horizontal_scroll_bar.show_animate()
-                        self.horizontal_scroll_bar.scroll_bar.setValue(
-                            self.horizontal_scroll_bar.scroll_bar.value() - self.delta_x)
-                if event.phase().ScrollEnd:
-                    self.delta_x = 0
+                if self.horizontal_scroll_bar:
+                    if self.horizontal_scroll_bar.isHidden():
+                        self.horizontal_scroll_bar.show_animate()
+
             if event.angleDelta().y():
-                if event.phase().ScrollUpdate:
-                    self.delta_y += event.angleDelta().y()
-                    if self.vertical_scroll_bar:
-                        if self.vertical_scroll_bar.isHidden():
-                            self.vertical_scroll_bar.show_animate()
-                        self.vertical_scroll_bar.scroll_bar.setValue(
-                            self.vertical_scroll_bar.scroll_bar.value() - self.delta_y)
-                if event.phase().ScrollEnd:
-                    self.delta_y = 0
+                if self.vertical_scroll_bar:
+                    if self.vertical_scroll_bar.isHidden():
+                        self.vertical_scroll_bar.show_animate()
+        super().wheelEvent(event)
 
     def get_region(self):
         self.region.setRect(self.x(), self.height() - 8, self.width(), 8)
@@ -1444,13 +1448,19 @@ class CQScrollBar(QFrame):
                 self.controlled_table = i
 
     def set_scroll_bar_parameters(self, orientation):
-        self.scroll_bar.setRange(0, self.get_maximum(self.orientation))
-        self.scroll_bar.setPageStep(self.get_page_step(self.orientation))
+        # self.scroll_bar.setRange(0, self.get_maximum(self.orientation))
+        # self.scroll_bar.setPageStep(self.get_page_step(self.orientation))
         if orientation == 'h':
+            self.scroll_bar.setRange(0, self.controlled_table.horizontalScrollBar().maximum())
+            self.scroll_bar.setPageStep(self.controlled_table.horizontalScrollBar().pageStep())
+            self.scroll_bar.setSingleStep(self.controlled_table.horizontalScrollBar().singleStep())
             self.scroll_bar.valueChanged.connect(lambda:
                                                  self.controlled_table.horizontalScrollBar().setValue(
                                                      self.scroll_bar.value()))
         if orientation == 'v':
+            self.scroll_bar.setRange(0, self.controlled_table.verticalScrollBar().maximum())
+            self.scroll_bar.setPageStep(self.controlled_table.verticalScrollBar().pageStep())
+            self.scroll_bar.setSingleStep(self.controlled_table.verticalScrollBar().singleStep())
             self.scroll_bar.valueChanged.connect(lambda:
                                                  self.controlled_table.verticalScrollBar().setValue(
                                                      self.scroll_bar.value()))
