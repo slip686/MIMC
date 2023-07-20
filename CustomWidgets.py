@@ -222,7 +222,6 @@ class Header(QHeaderView):
 
             if self.parent().horizontal_scroll_bar:
                 self.parent().horizontal_scroll_bar.set_scroll_bar_parameters('h')
-                print('poop')
             if self.parent().vertical_scroll_bar:
                 self.parent().vertical_scroll_bar.set_scroll_bar_parameters('v')
 
@@ -1451,16 +1450,16 @@ class CQScrollBar(QFrame):
         # self.scroll_bar.setRange(0, self.get_maximum(self.orientation))
         # self.scroll_bar.setPageStep(self.get_page_step(self.orientation))
         if orientation == 'h':
-            self.scroll_bar.setRange(0, self.controlled_table.horizontalScrollBar().maximum())
-            self.scroll_bar.setPageStep(self.controlled_table.horizontalScrollBar().pageStep())
-            self.scroll_bar.setSingleStep(self.controlled_table.horizontalScrollBar().singleStep())
+            self.scroll_bar.setRange(0, self.get_maximum('h'))
+            self.scroll_bar.setPageStep(self.get_page_step('h'))
+            # self.scroll_bar.setSingleStep(self.controlled_table.horizontalScrollBar().singleStep())
             self.scroll_bar.valueChanged.connect(lambda:
                                                  self.controlled_table.horizontalScrollBar().setValue(
                                                      self.scroll_bar.value()))
         if orientation == 'v':
-            self.scroll_bar.setRange(0, self.controlled_table.verticalScrollBar().maximum())
-            self.scroll_bar.setPageStep(self.controlled_table.verticalScrollBar().pageStep())
-            self.scroll_bar.setSingleStep(self.controlled_table.verticalScrollBar().singleStep())
+            self.scroll_bar.setRange(0, self.get_maximum('v'))
+            self.scroll_bar.setPageStep(self.get_page_step('v'))
+            # self.scroll_bar.setSingleStep(self.controlled_table.verticalScrollBar().singleStep())
             self.scroll_bar.valueChanged.connect(lambda:
                                                  self.controlled_table.verticalScrollBar().setValue(
                                                      self.scroll_bar.value()))

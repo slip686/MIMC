@@ -431,6 +431,8 @@ class user_connection:
                 pass
             except ConnectionWrongStateError:
                 pass
+            except OSError:
+                pass
         if self.cur:
             self.cur.close()
             self.conn.close()
