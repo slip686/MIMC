@@ -123,6 +123,9 @@ QPushButton{background-color: transparent;
             <string notr="true">#dropMainDocFrame{border: 2px solid rgb(184, 184, 184); border-radius: 6px}
 #mainDocPDFViewerContainer{border: 2px solid rgb(184, 184, 184); border-radius: 6px}</string>
            </property>
+           <property name="currentIndex">
+            <number>0</number>
+           </property>
            <widget class="QWidget" name="page_9">
             <layout class="QVBoxLayout" name="verticalLayout_24">
              <property name="spacing">
@@ -256,7 +259,23 @@ QPushButton{background-color: transparent;
                <property name="styleSheet">
                 <string notr="true"/>
                </property>
-               <layout class="QVBoxLayout" name="verticalLayout_25"/>
+               <layout class="QVBoxLayout" name="verticalLayout_25">
+                <property name="spacing">
+                 <number>0</number>
+                </property>
+                <property name="leftMargin">
+                 <number>0</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+               </layout>
               </widget>
              </item>
             </layout>

@@ -154,7 +154,9 @@ class Ui_Dialog(object):
         self.mainDocPDFViewerContainer.setMinimumSize(QSize(0, 0))
         self.mainDocPDFViewerContainer.setStyleSheet(u"")
         self.verticalLayout_25 = QVBoxLayout(self.mainDocPDFViewerContainer)
+        self.verticalLayout_25.setSpacing(0)
         self.verticalLayout_25.setObjectName(u"verticalLayout_25")
+        self.verticalLayout_25.setContentsMargins(0, 0, 0, 0)
 
         self.verticalLayout_26.addWidget(self.mainDocPDFViewerContainer)
 
@@ -645,6 +647,9 @@ class Ui_Dialog(object):
 
 
         self.retranslateUi(Dialog)
+
+        self.stackedWidget.setCurrentIndex(0)
+
 
         QMetaObject.connectSlotsByName(Dialog)
     # setupUi

@@ -32,15 +32,15 @@ def create_notification_table(email):
 
 def get_notifications(email):
     query = [
-        """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS null) row)""",
+        """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" 
+        WHERE receive_status IS null) row)""",
         (AsIs(email),)]
     return query
 
 
 def get_old_notifications(email, start, end):
-    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true AND ntfcn_id 
-    BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
-
+    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true 
+    AND ntfcn_id BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
     return query
 
 
@@ -289,8 +289,9 @@ def exclude_cell():
 
 def add_doc(table, document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
             end_develop_date, document_status, status_time_set, place_id, document_folder):
-    query = ['''INSERT INTO "%s" (document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
-    end_develop_date, document_status, status_time_set, place_id, document_folder) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)''',
+    query = ['''INSERT INTO "%s" (document_type, document_name, document_cypher, release_to_work_date, 
+    start_develop_date, end_develop_date, document_status, status_time_set, place_id, document_folder) VALUES (%s, %s, 
+    %s, %s, %s, %s, %s, %s, %s, %s)''',
              (AsIs(table), document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
               end_develop_date, document_status, status_time_set, place_id, document_folder)]
     return query
@@ -322,7 +323,8 @@ def insert_support_file_info(project_name, file_name, file_type, main_file_id):
 
 
 def get_doc_and_file_info(project_name, doc_id):
-    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" INNER JOIN "%s main_files" ON "%s docs".doc_id = "%s main_files".doc_id
+    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" INNER JOIN "%s main_files" ON 
+    "%s docs".doc_id = "%s main_files".doc_id
     WHERE "%s docs".doc_id=%s) row)""",
                   (AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name),
                    doc_id)]
@@ -376,6 +378,7 @@ def set_receive_status(email, ntfcn_id):
              (AsIs(email), ntfcn_id)]
     return query
 
+
 def set_read_status(email, ntfcn_id):
     query = ["""UPDATE public."%s_notification" SET read_status = true WHERE ntfcn_id = %s;""",
              (AsIs(email), ntfcn_id)]
@@ -387,9 +390,11 @@ def move_to_folder(project_name, doc_id, new_folder_place_id):
              (AsIs(project_name), new_folder_place_id, doc_id)]
     return query
 
-def get_all_users_ntfcn_tables(project_id):
+
+def get_all_users_ntfcn_tables():
     query = ["""SELECT notification_table FROM users """]
     return query
+
 
 def get_users_data_on_project(project_id):
     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users_projects_party 
@@ -397,9 +402,12 @@ def get_users_data_on_project(project_id):
     return query
 
 
-def send_notification(receiver_ntfcn_table, project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, place_id):
-    query = ["""INSERT INTO "%s" (project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, place_id) 
-    VALUES (%s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s')""", (AsIs(receiver_ntfcn_table), project_id, doc_id, sender_id,
-                                                           AsIs(type), AsIs(comments), AsIs(time_send),
-                                                           AsIs(time_limit), AsIs(text), AsIs(doc_type), AsIs(place_id))]
+def send_notification(receiver_ntfcn_table, project_id, doc_id, sender_id, type, comments, time_send, time_limit, text,
+                      doc_type, place_id):
+    query = ["""INSERT INTO "%s" (project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, 
+    place_id) 
+    VALUES (%s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s')""",
+             (AsIs(receiver_ntfcn_table), project_id, doc_id, sender_id,
+              AsIs(type), AsIs(comments), AsIs(time_send),
+              AsIs(time_limit), AsIs(text), AsIs(doc_type), AsIs(place_id))]
     return query

@@ -378,6 +378,7 @@ class user_connection:
         if self.connection_success:
             try:
                 self.cur.execute(*query)
+                # print(*query)
                 # self.conn.commit()
             except psycopg2.OperationalError as err:
                 print(err)

@@ -151,6 +151,7 @@ class MainWindow(QMainWindow):
             self.project_widget_list.clear()
             self.projects_ids_and_roles_list = {k: v for (k, v) in self.session.select_query(
                 [get_projects_ids_and_roles(), (self.logged_user.user_id,)], fetchall=True)}
+
             if self.projects_ids_and_roles_list:
                 for key in self.projects_ids_and_roles_list:
                     project_data_dict = self.session.select_query([get_project(), (key,)], fetchall=True)[0][0][0]
@@ -261,7 +262,6 @@ class MainWindow(QMainWindow):
             key = get_key(self.new_user.Email)
             self.new_user.Hash_key = hash(key)
             sending_process = Email_reg_sending(self.new_user.Email, key)
-            print(self.ui.termsAcception.checkState().value)
             if self.ui.termsAcception.checkState().value:
                 sending_process.start()
                 if not sending_process.correct_email:
@@ -656,7 +656,7 @@ class MainWindow(QMainWindow):
                 for i in initial_permit_docs_query_result:
                     list_element = list(i)
                     del list_element[1]
-                    self.nitial_permit_docs_structure_list.append(list_element)
+                    self.initial_permit_docs_structure_list.append(list_element)
                 structure_list = self.initial_permit_docs_structure_list
             return structure_list
 
@@ -733,6 +733,8 @@ class MainWindow(QMainWindow):
                         rows_objects_list_with_columns_nums = []
                         for num, obj in enumerated:
                             rows_objects_list_with_columns_nums.append((str(num), obj))
+
+                        # print(rows_objects_list_with_columns_nums[-1][0], self.item.folder_name, place_id_list)
                         self.session.commit_query([
                             update_pattern_folder_name(), (AsIs(f'"{docs_structure_tablename}"'),
                                                            AsIs(f'"{rows_objects_list_with_columns_nums[-1][0]}"'),
@@ -750,12 +752,13 @@ class MainWindow(QMainWindow):
 
             database_cells_list = []
             for i in structure_list:
-                for num, value in enumerate(i[2:], 1):
-                    # if value:
-                    database_cells_list.append([i[0], num, value])
+                for num, value in enumerate(i[1:], 1):
+                    if value:
+                        database_cells_list.append([i[0], num, value])
 
             for i in database_cells_list:
                 if [i[0], i[-1]] not in current_cells_list:
+                    print(i[1], i[0])
                     self.session.commit_query([exclude_cell(), (AsIs(f'"{docs_structure_tablename}"'),
                                                                 AsIs(f'"{i[1]}"'), AsIs('null'), AsIs(i[0]),
                                                                 docs_type)])
@@ -852,6 +855,7 @@ class MainWindow(QMainWindow):
                     if len(i) == 1:
                         columns_single = f'"{str(column)}"'
                         values_single = f"('{value}')"
+
                         self.session.commit_query(
                             [insert_pattern(), (AsIs(docs_structure_tablename), AsIs(columns_single),
                                                 AsIs('doc_type'), AsIs(values_single), docs_type)])
@@ -1392,11 +1396,11 @@ class MainWindow(QMainWindow):
         self.ui.searchDocsBtn.clicked.connect(lambda: self.ui.searchDocsFrame.hide_show_func())
         self.ui.searchDocsBtn_2.clicked.connect(lambda: self.ui.searchDocsFrame_2.hide_show_func())
         self.ui.searchDocsBtn_3.clicked.connect(lambda: self.ui.searchDocsFrame_3.hide_show_func())
-        self.ui.searchDocsLine.textChanged.connect(lambda: self.fill_table(doc_type='design', search_mode=True,
+        self.ui.searchDocsLine.textChanged.connect(lambda: self.fill_table(doc_type='design',
                                                                            text_to_search=self.ui.searchDocsLine.text()))
-        self.ui.searchDocsLine_2.textChanged.connect(lambda: self.fill_table(doc_type='construction', search_mode=True,
+        self.ui.searchDocsLine_2.textChanged.connect(lambda: self.fill_table(doc_type='construction',
                                                                              text_to_search=self.ui.searchDocsLine_2.text()))
-        self.ui.searchDocsLine_3.textChanged.connect(lambda: self.fill_table(doc_type='construction', search_mode=True,
+        self.ui.searchDocsLine_3.textChanged.connect(lambda: self.fill_table(doc_type='construction',
                                                                              text_to_search=self.ui.searchDocsLine_3.text()))
 
         self.ui.releaseBtn.hide()
@@ -1736,35 +1740,44 @@ class MainWindow(QMainWindow):
     def fill_table(self, doc_type: str = None, search_mode: bool = None, text_to_search: str = None):
         table = None
         current_folder = None
+        folder_name_label = None
+        current_folder_var = None
         if doc_type == 'design':
             table = self.ui.designDocsTableWidget
             current_folder = self.current_design_docs_folder
+            folder_name_label = self.ui.folderNameLabel
+            current_folder_var = self.current_design_docs_folder
         if doc_type == 'construction':
             table = self.ui.constructionDocsTableWidget
             current_folder = self.current_construction_docs_folder
+            folder_name_label = self.ui.folderNameLabel_2
+            current_folder_var = self.current_construction_docs_folder
         if doc_type == 'init_permit':
             table = self.ui.initDocsTableWidget
             current_folder = self.current_init_permission_docs_folder
+            folder_name_label = self.ui.folderNameLabel_3
+            current_folder_var = self.current_init_permission_docs_folder
 
         if self.current_project_docs_dicts_list:
             row_num = 0
             docs_to_show = []
             #######################################################################
             # SET ROWS NUMBER FOR TABLE
-            if not search_mode:
-                for doc_dict in self.current_project_docs_dicts_list:
-                    if doc_dict['document_type'] == doc_type:
+            for doc_dict in self.current_project_docs_dicts_list:
+                if doc_dict['document_type'] == doc_type:
+                    if not text_to_search:
                         if not current_folder:
+                            folder_name_label.setText('All documents')
                             row_num += 1
                             docs_to_show.append(doc_dict)
                         else:
+                            folder_name_label.setText(current_folder_var[1])
                             if doc_dict['place_id'] != 'None':
                                 if set(ast.literal_eval(doc_dict['place_id'])[0]).issubset(set(current_folder[0])):
                                     row_num += 1
                                     docs_to_show.append(doc_dict)
-            else:
-                for doc_dict in self.current_project_docs_dicts_list:
-                    if doc_dict['document_type'] == doc_type:
+                    else:
+                        folder_name_label.setText('Search results')
                         if doc_dict['document_name'].find(text_to_search) >= 0 or \
                                 doc_dict['document_cypher'].find(text_to_search) >= 0:
                             docs_to_show.append(doc_dict)

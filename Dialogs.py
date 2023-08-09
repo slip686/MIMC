@@ -11,10 +11,12 @@ from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QProgressBar, QSizePolicy
 from AddDocDialog import Ui_Dialog as AddingDialog
+from CustomWidgets import PDFViewer
 from DocViewDialog import Ui_Dialog as ViewingDialog
 from query_list import *
 from core import ProjectDocument, ProjectMainFile, Support_File
 from random import randint as rand
+from pprint import pprint
 
 from query_list import add_doc
 
@@ -31,7 +33,7 @@ class AddDocDialog(QDialog):
         self.setWindowFlag(Qt.FramelessWindowHint)
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.dialog.mainHeader.minimizeBtn.hide()
-        self.dialog.mainHeader.restoreBtn.hide()
+        # self.dialog.mainHeader.restoreBtn.hide()
         self.dialog.mainHeader.MIMC.setText('Add Document')
         self.dialog.mainHeader.MIMC.setAlignment(Qt.AlignCenter)
         self.dialog.revisionLabel.hide()
@@ -40,9 +42,8 @@ class AddDocDialog(QDialog):
         self.dialog.mainHeader.minimizeBtn.hide()
         self.uploading_finished = False
 
-        self.pdf_view = QPdfView()
-        self.pdf_document = QPdfDocument()
-        self.pdf_view.setDocument(self.pdf_document)
+        self.pdf_view = PDFViewer(dialog_window_object=self)
+
         self.pdf_view.setStyleSheet(u'border-radius: 6 px')
         self.dialog.verticalLayout_25.addWidget(self.pdf_view)
 
@@ -182,7 +183,7 @@ class AddDocDialog(QDialog):
         if self.dialog.dropMainDocFrame.suitable_format:
             self.document.main_doc_file_path = self.dialog.dropMainDocFrame.file_path
             self.dialog.stackedWidget.setCurrentIndex(1)
-            self.pdf_document.load(self.document.main_doc_file_path)
+            self.pdf_view.load_document(self.document.main_doc_file_path)
 
         else:
             self.dialog.label_18.setText('Wrong file format')
@@ -507,6 +508,7 @@ class DocViewDialog(QDialog):
             project_name=project_name,
             doc_id=doc_id),
             fetchall=True)[0][0]
+        pprint(self.doc_files_info)
         self.support_files_info = self.main_window.session.select_query(query=get_support_files_info(self.project_name),
                                                                         fetchall=True)[0][0]
         self.files_sorted_info = self.get_files_sorted_info()

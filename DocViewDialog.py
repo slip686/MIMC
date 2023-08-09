@@ -274,6 +274,10 @@ class Ui_Dialog(object):
         self.pdfViewFrame.setMaximumSize(QSize(16777215, 16777215))
         self.pdfViewFrame.setFrameShape(QFrame.StyledPanel)
         self.pdfViewFrame.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_35 = QVBoxLayout(self.pdfViewFrame)
+        self.verticalLayout_35.setSpacing(0)
+        self.verticalLayout_35.setObjectName(u"verticalLayout_35")
+        self.verticalLayout_35.setContentsMargins(0, 0, 0, 0)
 
         self.verticalLayout_10.addWidget(self.pdfViewFrame)
 
@@ -1640,7 +1644,7 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
 
-        self.mainFileViewStackedWidget.setCurrentIndex(0)
+        self.mainFileViewStackedWidget.setCurrentIndex(2)
         self.worksTabWidget.setCurrentIndex(0)
         self.contentsStackedWidget.setCurrentIndex(0)
         self.addNewMainFileVersionStack.setCurrentIndex(0)
