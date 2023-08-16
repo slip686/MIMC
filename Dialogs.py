@@ -4,7 +4,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Thread
 
-from PySide6.QtCore import Qt, QBuffer, QRect, QSize, QThread, QObject, Slot, Signal, QDate
+from PySide6.QtCore import Qt, QBuffer, QRect, QSize, QThread, QObject, Slot, Signal, QDate, QSaveFile, QIODevice
 import resources_rc_rc
 from PySide6.QtGui import QMovie, QIcon, QPixmap, QPainter, QColor
 from PySide6.QtPdf import QPdfDocument
@@ -14,11 +14,9 @@ from AddDocDialog import Ui_Dialog as AddingDialog
 from CustomWidgets import PDFViewer
 from DocViewDialog import Ui_Dialog as ViewingDialog
 from query_list import *
-from core import ProjectDocument, ProjectMainFile, Support_File
+from core import ProjectDocument, ProjectMainFile, Support_File, get_paths
 from random import randint as rand
 from pprint import pprint
-
-from query_list import add_doc
 
 
 class AddDocDialog(QDialog):
@@ -87,7 +85,6 @@ class AddDocDialog(QDialog):
         self.dialog.releaseToWorkDateEdit.dateChanged.connect(lambda: self.set_release_to_work_date())
         self.dialog.startDevelopDateEdit.dateChanged.connect(lambda: self.set_start_develop_date())
         self.dialog.endDevelopDateEdit.dateChanged.connect(lambda: self.set_end_develop_date())
-
         self.dialog.addDocBtn.clicked.connect(lambda: self.add_document())
         # self.dialog.addDocBtn.clicked.connect(lambda: dates(self.document.release_to_work_date,
         #                                                     self.document.start_develop_date,
@@ -99,12 +96,19 @@ class AddDocDialog(QDialog):
         self.dialog.deleteEditableArchive.clicked.connect(lambda: self.delete_zipped_archive_file_path())
         self.dialog.deleteAdditionalDoc.clicked.connect(lambda: self.delete_support_doc_file_path())
 
+        self.pdf_view.delete_btn.clicked.connect(lambda: self.delete_main_file())
+
         if self.window_object:
             self.parent_window = self.window_object
         else:
             self.window_object = self.parent()
 
         self.set_folder_in_structure(self.parent_window)
+
+    def delete_main_file(self):
+        self.dialog.stackedWidget.setCurrentIndex(0)
+        self.document.main_doc_file_path = None
+        self.main_doc_file_path = None
 
     def go_back(self):
         self.pdf_view.back()
@@ -119,9 +123,10 @@ class AddDocDialog(QDialog):
             if window_object.ui.stackedWidget_3.currentIndex() == 2:
                 self.doc_type = "init_permit"
 
-            for doc_dict in window_object.current_project_docs_dicts_list:
-                if doc_dict['document_type'] == self.doc_type:
-                    self.existing_folders.append(doc_dict['document_folder'])
+            if window_object.current_project_docs_dicts_list:
+                for doc_dict in window_object.current_project_docs_dicts_list:
+                    if doc_dict['document_type'] == self.doc_type:
+                        self.existing_folders.append(doc_dict['document_folder'])
 
         if self.multiple_documents:
             set_doc_type(self.window_object)
@@ -183,10 +188,15 @@ class AddDocDialog(QDialog):
         if self.dialog.dropMainDocFrame.suitable_format:
             self.document.main_doc_file_path = self.dialog.dropMainDocFrame.file_path
             self.dialog.stackedWidget.setCurrentIndex(1)
-            self.pdf_view.load_document(self.document.main_doc_file_path)
+            self.pdf_view.load_document(path=self.document.main_doc_file_path)
 
         else:
             self.dialog.label_18.setText('Wrong file format')
+
+    def delete_main_doc_file_path(self):
+        self.document.main_doc_file_path = None
+        self.main_doc_file_path = None
+        self.dialog.stackedWidget.setCurrentIndex(0)
 
     def set_zipped_archive_file_path(self):
         if self.dialog.dropEditableArchive.suitable_format:
@@ -215,22 +225,23 @@ class AddDocDialog(QDialog):
         self.dialog.label_16.setText('Drop file here')
 
     def set_release_to_work_date(self):
-        self.document.release_to_work_date = self.dialog.releaseToWorkDateEdit.date().toPython().strftime('%d-%m-%Y')
+        self.document.release_to_work_date = self.dialog.releaseToWorkDateEdit.date().toPython().strftime('%m-%d-%Y')
 
     def set_start_develop_date(self):
-        self.document.start_develop_date = self.dialog.startDevelopDateEdit.date().toPython().strftime('%d-%m-%Y')
+        self.document.start_develop_date = self.dialog.startDevelopDateEdit.date().toPython().strftime('%m-%d-%Y')
 
     def set_end_develop_date(self):
-        self.document.end_develop_date = self.dialog.endDevelopDateEdit.date().toPython().strftime('%d-%m-%Y')
+        self.document.end_develop_date = self.dialog.endDevelopDateEdit.date().toPython().strftime('%m-%d-%Y')
 
     def add_document_function(self, document: ProjectDocument):
         def check_cypher_and_create_folders(window_object):
             repo_id = window_object.current_project_data_dict['repo_id']
             unique = True
             done = True
-            for item in window_object.current_project_docs_dicts_list:
-                if item['document_type'] == document.type and item['document_cypher'] == document.document_cypher:
-                    unique = False
+            if window_object.current_project_docs_dicts_list:
+                for item in window_object.current_project_docs_dicts_list:
+                    if item['document_type'] == document.type and item['document_cypher'] == document.document_cypher:
+                        unique = False
             if unique:
                 if document.type == "design":
                     window_object.session.create_folder(repo_id, f'ddocs/{document.file_folder}')
@@ -244,12 +255,19 @@ class AddDocDialog(QDialog):
             return done
 
         def insert_data_to_db(window_object):
-            table = window_object.current_project_data_dict['docs_table']
-            window_object.session.commit_query(add_doc(table, document.type, document.document_name,
-                                                       document.document_cypher, document.release_to_work_date,
-                                                       document.start_develop_date, document.end_develop_date,
-                                                       document.document_status, document.status_time_set,
-                                                       str(document.place_id), document.file_folder))
+            data = {"project_id": window_object.current_project_data_dict['id'],
+                    "document_type": document.type,
+                    "document_cypher": document.document_cypher,
+                    "document_name": document.document_name,
+                    "place_id": str(document.place_id),
+                    "document_folder": document.file_folder,
+                    "release_to_work_date": document.release_to_work_date,
+                    "start_develop_date": document.start_develop_date,
+                    "end_develop_date": document.end_develop_date,
+                    "document_status": document.document_status,
+                    "status_time_set": document.status_time_set}
+
+            window_object.session.api.add_doc(data)
 
         if self.multiple_documents:
             valid_data = check_cypher_and_create_folders(self.window_object)
@@ -301,8 +319,8 @@ class AddDocDialog(QDialog):
 
                         doc_types_and_folders = {'design': 'ddocs', 'construction': 'cdocs', 'init_permit': 'ipdocs'}
                         main_file = ProjectMainFile(doc_id=doc_id, cypher=document.document_cypher,
-                                                    project_name=self.window_object.current_project_data_dict[
-                                                        'project_name'],
+                                                    project_id=self.window_object.current_project_data_dict[
+                                                        'id'],
                                                     user_id=self.window_object.logged_user_data['user_id'])
 
                         local_addresses_list.append(document.main_doc_file_path)
@@ -317,7 +335,6 @@ class AddDocDialog(QDialog):
                                                                                               self.window_object.ui.statusLabel2)
                             if upload_main_file_result:
                                 main_file.insert_data_to_db(self.window_object.session)
-                                main_file.get_id(self.window_object.session)
                                 local_addresses_list.clear()
                                 uploading_file_names_list.clear()
                                 support_zip_file = None
@@ -362,13 +379,13 @@ class AddDocDialog(QDialog):
 
 
 class DocViewDialog(QDialog):
-    def __init__(self, main_window, project_name, doc_id):
+    def __init__(self, main_window, project_id, doc_id):
         super().__init__()
         self.uploading_support_doc = None
         self.uploading_support_archive = None
         self.uploading_main_file = None
         self.doc_info = None
-        self.project_name = project_name
+        self.project_id = project_id
         self.doc_id = doc_id
         self.main_file_path = None
         self.zipped_archive_file_path = None
@@ -388,14 +405,8 @@ class DocViewDialog(QDialog):
         self.setAttribute(Qt.WA_TranslucentBackground)
         self.dialog.mainHeader.minimizeBtn.hide()
         self.main_window = main_window
-        self.pdf_view = QPdfView()
-        self.pdf_view.setAttribute(Qt.WidgetAttribute.WA_AcceptTouchEvents, False)
-        self.pdf_document = QPdfDocument()
-        self.pdf_view.setDocument(self.pdf_document)
-        self.pdf_view.setStyleSheet(u'border-radius: 6 px')
-        self.pdf_view_layout = QVBoxLayout(self.dialog.pdfViewFrame)
-        self.pdf_view_layout.setContentsMargins(0, 0, 0, 0)
-        self.pdf_view_layout.addWidget(self.pdf_view)
+        self.pdf_view = PDFViewer(dialog_window_object=self)
+        self.dialog.verticalLayout_35.addWidget(self.pdf_view)
         self.device = QBuffer()
         self.dialog.mainFileViewStackedWidget.setCurrentIndex(0)
         self.dialog.contentsStackedWidget.setCurrentIndex(0)
@@ -499,18 +510,20 @@ class DocViewDialog(QDialog):
         self.dialog.uploadNewRevBtn.clicked.connect(lambda: self.upload_files(new_revision=True))
         self.dialog.dwnldArchiveBtn.clicked.connect(lambda: self.download_support_archive())
         self.dialog.dwnldDocBtn.clicked.connect(lambda: self.download_support_doc())
+        self.dialog.dwnldMainFileBtn.clicked.connect(lambda: self.save_main_file())
+        self.pdf_view.delete_btn.clicked.connect(lambda: self.delete_main_file_path_while_first_loading())
 
         self.executor = None
+        response = self.main_window.session.api.get_doc_info(self.doc_id)
+        if response:
+            self.doc_info = response.get('content')
+        response = self.main_window.session.api.get_doc_main_files_info(self.doc_id)
+        if response:
+            self.doc_files_info = response.get('content').get("doc_and_main_files")
+        response = self.main_window.session.api.get_support_files_info(self.project_id)
+        if response:
+            self.support_files_info = response.get('content')
 
-        self.doc_info = self.main_window.session.select_query(query=get_doc_info(project_name=self.project_name,
-                                                                                 doc_id=self.doc_id))[0][0]
-        self.doc_files_info = self.main_window.session.select_query(query=get_doc_and_file_info(
-            project_name=project_name,
-            doc_id=doc_id),
-            fetchall=True)[0][0]
-        pprint(self.doc_files_info)
-        self.support_files_info = self.main_window.session.select_query(query=get_support_files_info(self.project_name),
-                                                                        fetchall=True)[0][0]
         self.files_sorted_info = self.get_files_sorted_info()
 
         if self.files_sorted_info:
@@ -533,7 +546,8 @@ class DocViewDialog(QDialog):
                 for sup_file_info_dict in self.latest_file['sup_files_info']:
                     if sup_file_info_dict:
                         if sup_file_info_dict['file_type'] == 'sup_doc':
-                            self.support_doc_to_download = self.prepare_sup_file_for_download(sup_file_info_dict, 'sup_doc')
+                            self.support_doc_to_download = self.prepare_sup_file_for_download(sup_file_info_dict,
+                                                                                              'sup_doc')
                         if sup_file_info_dict['file_type'] == 'sup_archive':
                             self.support_archive_to_download = self.prepare_sup_file_for_download(sup_file_info_dict,
                                                                                                   'sup_archive')
@@ -546,8 +560,9 @@ class DocViewDialog(QDialog):
                 self.dialog.worksTabWidget.setTabEnabled(tab, False)
             self.dialog.worksMenuBtn.setDisabled(True)
             self.dialog.worksFrame.show()
-            self.doc_info = self.main_window.session.select_query(query=get_doc_info(project_name=self.project_name,
-                                                                                     doc_id=self.doc_id))[0][0]
+            response = self.main_window.session.api.get_doc_info(self.doc_id)
+            if response:
+                self.doc_info = response.get('content')
 
         self.downloaded = False
 
@@ -567,16 +582,17 @@ class DocViewDialog(QDialog):
                 repo_id=self.main_window.current_project_data_dict['repo_id'],
                 file_address=path,
                 bytes_format=True,
-                pdf_document_view=self.pdf_document,
                 buffer_device=self.device,
                 window_instance=self)
             if not event.isSet():
                 if download_result:
                     self.downloaded = True
                     self.dialog.mainFileViewStackedWidget.setCurrentIndex(1)
+                    self.pdf_view.delete_btn.hide()
                     self.dialog.contentsStackedWidget.setCurrentIndex(0)
                     self.dialog.worksMenuBtn.setDisabled(False)
                     self.current_file_info = file
+                    self.pdf_view.load_document(device=self.device)
                 else:
                     self.dialog.downloadInfoLabel.setFixedHeight(16)
                     self.dialog.downloadInfoLabel.setStyleSheet(
@@ -686,7 +702,7 @@ class DocViewDialog(QDialog):
         self.dialog.downloadInfoLabel.update()
 
     def get_author_name(self, user_id):
-        user_info = self.main_window.session.select_query(query=get_user_data_by_user_id(user_id=user_id))[0][0]
+        user_info = self.main_window.session.api.get_user_data(user_id).get('content')
         return f'{user_info["first_name"]} {user_info["last_name"]}'
 
     def set_main_file_path(self, drop_frame=None, label=None, stack_widget=None, address_label=None, upload_btn=None,
@@ -701,7 +717,7 @@ class DocViewDialog(QDialog):
                 upload_btn.setEnabled(True)
             self.dialog.mainFileViewStackedWidget.setCurrentIndex(1)
             if show_file:
-                self.pdf_document.load(self.main_file_path)
+                self.pdf_view.load_document(self.main_file_path)
         else:
             label.setText('Wrong file format')
 
@@ -726,6 +742,10 @@ class DocViewDialog(QDialog):
         upload_btn.setEnabled(False)
         stack_widget.setCurrentIndex(0)
         label.setText('Drop file here')
+
+    def delete_main_file_path_while_first_loading(self):
+        self.main_file_path = None
+        self.dialog.mainFileViewStackedWidget.setCurrentIndex(2)
 
     def delete_zipped_archive_file_path(self, stack_widget=None, label=None):
         self.zipped_archive_file_path = None
@@ -900,4 +920,9 @@ class DocViewDialog(QDialog):
             self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=1)
             self.executor.submit(self.download_support_file, self.support_doc_to_download, self.stop_event)
 
-
+    def save_main_file(self):
+        login = get_paths()['os_login']
+        file = QSaveFile(f"/Users/{login}/Downloads/{self.latest_file['main_file_info']['file_name']}.pdf")
+        file.open(QIODevice.WriteOnly)
+        file.write(self.device.data())
+        file.commit()

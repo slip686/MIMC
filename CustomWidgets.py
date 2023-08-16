@@ -2301,27 +2301,22 @@ class CQLineEdit2(QTextEdit):
         doc_cypher = doc_to_move_info['cypher']
         doc_type = doc_to_move_info['doc_type']
 
-        queries_list = []
+        self.window_object.session.api.move_doc(doc_id=doc_id, data={"place_id": str(new_place_id_list)})
 
-        set_new_folder_query = move_to_folder(project_name=self.window_object.current_project_data_dict['project_name'],
-                                              doc_id=doc_id, new_folder_place_id=str(new_place_id_list))
-        queries_list.append(set_new_folder_query)
-        project_users_notification_tables = [info['notification_table'] for info in
-                                             self.window_object.current_project_users_data]
-
-        for ntfcn_table in project_users_notification_tables:
-            notification = Notification(ntfcn_type=Notification.Types.DOC_FOLDER_CHANGE,
+        for user in self.window_object.current_project_users_data:
+            notification = Notification(window_object=self.window_object,
+                                        ntfcn_type=Notification.Types.DOC_FOLDER_CHANGE,
                                         project_id=self.window_object.current_project_id,
-                                        doc_id=doc_id, sender_id=self.window_object.logged_user.user_id,
-                                        receiver_ntfcn_table=ntfcn_table,
+                                        doc_id=doc_id,
+                                        sender_id=self.window_object.logged_user.user_id,
+                                        receiver_id=user['user_id'],
                                         text=f'{datetime.now().strftime("%d-%m-%Y %H:%M")} '
                                              f'Document "{doc_cypher}" moved to folder "{new_folder_name}" on project '
                                              f'{self.window_object.current_project_data_dict["project_name"]}',
-                                        doc_type=doc_type, place_id_list=new_place_id_list[0])
-            queries_list.append(notification.query)
-
-        for query in queries_list:
-            self.window_object.session.commit_query(query)
+                                        doc_type=doc_type,
+                                        receiver_channel=user['ntfcn_channel'],
+                                        place_id_list=str(new_place_id_list))
+            notification.send()
 
         event.accept()
 
@@ -2524,6 +2519,7 @@ class RowElement(QTreeWidgetItem):
                 self.renamed = True
             else:
                 self.folder_name = str((self.lineEdit.toPlainText())).strip()
+
             return self.folder_name
 
     def remove(self):
@@ -2582,6 +2578,7 @@ class RowElement(QTreeWidgetItem):
                         for j in i[1:k + 1]:
                             if j:
                                 path.append(j)
+                # print(path)
                 self.window_object.current_design_docs_folder_path = (" | ".join(path))
                 self.window_object.ui.folderNameLabel.setText(self.folder_name)
 
@@ -2735,11 +2732,11 @@ class ProjectCard(Ui_Form, QWidget):
         super().__init__()
         self.setupUi(self)
         self.main_window = main_window
-        self.project_id = None
         self.project_picture = None
         self.project_data_dict = data_dict
         self.user_role = role
         self.project_users_dict = None
+        self.project_id = self.project_data_dict['id']
 
     def mousePressEvent(self, event):
         self.widget_3.setStyleSheet(u"#widget_3 {border-radius: 15px; border: 3px solid black}")
@@ -2754,20 +2751,15 @@ class ProjectCard(Ui_Form, QWidget):
             self.main_window.ui.interfaceBodyStackedWidget.slideInIdx(2)
             self.main_window.current_project_id = self.project_id
             self.main_window.current_project_data_dict = self.project_data_dict
-            # print(self.main_window.current_project_data_dict)
             self.main_window.ui.homeBtn.show()
             self.main_window.ui.leftSideMenuBtn.show()
             self.main_window.ui.folderNameLabel.setText('All Documents')
             self.main_window.ui.newProjectBtn.hide()
             self.main_window.ui.editProjectCardBtn.hide()
             self.main_window.current_project_docs_dicts_list = \
-                self.main_window.session.select_query([get_docs(),
-                                                       (AsIs(self.project_data_dict['project_name']),)], fetchall=True)[
-                    0][0]
-            self.project_users_dict = self.main_window.session.select_query(get_users_data_on_project(self.project_id),
-                                                                            fetchall=True)[0][0]
+                self.main_window.session.api.get_project_docs(self.project_id).get("content")
+            self.project_users_dict = self.main_window.session.api.get_project_users(self.project_id).get("content")
             self.main_window.current_project_users_data = self.project_users_dict
-            # print(self.main_window.current_project_users_data)
             self.main_window.get_project_structure()
             for i in ['design', 'construction', 'init_permit']:
                 self.main_window.fill_table(doc_type=i)
@@ -2954,13 +2946,18 @@ class NotificationsSlideFrame(QFrame):
             last_item = self.notificationsLayout.itemAt(self.notificationsLayout.count() - 2).widget()
             self.end_value = last_item.ntfcn_id - 1
             self.start_value = self.end_value - 9
-            self.old_notifications_list = reversed(self.session_object.select_query(get_old_notifications(
-                self.session_object.email,
-                self.start_value,
-                self.end_value))[0])
+            response = self.session_object.api.get_old_messages(self.main_window.logged_user_data['user_id'])
+            if response.get("code") == 200:
+                self.old_notifications_list = reversed(response.get("content"))
+
+            # self.old_notifications_list = reversed(self.session_object.select_query(get_old_notifications(
+            #     self.session_object.email,
+            #     self.start_value,
+            #     self.end_value))[0])
         else:
-            self.old_notifications_list = self.session_object.select_query(
-                get_last_ten_notifications(self.session_object.email))[0]
+            response = self.session_object.api.get_ten_old_messages(self.main_window.logged_user_data['user_id'])
+            if response.get("code") == 200:
+                self.old_notifications_list = response.get("content")
 
         for notification in self.old_notifications_list:
             self.insert_notification(ntfcn_dict=notification, show_new=False)
@@ -3242,7 +3239,7 @@ class FlowLayout(QLayout):
 class NotificationLabel(QTextEdit):
     clicked = Signal()
 
-    def __init__(self, text):
+    def __init__(self, text=None):
         super(NotificationLabel, self).__init__()
         self.expanded = False
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Preferred)
@@ -3311,7 +3308,7 @@ class NotificationWidget(QWidget):
         self.horizontalLayout = QHBoxLayout(self.frame)
         self.horizontalLayout.setSpacing(4)
         self.horizontalLayout.setContentsMargins(6, 0, 16, 0)
-        self.label = NotificationLabel(str(ntfcn_dict['text']))
+        self.label = NotificationLabel(str(ntfcn_dict['ntfcn_id'])+' '+str(ntfcn_dict['text']))
 
         self.label.setMinimumSize(QSize(0, 25))
         self.label.setMaximumSize(QSize(1000, 25))
@@ -3324,8 +3321,6 @@ class NotificationWidget(QWidget):
 
         self.horizontalLayout.addWidget(self.Indicator, 0, Qt.AlignRight)
         self.verticalLayout.addWidget(self.frame)
-
-        self.label.setText(str(ntfcn_dict['text']))
         self.notification_type = ntfcn_dict['type']
         self.ntfcn_id = ntfcn_dict['ntfcn_id']
         self.setMouseTracking(True)
@@ -3344,7 +3339,7 @@ class NotificationWidget(QWidget):
     def set_read(self, notif_dict=None):
         if self.Indicator.isVisible():
             if not notif_dict['read_status']:
-                self.main_window.session.commit_query(set_read_status(self.main_window.session.email, self.ntfcn_id))
+                self.main_window.session.api.set_message_read(self.ntfcn_id)
                 self.Indicator.hide()
 
     def go_to_folder_if_DOC_FOLDER_CHANGE_type(self, notif_dict=None):
@@ -3369,12 +3364,12 @@ class NotificationWidget(QWidget):
             while iterator.value():
                 item = iterator.value()
                 if isinstance(item, RowElement):
-                    if item.place_id_list == ast.literal_eval(place_id):
+                    if item.place_id_list == ast.literal_eval(place_id)[0]:
                         return item
                 iterator += 1
 
-        if notif_dict[
-            'project_id'] != self.main_window.current_project_id or self.main_window.current_project_id is None:
+        if notif_dict['project_id'] != self.main_window.current_project_id or \
+                self.main_window.current_project_id is None:
             for project_widget in self.main_window.project_widget_list:
                 if project_widget.project_id == notif_dict['project_id']:
                     project_widget.load_project()
@@ -3586,6 +3581,7 @@ class PDFViewer(QWidget):
         self.zoom_out_btn.clicked.connect(lambda: self.zoom_out_action())
 
         self.document = QPdfDocument()
+        self.document.pageCountChanged.connect(lambda: self.set_page_icons())
         self.document_area.setDocument(self.document)
         self.bookmark_model = QPdfBookmarkModel(self)
         self.bookmark_model.setDocument(self.document)
@@ -3610,16 +3606,18 @@ class PDFViewer(QWidget):
         self.document_area.setZoomFactor(factor)
         self.document_area.set_scroll_bar_parameters()
 
-    def load_document(self, path):
-        self.document.load(path)
+    def load_document(self, path=None, device=None):
+        if path:
+            self.document.load(path)
+        if device:
+            self.document.load(device)
         self.page_selector.setMaximum(self.document.pageCount())
-        for page in range(self.document.pageCount()):
-            picture = self.document.render(page, self.document.pagePointSize(page).toSize())
-            preview = PdfPreview(parent=self.pagesView_contents, picture=picture, page_num=page,
-                                 viewer_widget=self)
-
-            self.preview_widgets_layout.addWidget(preview, 0, Qt.AlignmentFlag.AlignHCenter)
-            self.preview_widgets_list.append(preview)
+        # for page in range(self.document.pageCount()):
+        #     picture = self.document.render(page, self.document.pagePointSize(page).toSize())
+        #     preview = PdfPreview(picture=picture, page_num=page,
+        #                          viewer_widget=self)
+        #     self.preview_widgets_layout.addWidget(preview, 0, Qt.AlignmentFlag.AlignHCenter)
+        #     self.preview_widgets_list.append(preview)
         self.zoom_selector.setCurrentIndex(0)
         self.document_area.set_scroll_bar_parameters()
         self.nav.jump(0, QPoint(), self.nav.currentZoom())
@@ -3628,6 +3626,15 @@ class PDFViewer(QWidget):
         self.nav_btns_on_off()
         self.selected_page_preview_widget = self.preview_widgets_list[0]
         self.preview_widgets_list[0].set_selected()
+
+    def set_page_icons(self):
+        for page in range(self.document.pageCount()):
+            picture = self.document.render(page, self.document.pagePointSize(page).toSize())
+            preview = PdfPreview(picture=picture, page_num=page,
+                                 viewer_widget=self)
+            self.preview_widgets_layout.addWidget(preview, 0, Qt.AlignmentFlag.AlignHCenter)
+            self.preview_widgets_list.append(preview)
+
 
     @Slot(QModelIndex)
     def bookmark_selected(self, index):
@@ -3678,8 +3685,6 @@ class PDFViewer(QWidget):
                 child.setParent(None)
                 child.deleteLater()
         self.document.close()
-        self.dialog_window_object.dialog.stackedWidget.setCurrentIndex(0)
-        self.dialog_window_object.document.main_doc_file_path = None
 
 
 class ZoomSelector(QComboBox):
@@ -3836,6 +3841,7 @@ class CQPdfView(QPdfView):
                     if self.viewport().rect().width() - 14 < event.pos().x() < self.viewport().rect().width():
                         self.vertical_scroll_bar.show_animate()
         super().mouseMoveEvent(event)
+
 
 
 class PdfPreview(QWidget):

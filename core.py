@@ -1,5 +1,4 @@
 import ast
-import asyncio
 import mimetypes
 import concurrent.futures
 from concurrent.futures import wait
@@ -15,8 +14,8 @@ from PySide6.QtCore import QBuffer, QTimer, QMetaObject, QThread, QObject, Signa
 from PySide6.QtGui import Qt
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
-from PySide6.QtWidgets import QProgressBar
 
+from api_requests import Request
 from searchRow import Ui_Form as Row
 from ProjectWidget import Ui_Form
 from datetime import datetime
@@ -30,9 +29,7 @@ from email_validate import validate
 import json
 from cryptography.fernet import Fernet
 from query_list import *
-from psycopg2.extensions import AsIs
 from PIL import Image
-import seafileapi
 import os
 import platform
 import requests
@@ -101,14 +98,6 @@ def get_key(Email):
     return encrypted_text.decode('UTF-8')
 
 
-def clear_json():
-    email_template = ['']
-    password_template = ['']
-    to_json = {'email': email_template, 'password': password_template}
-    with open(get_paths()['keep_pass_json'], 'w') as f:
-        json.dump(to_json, f)
-
-
 class Json_process:
     def __init__(self, email, password):
         self.file = get_paths()['keep_pass_json']
@@ -129,73 +118,49 @@ class Email_reg_sending:
         self.email_address = email_address
         self.correct_email = 1
         self.successfully_sent = 1
-        self.duplicate_email = 0
 
     def start(self):
-        with open(get_paths()['connection_config_json']) as f:
-            file_content = f.read()
-            template = json.loads(file_content)
+        if validate(
+                email_address=self.email_address,
+                check_format=True,
+                check_blacklist=False,
+                check_dns=False,
+                dns_timeout=10,
+                check_smtp=False,
+                smtp_debug=False):
+            # create message object instance
+            msg = MIMEMultipart()
 
-        try:
-            conn = psycopg2.connect(user=template["user"],
-                                    password=template["password"],
-                                    host=template["host"],
-                                    port=template["port"],
-                                    database=template["database"])
-            cur = conn.cursor()
-            cur.execute("SELECT COUNT(*) FROM users WHERE email = %s", (self.email_address,))
-            n, = cur.fetchone()
-            if n != 0:
-                self.duplicate_email = 1
-            else:
-                if validate(
-                        email_address=self.email_address,
-                        check_format=True,
-                        check_blacklist=False,
-                        check_dns=False,
-                        dns_timeout=10,
-                        check_smtp=False,
-                        smtp_debug=False):
-                    # create message object instance
-                    msg = MIMEMultipart()
+            message = self.key
+            print(message)
 
-                    message = self.key
-                    print(message)
+            # setup the parameters of the message
+            password = "lboxuldvmrxzorna"
+            msg['From'] = "MIMCProjects@yandex.ru"
+            msg['To'] = self.email_address
+            msg['Subject'] = "MIMCProjects registration key"
 
-                    # setup the parameters of the message
-                    password = "lboxuldvmrxzorna"
-                    msg['From'] = "MIMCProjects@yandex.ru"
-                    msg['To'] = self.email_address
-                    msg['Subject'] = "MIMCProjects registration key"
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
 
-                    # add in the message body
-                    msg.attach(MIMEText(message, 'plain'))
+            # create server
+            server = smtplib.SMTP('smtp.yandex.ru: 587')
+            try:
+                server.starttls()
 
-                    # create server
-                    server = smtplib.SMTP('smtp.yandex.ru: 587')
-                    try:
-                        server.starttls()
+                # server.starttls()
 
-                        # server.starttls()
+                # Login Credentials for sending the mail
+                server.login(msg['From'], password)
 
-                        # Login Credentials for sending the mail
-                        server.login(msg['From'], password)
+                # send the message via the server.
+                server.sendmail(msg['From'], msg['To'], msg.as_string())
 
-                        # send the message via the server.
-                        server.sendmail(msg['From'], msg['To'], msg.as_string())
-
-                        server.quit()
-                    except SMTPConnectError:
-                        self.successfully_sent = 0
-                else:
-                    self.correct_email = 0
-
-        except (Exception, Error) as error:
-            print("Error while working with PostgreSQL", error)
-        finally:
-            if conn:
-                cur.close()
-                conn.close()
+                server.quit()
+            except SMTPConnectError:
+                self.successfully_sent = 0
+        else:
+            self.correct_email = 0
 
 
 class Email_recover_sending:
@@ -250,12 +215,11 @@ class Email_recover_sending:
 
 
 class user_connection:
-    def __init__(self, email, password, status_label, main_window_object=None):
+    def __init__(self, email, password, status_label, main_window_object=None, remember=False):
         self.main_window_object = main_window_object
         self.email = email
         self.password = password
-        self.conn = None
-        self.cur = None
+        self.remember = remember
         self.connection_success = 0
         self.user_data = None
         self.stash_connection = None
@@ -273,6 +237,7 @@ class user_connection:
         self.notifications = []
         self.conn_broker = None
         self.channel_broker = None
+        self.api: Request = None
 
     def set_stop_checking(self):
         self.stop_checking = True
@@ -281,144 +246,91 @@ class user_connection:
 
         with open(get_paths()['connection_config_json']) as f:
             file_content = f.read()
-            template = json.loads(file_content)
-            self.stash_url = template["stash_url"]
-            self.msg_broker_url = template["msg_broker_url"]
+            config = json.loads(file_content)
+            self.stash_url = config["stash_url"]
+            self.msg_broker_url = config["msg_broker_url"]
             try:
                 ##################################################
-                # CONNECT TO DATABASE
+                # CONNECT TO API
                 ##################################################
 
-                self.conn = psycopg2.connect(user=self.email,
-                                             password=self.password,
-                                             host=template["host"],
-                                             port=template["port"],
-                                             database=template["database"])
-                self.conn.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
-                self.cur = self.conn.cursor()
+                self.api = Request()
+                login_data = self.api.login(email=self.email, password=self.password, remember=self.remember)
 
-                ##################################################
-                # CONNECT TO MESSAGE BROKER
-                ##################################################
+                if login_data and login_data.get("code") == 202:
+                    self.token = login_data.get('content').get('stash_token')
+                    self.user_data = login_data.get('content')
+                    self.email = self.user_data.get('email')
 
-                credentials = pika.PlainCredentials(self.email, self.password)
-                parameters = pika.ConnectionParameters(self.msg_broker_url, 5672, '/', credentials, heartbeat=10, )
+                    ##################################################
+                    # CONNECT TO MESSAGE BROKER
+                    ##################################################
 
-                self.conn_broker = pika.BlockingConnection(parameters)
+                    credentials = pika.PlainCredentials(self.email, '1234')
+                    parameters = pika.ConnectionParameters(self.msg_broker_url, 5672, '/', credentials, heartbeat=10, )
 
-                ##################################################
-                # CONNECT TO STASH
-                ##################################################
+                    self.conn_broker = pika.BlockingConnection(parameters)
 
-                self.stash_connection = seafileapi.connect(self.stash_url, self.email, self.password)
+                    self.connection_success = 1
 
-                #################################################################
-                # GET STASH CURRENT USER TOKEN
-                #################################################################
+                    #################################################################
+                    # GET UNREAD NOTIFICATIONS
+                    #################################################################
 
-                headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-                data = f'username={self.email}&password={self.password}'
-                response = requests.post(f'{self.stash_url}/api2/auth-token/', headers=headers, data=data)
-                self.token = response.json()['token']
+                    offline_notifications = self.api.unread_messages(self.user_data.get("user_id"))
+                    if offline_notifications:
+                        self.notifications.extend(offline_notifications.get("content"))
+                        self.set_notification_receive_status()
 
-                self.connection_success = 1
+                    #################################################################
+                    # CHECKING CONNECTION ASYNC
+                    #################################################################
 
-                #################################################################
-                # GET OFFLINE NOTIFICATIONS
-                #################################################################
-
-                offline_notifications = self.select_query(get_notifications(self.email), fetchall=True)[0][0]
-                self.notifications.extend(offline_notifications)
-                self.set_notification_receive_status()
-
-                #################################################################
-                # CHECKING CONNECTION ASYNC
-                #################################################################
-
-                def check_conn(stop):
-                    while True:
-                        try:
-                            time.sleep(3)
-                            requests.get('http://sliplab.net', timeout=3)
-                            self.connection_success = True
-                            self.status_label.setText('')
-                        except requests.exceptions.ConnectionError:
-                            self.connection_success = False
-                            self.status_label.setText('Connection lost')
+                    def check_conn(stop):
+                        while True:
+                            try:
+                                time.sleep(3)
+                                status = self.api.connection_test
+                                if status:
+                                    self.connection_success = True
+                                    self.status_label.setText('')
+                            except requests.exceptions.ConnectionError:
+                                self.connection_success = False
+                                self.status_label.setText('Connection lost')
+                                if stop():
+                                    break
+                                continue
+                            except requests.exceptions.ReadTimeout:
+                                self.connection_success = False
+                                self.status_label.setText('Connection lost')
+                                if stop():
+                                    break
+                                continue
                             if stop():
                                 break
-                            continue
-                        except requests.exceptions.ReadTimeout:
-                            self.connection_success = False
-                            self.status_label.setText('Connection lost')
-                            if stop():
-                                break
-                            continue
-                        if stop():
-                            break
 
-                connection_check_thread = Thread(target=check_conn, args=(lambda: self.stop_checking,),
-                                                 name='check_conn')
-                connection_check_thread.start()
+                    connection_check_thread = Thread(target=check_conn, args=(lambda: self.stop_checking,),
+                                                     name='check_conn')
+                    connection_check_thread.start()
 
-                return 'connected'
+                    return 'connected'
 
-            except psycopg2.OperationalError as err:
-                error_text = (str(err).split(' '))
-                if 'translate' in error_text:
-                    return 'check connection'
-                elif 'authentication' in error_text:
-                    return 'invalid credentials'
-                elif 'no' and 'password' in error_text:
-                    return 'invalid credentials'
+                if login_data and login_data.get("code") == 401:
+                    return 'Incorrect password'
+                if login_data and login_data.get("code") == 404:
+                    return 'Incorrect email'
+
             except requests.exceptions.RequestException:
-                return 'stash connection failed'
-
-    def commit_query(self, query: list):
-        if self.connection_success:
-            try:
-                self.cur.execute(*query)
-                # print(*query)
-                # self.conn.commit()
-            except psycopg2.OperationalError as err:
-                print(err)
-            except psycopg2.InterfaceError as err:
-                print(err)
-            except psycopg2.DatabaseError as err:
-                print(err)
-
-    def select_query(self, query, fetchall: bool = False):
-        if self.connection_success:
-            try:
-                self.cur.execute(*query)
-                if fetchall:
-                    result = self.cur.fetchall()
-                    # self.conn.commit()
-                    return result
-                else:
-                    result = self.cur.fetchone()
-                    # self.conn.commit()
-                    return result
-
-            except psycopg2.OperationalError as err:
-                print(err)
-            except psycopg2.InterfaceError as err:
-                print(err)
-            except psycopg2.DatabaseError as err:
-                print(err)
+                return 'Server unavailable'
 
     def set_notification_receive_status(self):
         for ntfcn in self.notifications:
-            self.cur.execute(*set_receive_status(self.email, ntfcn['ntfcn_id']))
-        if self.connection_success:
-            try:
-                self.conn.commit()
-            except psycopg2.OperationalError as err:
-                print(err)
-            except psycopg2.InterfaceError as err:
-                print(err)
-            except psycopg2.DatabaseError as err:
-                print(err)
+            if self.connection_success:
+                try:
+                    if not ntfcn['receive_status']:
+                        self.api.set_message_received(ntfcn['ntfcn_id'])
+                except Exception as err:
+                    print(err)
 
     def close_session(self):
         self.connection_success = 0
@@ -434,9 +346,8 @@ class user_connection:
                 pass
             except OSError:
                 pass
-        if self.cur:
-            self.cur.close()
-            self.conn.close()
+        if self.api:
+            self.api.close_session()
         self.set_stop_checking()
 
     def download_template(self):
@@ -479,10 +390,9 @@ class user_connection:
                 with open(f'/Users/{self.os_login}/Downloads/{file_name}.{file_type}', 'wb') as f:
                     f.write(content)
             else:
-                if pdf_document_view and buffer_device:
+                if buffer_device:
                     buffer_device.open(QBuffer.ReadWrite)
                     buffer_device.write(content)
-                    pdf_document_view.load(buffer_device)
                 return content
         except requests.exceptions.ReadTimeout:
 
@@ -569,84 +479,80 @@ class user_connection:
         requests.post(f'{self.stash_url}/api2/repos/{repo_id}/dir/?p=/{folder}', headers=headers, data=data, )
 
 
-class push_user_data:
-    def __init__(self, email, password, name, last_name, company_name, TIN):
-        self.company_name = company_name
-        self.last_name = last_name
-        self.name = name
-        self.password = password
-        self.email = email
-        self.TIN = TIN
-        self.successful_insertion = False
-        self.stash_url = None
-        self.msg_broker_url = None
-        self.conn = None
-        self.cur = None
+# class push_user_data:
+#     def __init__(self, email, password, name, last_name, company_name, TIN):
+#         self.company_name = company_name
+#         self.last_name = last_name
+#         self.name = name
+#         self.password = password
+#         self.email = email
+#         self.TIN = TIN
+#         self.successful_insertion = False
+#         self.stash_url = None
+#         self.msg_broker_url = None
+#         self.conn = None
+#         self.cur = None
+#
+#     def start(self):
+#
+#         ##############################################################
+#         # INSERT USER DATA TO DATABASE
+#         ##############################################################
+#
+#         try:
 
-    def start(self):
-        with open(get_paths()['connection_config_json']) as f:
-            file_content = f.read()
-            template = json.loads(file_content)
-            self.stash_url = template["stash_url"]
-            self.msg_broker_url = template["msg_broker_url"]
-
-        ##############################################################
-        # INSERT USER DATA TO DATABASE
-        ##############################################################
-
-        try:
-            self.conn = psycopg2.connect(user=template["user"],
-                                         password=template["password"],
-                                         host=template["host"],
-                                         port=template["port"],
-                                         database=template["database"])
-            self.cur = self.conn.cursor()
-            self.cur.execute("""INSERT INTO users (email, first_name, last_name, company_name, 
-                            notification_table, tin, ntfcn_channel) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-                             (self.email, self.name, self.last_name, self.company_name, self.email +
-                              '_notification', self.TIN, self.email + '_msg_channel'))
-
-            self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
-                sql.Identifier(self.email), sql.Literal(self.password)))
-
-            self.cur.execute(*create_notification_table(self.email))
-            self.cur.execute(*set_ntfcn_func_and_trigger(self.email))
-            self.conn.commit()
-
-            ##############################################################
-            # REGISTRATION ON CLOUD FILE STASH
-            ##############################################################
-
-            headers = {
-                'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
-                'Accept': 'application/json; charset=utf-8; indent=4',
-                'Content-Type': 'application/x-www-form-urlencoded',
-            }
-            # print(self.email, self.password)
-            data = f'email={self.email}&password={self.password}'
-            requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
-
-            ##############################################################
-            # REGISTRATION ON MESSAGE BROKER
-            ##############################################################
-            headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-            data = {"password": self.password, "tags": "management"}
-            response = requests.put(f'http://{self.msg_broker_url}/api/users/{self.email}',
-                                    auth=('slip686', 'ddtlbnt yjdsq'),
-                                    json=data, headers=headers)
-            headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-            data = {"configure": ".*", "read": ".*", "write": ".*"}
-            response = requests.put(f'http://{self.msg_broker_url}/api/permissions/%2F/{self.email}',
-                                    auth=('slip686', 'ddtlbnt yjdsq'),
-                                    json=data, headers=headers)
-
-            self.successful_insertion = True
-        except (Exception, Error) as error:
-            print("Something wrong", error)
-        finally:
-            if self.conn:
-                self.cur.close()
-                self.conn.close()
+#     self.conn = psycopg2.connect(user=template["user"],
+#                                  password=template["password"],
+#                                  host=template["host"],
+#                                  port=template["port"],
+#                                  database=template["database"])
+#     self.cur = self.conn.cursor()
+#     self.cur.execute("""INSERT INTO users (email, first_name, last_name, company_name,
+#                     notification_table, tin, ntfcn_channel) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
+#                      (self.email, self.name, self.last_name, self.company_name, self.email +
+#                       '_notification', self.TIN, self.email + '_msg_channel'))
+#
+#     self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
+#         sql.Identifier(self.email), sql.Literal(self.password)))
+#
+#     self.cur.execute(*create_notification_table(self.email))
+#     self.cur.execute(*set_ntfcn_func_and_trigger(self.email))
+#     self.conn.commit()
+#
+#     ##############################################################
+#     # REGISTRATION ON CLOUD FILE STASH
+#     ##############################################################
+#
+#     headers = {
+#         'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
+#         'Accept': 'application/json; charset=utf-8; indent=4',
+#         'Content-Type': 'application/x-www-form-urlencoded',
+#     }
+#     # print(self.email, self.password)
+#     data = f'email={self.email}&password={self.password}'
+#     requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
+#
+#     ##############################################################
+#     # REGISTRATION ON MESSAGE BROKER
+#     ##############################################################
+#     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+#     data = {"password": self.password, "tags": "management"}
+#     response = requests.put(f'http://{self.msg_broker_url}/api/users/{self.email}',
+#                             auth=('slip686', 'ddtlbnt yjdsq'),
+#                             json=data, headers=headers)
+#     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
+#     data = {"configure": ".*", "read": ".*", "write": ".*"}
+#     response = requests.put(f'http://{self.msg_broker_url}/api/permissions/%2F/{self.email}',
+#                             auth=('slip686', 'ddtlbnt yjdsq'),
+#                             json=data, headers=headers)
+#
+#     self.successful_insertion = True
+# except (Exception, Error) as error:
+#     print("Something wrong", error)
+# finally:
+#     if self.conn:
+#         self.cur.close()
+#         self.conn.close()
 
 
 class push_recover_user_data:
@@ -687,7 +593,7 @@ class User:
         self.last_name = None
         self.company_name = None
         self.TIN = None
-        self.notification_table = None
+        self.notification_channel = None
         self.user_projects_table = None
 
 
@@ -705,11 +611,6 @@ class Project(User):
         self.address = address
         self.time = time
         self.status = status
-        self.construction_project_docs_table = None
-        self.design_project_docs_table = None
-        self.construction_docs_structure = None
-        self.design_docs_structure = None
-        self.users_access_table = None
         self.project_id = None
         self.chief_engineer = User()
         self.contractor = User()
@@ -719,15 +620,6 @@ class Project(User):
         self.ddocs_path = None
         self.cdocs_path = None
         self.ipdocs_path = None
-        self.create_docs_table = reg_new_docs_table(self.name)
-        self.docs_table_name = f'{self.name} docs'
-        self.create_main_files_table = reg_new_main_files_table(self.name)
-        self.main_files_table_name = f'{self.name} main_files'
-        self.create_support_files_table = reg_new_support_files_table(self.name)
-        self.support_files_table_name = f'{self.name} support_files'
-        self.create_docs_structure_table = reg_new_docs_structure(self.name)
-        self.docs_structure_table_name = f'{self.name} docs_structure'
-        self.create_project_users_table = reg_new_users_access_table(self.name)
 
         self.add_folders_thread = Thread(target=self.add_folders_process)
 
@@ -848,24 +740,12 @@ class Project(User):
         files = {'file': open(filepath, 'rb'), 'parent_dir': (None, '/')}
         requests.post(link, headers=headers, files=files)
 
-    def push_project_table_insert(self):
-        query = reg_new_project(self.picture.split("/")[-1], self.name, self.address,
-                                self.time, self.owner_id, self.status, self.repo_id)
-        return query
-
-    def grant_privs_on_tables_and_add_to_stash_group(self, tables_list: list, emails_list: list):
-        queries_list = []
-        for table in tables_list:
-            for email in emails_list:
-                queries_list.append(f'GRANT SELECT, INSERT, UPDATE ON "{table}" TO "{email}"')
-        result_query = ';\n'.join(queries_list)
+    def add_users_to_stash_group(self, emails_list: list):
         for email in emails_list:
             self.add_user_to_stash_group(email)
-        return result_query
 
 
 class ProjectDocument:
-
     def __init__(self):
         self.type = None
         self.document_name = None
@@ -908,36 +788,33 @@ class ProjectMainFile:
     APPRW = STATUS[6]
     ACC = [7]
 
-    def __init__(self, doc_id, cypher, project_name, user_id, revision='0', version='1', status=JL,
-                 status_set_time=str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))):
+    def __init__(self, doc_id, cypher, project_id, user_id, revision='0', version='1', status=JL,
+                 status_time_set=datetime.now().strftime("%m-%d-%Y %H:%M")):
         self.doc_id = doc_id
         self.cypher = cypher
         self.revision = revision
         self.version = version
         self.status = status
-        self.status_set_time = status_set_time
-        self.loading_time = str(datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+        self.status_time_set = status_time_set
+        self.loading_time = datetime.now().strftime("%m-%d-%Y %H:%M")
         self.name = f"{self.cypher}-rev{self.revision}-ver{self.version}"
-        self.project_name = project_name
+        self.project_id = project_id
         self.user_id = user_id
         self.id = None
 
     def insert_data_to_db(self, session_object):
-        session_object.commit_query(insert_main_file_info(
-            project_name=self.project_name,
-            doc_id=self.doc_id,
-            name=self.name,
-            revision=self.revision,
-            version=self.version,
-            status=self.status,
-            status_set_time=self.status_set_time,
-            loading_time=self.loading_time,
-            user_id=self.user_id))
-
-    def get_id(self, session_object):
-        file_id = session_object.select_query(
-            get_main_file_id(project_name=self.project_name, name=self.name))
-        self.id = file_id[0]
+        data = {"doc_id": self.doc_id,
+                "user_id": self.user_id,
+                "project_id": self.project_id,
+                "name": self.name,
+                "revision": self.revision,
+                "version": self.version,
+                "document_status": self.status,
+                "status_time_set": self.status_time_set,
+                "loading_time": self.loading_time}
+        response = session_object.api.add_main_file(data)
+        if response.get("code") == 200:
+            self.id = response.get("content").get("new_main_file_id")
 
 
 class Support_File:
@@ -950,14 +827,16 @@ class Support_File:
         self.file_type = file_type
         self.name = f'{self.main_file_object.cypher}-rev{self.main_file_object.revision}-' \
                     f'ver{self.main_file_object.version}-id{self.main_file_object.id}-{self.file_type}'
-        self.project_name = main_file_object.project_name
+        self.project_id = main_file_object.project_id
 
     def insert_data_to_db(self, session_object):
-        session_object.commit_query(insert_support_file_info(
-            project_name=self.project_name,
-            file_name=self.name,
-            file_type=self.file_type,
-            main_file_id=self.main_file_id))
+        data = {"file_name": self.name,
+                "file_type": self.file_type,
+                "loading_time": datetime.now().strftime("%m-%d-%Y %H:%M"),
+                "main_file_id": self.main_file_id,
+                "project_id": self.project_id}
+
+        session_object.api.add_support_file(data)
 
     def reset_name(self):
         self.main_file_id = self.main_file_object.id
@@ -974,6 +853,12 @@ class Reg_data:
         self.last_name = None
         self.company_name = None
         self.TIN = None
+
+    @property
+    def as_dict(self):
+        data = {"email": self.Email, "first_name": self.name, "last_name": self.last_name,
+                "company_name": self.company_name, "tin": self.TIN, "password": self.password}
+        return data
 
 
 def get_company(TIN):
@@ -1004,20 +889,19 @@ class NotificationReceiver(QObject):
         super().__init__(parent)
         self.channel_broker = mq_connection_object.channel()
         self.session_object = session_object
-        self.channel_broker.basic_consume(queue=f"{self.session_object.email}_msg_channel",
+        self.channel_broker.basic_consume(queue=f"{self.session_object.email}_msgchannel",
                                           auto_ack=True,
                                           on_message_callback=self.callback)
         self.message = None
 
     def callback(self, ch, method, properties, body):
         raw_message = str(body.decode("utf-8"))
-        json_acceptable_string = raw_message.replace("'", "\"")
+        json_acceptable_string = raw_message
         message_dict = json.loads(json_acceptable_string)
         ids_list = [notification['ntfcn_id'] for notification in self.session_object.notifications]
         if message_dict['ntfcn_id'] not in ids_list:
-            print(message_dict)
             self.session_object.notifications.append(message_dict)
-            self.session_object.cur.execute(*set_receive_status(self.session_object.email, message_dict['ntfcn_id']))
+            self.session_object.api.set_message_received(message_dict['ntfcn_id'])
             self.message = message_dict
             self.got_message.emit()
 
@@ -1028,7 +912,10 @@ class NotificationReceiver(QObject):
             pass
 
     def stop_broker_loop(self):
-        self.channel_broker.stop_consuming()
+        try:
+            self.channel_broker.stop_consuming()
+        except AssertionError:
+            pass
 
 
 class Ntfcn_types:
@@ -1045,30 +932,38 @@ class Notification:
     Types = Ntfcn_types
 
     def __init__(self, ntfcn_type: Ntfcn_types = None, project_id=None,
-                 doc_id=None, sender_id=None, receiver_ntfcn_table=None, comments=None, time_limit=None, text=None,
-                 window_object=None, doc_type=None, place_id_list=None):
+                 doc_id=None, sender_id=None, receiver_id=None, comments=None, time_limit=None, text=None,
+                 window_object=None, doc_type=None, place_id_list=None, receiver_channel=None):
         self.ntfcn_type = ntfcn_type
         self.project_id = project_id
         self.doc_id = doc_id
         self.doc_type = doc_type
         self.sender_id = sender_id
-        self.receiver_ntfcn_table = receiver_ntfcn_table
-        self.time_send = datetime.now()
+        self.receiver_id = receiver_id
+        self.time_send = datetime.now().strftime("%m-%d-%Y %H:%M")
         self.comments = comments
         self.text = text
         self.place_id_list = place_id_list
         self.time_limit = time_limit
+        self.receiver_channel = receiver_channel
 
         if self.ntfcn_type == Notification.Types.DOC_FOLDER_CHANGE:
             self.time_limit = None
             self.comments = None
 
-        self.query = send_notification(receiver_ntfcn_table=self.receiver_ntfcn_table, project_id=self.project_id,
-                                       doc_id=self.doc_id, sender_id=self.sender_id, type=self.ntfcn_type,
-                                       comments=self.comments, time_send=self.time_send, time_limit=self.time_limit,
-                                       text=self.text, doc_type=self.doc_type, place_id=self.place_id_list)
-
         self.window_object = window_object
 
     def send(self):
-        self.window_object.session.commit_query(self.query)
+        data = {"receiver_id": self.receiver_id,
+                "project_id": self.project_id,
+                "doc_id": self.doc_id,
+                "sender_id": self.sender_id,
+                "ntfcn_type": self.ntfcn_type,
+                "comments": self.comments,
+                "time_send": self.time_send,
+                "time_limit": self.time_limit,
+                "msg_text": self.text,
+                "doc_type": self.doc_type,
+                "place_id": self.place_id_list,
+                "receiver_channel": self.receiver_channel}
+        self.window_object.session.api.send_message(data)
