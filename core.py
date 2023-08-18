@@ -23,8 +23,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 from smtplib import SMTPConnectError
-import psycopg2
-from psycopg2 import Error, sql
 from email_validate import validate
 import json
 from cryptography.fernet import Fernet
@@ -45,6 +43,9 @@ from selenium.common.exceptions import TimeoutException
 from functools import wraps
 import time
 from pika.exceptions import AMQPError
+from pathlib import Path
+
+BASE_DIR = Path(__file__).parent
 
 
 def timeit(func):
@@ -68,18 +69,15 @@ def get_platform():
 
 def get_paths():
     ops = platform.platform()[:3].lower()
-    keep_pass_json = None
     connection_config_json = None
     os_login = None
     if ops == 'mac':
-        keep_pass_json = 'data/keep_pass.json'
-        connection_config_json = 'data/connection_config.json'
+        connection_config_json = f'{BASE_DIR}/data/connection_config.json'
         os_login = (os.path.expanduser('~')).split('/')[-1]
     elif ops == 'win':
-        keep_pass_json = r'data\keep_pass.json'
-        connection_config_json = r'data\connection_config.json'
+        connection_config_json = f'{BASE_DIR}\data\connection_config.json'
         os_login = os.getlogin()
-    return {'keep_pass_json': keep_pass_json, 'connection_config_json': connection_config_json, 'os_login': os_login}
+    return {'connection_config_json': connection_config_json, 'os_login': os_login}
 
 
 def get_advice():
@@ -96,20 +94,6 @@ def get_key(Email):
     text = Email.encode('UTF-8')
     encrypted_text = cipher.encrypt(text)
     return encrypted_text.decode('UTF-8')
-
-
-class Json_process:
-    def __init__(self, email, password):
-        self.file = get_paths()['keep_pass_json']
-        self.email = email
-        self.password = password
-
-    def save_to_json(self):
-        email_template = [self.email]
-        password_template = [self.password]
-        to_json = {'email': email_template, 'password': password_template}
-        with open(self.file, 'w') as f:
-            json.dump(to_json, f)
 
 
 class Email_reg_sending:
@@ -555,34 +539,34 @@ class user_connection:
 #         self.conn.close()
 
 
-class push_recover_user_data:
-    def __init__(self, email, password):
-        self.password = password
-        self.email = email
-        self.successful_insertion = 0
-
-    def start(self):
-        with open(get_paths()['connection_config_json']) as f:
-            file_content = f.read()
-            template = json.loads(file_content)
-
-        try:
-            conn = psycopg2.connect(user=template["user"],
-                                    password=template["password"],
-                                    host=template["host"],
-                                    port=template["port"],
-                                    database=template["database"])
-            cur = conn.cursor()
-            cur.execute(sql.SQL("ALTER ROLE {0} LOGIN PASSWORD {1}").format(sql.Identifier(self.email),
-                                                                            sql.Literal(self.password)))
-            conn.commit()
-            self.successful_insertion = 1
-        except (Exception, Error) as error:
-            print("Error while working with PostgreSQL", error)
-        finally:
-            if conn:
-                cur.close()
-                conn.close()
+# class push_recover_user_data:
+#     def __init__(self, email, password):
+#         self.password = password
+#         self.email = email
+#         self.successful_insertion = 0
+#
+#     def start(self):
+#         with open(get_paths()['connection_config_json']) as f:
+#             file_content = f.read()
+#             template = json.loads(file_content)
+#
+#         try:
+#             conn = psycopg2.connect(user=template["user"],
+#                                     password=template["password"],
+#                                     host=template["host"],
+#                                     port=template["port"],
+#                                     database=template["database"])
+#             cur = conn.cursor()
+#             cur.execute(sql.SQL("ALTER ROLE {0} LOGIN PASSWORD {1}").format(sql.Identifier(self.email),
+#                                                                             sql.Literal(self.password)))
+#             conn.commit()
+#             self.successful_insertion = 1
+#         except (Exception, Error) as error:
+#             print("Error while working with PostgreSQL", error)
+#         finally:
+#             if conn:
+#                 cur.close()
+#                 conn.close()
 
 
 class User:

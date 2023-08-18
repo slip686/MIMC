@@ -922,7 +922,7 @@ class DocViewDialog(QDialog):
 
     def save_main_file(self):
         login = get_paths()['os_login']
-        file = QSaveFile(f"/Users/{login}/Downloads/{self.latest_file['main_file_info']['file_name']}.pdf")
+        file = QSaveFile(f"/Users/{login}/Downloads/{self.current_file_info['main_file_info']['file_name']}.pdf")
         file.open(QIODevice.WriteOnly)
         file.write(self.device.data())
         file.commit()

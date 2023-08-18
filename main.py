@@ -1,5 +1,4 @@
 import ast
-from Custom_Widgets.Widgets import QMainWindow
 from PySide6.QtWidgets import QApplication, QFileDialog, QGridLayout
 from CustomWidgets import *
 from UIwindow import Ui_MainWindow
@@ -12,12 +11,6 @@ from Dialogs import *
 import schedule
 import time
 from threading import Thread
-
-
-# this shit is just for correct SQL strings
-class str2(str):
-    def __repr__(self):
-        return ''.join(('"', super().__repr__()[1:-1], '"'))
 
 
 class MainWindow(QMainWindow):
@@ -241,7 +234,6 @@ class MainWindow(QMainWindow):
         start_session()
 
         self.new_user = Reg_data(None, None)
-        self.json_process = Json_process(None, None)
         self.exist_user = Reg_data(None, None)
 
         ########################################################################################################
@@ -309,20 +301,20 @@ class MainWindow(QMainWindow):
             else:
                 self.ui.infoLabel_5.setText('Passwords are mismatch, try again')
 
-        def user_password_recover():
-            self.ui.infoLabel_10.setText('')
-            self.exist_user.password = self.ui.passEntering_3.text()
-            self.recover_process = push_recover_user_data(self.exist_user.Email,
-                                                          self.exist_user.password)
-            if self.ui.passRepeatEntering_2.text() == self.exist_user.password:
-                self.recover_process.start()
-                if self.recover_process.successful_insertion == 1:
-                    exist_user_data_clear()
-                    self.ui.regStackedWidget.slideInIdx(9)
-                else:
-                    self.ui.infoLabel_10.setText('Something went wrong')
-            else:
-                self.ui.infoLabel_10.setText('Passwords are mismatch, try again')
+        # def user_password_recover():
+        #     self.ui.infoLabel_10.setText('')
+        #     self.exist_user.password = self.ui.passEntering_3.text()
+        #     # self.recover_process = push_recover_user_data(self.exist_user.Email,
+        #     #                                               self.exist_user.password)
+        #     if self.ui.passRepeatEntering_2.text() == self.exist_user.password:
+        #         self.recover_process.start()
+        #         if self.recover_process.successful_insertion == 1:
+        #             exist_user_data_clear()
+        #             self.ui.regStackedWidget.slideInIdx(9)
+        #         else:
+        #             self.ui.infoLabel_10.setText('Something went wrong')
+        #     else:
+        #         self.ui.infoLabel_10.setText('Passwords are mismatch, try again')
 
         def new_user_data_clear():
             self.new_user = Reg_data(None, None)
@@ -802,7 +794,7 @@ class MainWindow(QMainWindow):
             # 1. Get names of columns (as ints) in current documents' table except 'place_id' column
             # (column named by its order in database table)
 
-            columns_names_list = list(self.session.api.get_structure_columns_names)
+            columns_names_list = list(self.session.api.get_structure_columns_names.get('content').get('names'))
             # columns_names_list = list(
             #     self.session.select_query([columns_names(), (AsIs(docs_structure_tablename),)], fetchall=True))
             del columns_names_list[0:3]
@@ -810,7 +802,6 @@ class MainWindow(QMainWindow):
             #####################################################################################################
             # Adding columns process
             #####################################################################################################
-
             if len(columns_names_list) < most_long_pattern:
                 delta = most_long_pattern - len(columns_names_list)
                 columns_names_to_add = []
@@ -1212,7 +1203,7 @@ class MainWindow(QMainWindow):
         self.ui.cancelRegBtn_6.clicked.connect(lambda: exist_user_data_clear())
 
         # regPage8 buttons
-        self.ui.proceedBtn_5.clicked.connect(lambda: user_password_recover())
+        # self.ui.proceedBtn_5.clicked.connect(lambda: user_password_recover())
         self.ui.cancelRegBtn_7.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
         self.ui.cancelRegBtn_7.clicked.connect(lambda: exist_user_data_clear())
 

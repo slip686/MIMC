@@ -1,413 +1,413 @@
-from psycopg2.extensions import AsIs
-
-
-def user_data():
-    query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM users WHERE email = %s) row)'''
-    return query
-
-
-def create_notification_table(email):
-    query = ['''CREATE TABLE IF NOT EXISTS "%s_notification"
-            (
-            ntfcn_id serial PRIMARY KEY,
-            project_id integer,
-            doc_id varchar,
-            sender_id integer,
-            type varchar,
-            comments varchar,
-            text varchar,
-            time_send varchar,
-            time_limit varchar,
-            receive_status bool,
-            read_status bool,
-            doc_type varchar,
-            place_id varchar,
-            FOREIGN KEY (sender_id) REFERENCES users (user_id),
-            FOREIGN KEY (project_id) REFERENCES projects (project_id)
-            );
-            GRANT SELECT, UPDATE, INSERT ON TABLE "%s_notification" TO "%s" ''',
-             (AsIs(email), AsIs(email), AsIs(email))]
-    return query
-
-
-def get_notifications(email):
-    query = [
-        """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" 
-        WHERE receive_status IS null) row)""",
-        (AsIs(email),)]
-    return query
-
-
-def get_old_notifications(email, start, end):
-    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true 
-    AND ntfcn_id BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
-    return query
-
-
-def get_last_ten_notifications(email):
-    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" 
-                ORDER BY ntfcn_id DESC LIMIT 10) row)""", (AsIs(email),)]
-    return query
-
-
-def create_user_projects_access_table():
-    query = """CREATE TABLE IF NOT EXISTS "%s_projects"
-            (
-            access_id serial PRIMARY KEY,
-            project_id integer,
-            FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE
-            )"""
-    return query
-
-
-def grant_privs_to_user():
-    query = 'GRANT SELECT ON TABLE public.users TO "%s"'
-    return query
-
-
-def grant_select_privs_to_user_on_project():
-    query = 'GRANT SELECT ON TABLE %s TO "%s"'
-    return query
-
-
-def grant_select_update_insert_privs_to_user_on_project(table_name, user_email):
-    query = ['GRANT SELECT, UPDATE, INSERT ON TABLE %s TO "%s"', (table_name, user_email)]
-    return query
-
-
-def grant_privs_to_project_engineer():
-    query = 'GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA public TO "%s"'
-    return query
-
-
-def grant_seq_privs_to_project_engineer():
-    query = 'GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO "%s"'
-    return query
-
-
-def reg_new_project(picture, name, owner_id, address, time_limits, status, repo_id):
-    query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status, 
-                                    repo_id, docs_table, main_files_table, support_files_table, doc_structure_table) 
-                    VALUES (%s, %s, %s, %s, %s, %s, %s, '%s docs', '%s main_files', 
-                            '%s support_files', '%s docs_structure')""",
-                  (picture, name, owner_id, address, time_limits, status, repo_id, AsIs(name)
-                   , AsIs(name), AsIs(name), AsIs(name))]
-    return query_list
-
-
-def get_new_project_id():
-    query = """SELECT project_id FROM projects WHERE project_name = %s"""
-    return query
-
-
-def insert_into_users_projects_party(user_id, project_id, job_title):
-    query = ["""INSERT INTO users_projects_party (user_id, project_id, job_title) VALUES (%s, %s, %s)""",
-             (user_id, project_id, job_title)]
-    return query
-
-
-def reg_new_docs_table(name):
-    query_list = ["""CREATE TABLE "%s docs" (
-            doc_id serial PRIMARY KEY,
-            document_type varchar,
-            document_name varchar,
-            document_cypher varchar,
-            release_to_work_date varchar,
-            start_develop_date varchar,
-            end_develop_date varchar,
-            document_status varchar,
-            status_time_set varchar,
-            place_id varchar,
-            document_folder varchar
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def grant_usage_on_sequence(seq_name, user_email):
-    query = 'GRANT USAGE ON SEQUENCE "{}" TO "{}"'.format(seq_name, user_email)
-    return query
-
-
-def reg_new_design_project_docs_structure(name):
-    query_list = ["""CREATE TABLE "%s ddocs_structure" (
-            place_id serial PRIMARY KEY
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def reg_new_main_files_table(name):
-    query_list = ["""CREATE TABLE "%s main_files" (
-            file_id serial PRIMARY KEY,
-            file_path varchar,
-            file_name varchar,
-            rev_num integer,
-            ver_num integer,
-            document_status varchar,
-            status_time_set varchar,
-            status_time_delta varchar,
-            loading_time varchar,
-            user_id integer,
-            doc_id integer,
-            FOREIGN KEY (doc_id) REFERENCES "%s docs" (doc_id),
-            FOREIGN KEY (user_id) REFERENCES users (user_id)
-            )""", (AsIs(name), AsIs(name))]
-    return query_list
-
-
-def reg_new_construction_project_docs_structure(name):
-    query_list = ["""CREATE TABLE "%s cdocs_structure" (
-            place_id serial PRIMARY KEY
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def reg_new_support_files_table(name):
-    query_list = ["""CREATE TABLE "%s support_files" (
-            id serial PRIMARY KEY,
-            file_name varchar,
-            file_type varchar,
-            loading_time varchar,
-            main_file_id integer,
-            FOREIGN KEY (main_file_id) REFERENCES "%s main_files" (file_id)
-            )""", (AsIs(name), AsIs(name))]
-    return query_list
-
-
-def reg_new_initial_permit_project_docs_structure(name):
-    query_list = ["""CREATE TABLE "%s ipdocs_structure" (
-            place_id serial PRIMARY KEY
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def reg_new_docs_structure(name):
-    query_list = ["""CREATE TABLE "%s docs_structure" (
-            place_id serial PRIMARY KEY,
-            doc_type varchar
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def reg_new_users_access_table(name):
-    query_list = ["""CREATE TABLE "%s users" (
-            table_user_id serial PRIMARY KEY,
-            email varchar,
-            first_name varchar,
-            last_name varchar,
-            company_name varchar,
-            job_title varchar
-            )""", (AsIs(name),)]
-    return query_list
-
-
-def push_users_data_to_users_access_table(project_name, email, first_name, last_name, company_name, job_title):
-    query_list = ["""INSERT INTO "%s users" (email, first_name, last_name, company_name, job_title) 
-            VALUES (%s, %s, %s, %s, %s)""", (AsIs(project_name), email, first_name, last_name, company_name, job_title)]
-    return query_list
-
-
-def exist_project_check():
-    query = """SELECT project_name FROM projects"""
-    return query
-
-
-def retrieve_company_list():
-    query = """SELECT DISTINCT company_name FROM users"""
-    return query
-
-
-def retrieve_company_users_list():
-    query = """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)"""
-    return query
-
-
-def get_user_data():
-    query = """SELECT email, first_name, last_name, company_name FROM users WHERE user_id = %s"""
-    return query
-
-
-def get_projects_ids_and_roles():
-    query = """SELECT project_id, job_title FROM users_projects_party WHERE user_id = %s"""
-    return query
-
-
-def get_project():
-    query = """SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM projects WHERE project_id = %s) row)"""
-    return query
-
-
-def get_docs_structure_tablenames():
-    query = """SELECT design_docs_structure, construction_docs_structure, initial_permit_docs_structure
-                                                                    FROM projects WHERE project_id = %s"""
-    return query
-
-
-def get_structure():
-    query_list = '''SELECT * FROM "%s" WHERE doc_type = %s'''
-    return query_list
-
-
-def add_column():
-    query_list = 'ALTER TABLE "%s" ADD COLUMN IF NOT EXISTS "%s" varchar'
-    return query_list
-
-
-def columns_names():
-    query = "SELECT column_name FROM information_schema.columns where table_name = '%s'"
-    return query
-
-
-def get_docs_patterns():
-    query = '''SELECT * FROM "%s"'''
-    return query
-
-
-def delete_pattern():
-    query = '''DELETE FROM "%s" WHERE place_id = %s AND doc_type = %s'''
-    return query
-
-
-def insert_pattern():
-    query = '''INSERT INTO "%s" (%s, %s) VALUES (%s, %s)'''
-    return query
-
-
-def insert_pattern_one_value():
-    query = '''INSERT INTO "%s" (%s, %s) VALUES (%s, %s)'''
-    return query
-
-
-def update_pattern_folder_name():
-    query = '''UPDATE %s SET %s = %s WHERE place_id IN %s AND doc_type = %s'''
-    return query
-
-
-def exclude_cell():
-    query = '''UPDATE %s SET %s = %s WHERE place_id = %s AND doc_type = %s'''
-    return query
-
-
-def add_doc(table, document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
-            end_develop_date, document_status, status_time_set, place_id, document_folder):
-    query = ['''INSERT INTO "%s" (document_type, document_name, document_cypher, release_to_work_date, 
-    start_develop_date, end_develop_date, document_status, status_time_set, place_id, document_folder) VALUES (%s, %s, 
-    %s, %s, %s, %s, %s, %s, %s, %s)''',
-             (AsIs(table), document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
-              end_develop_date, document_status, status_time_set, place_id, document_folder)]
-    return query
-
-
-def get_docs():
-    query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM "%s docs") row)'''
-    return query
-
-
-def insert_main_file_info(project_name, user_id, doc_id, name, revision, version, status, status_set_time,
-                          loading_time):
-    query_list = ["""INSERT INTO "%s main_files" (file_name, rev_num, ver_num, document_status, 
-    status_time_set, loading_time, user_id, doc_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
-                  (AsIs(project_name), name, revision, version, status, status_set_time, loading_time, user_id, doc_id)]
-    return query_list
-
-
-def get_main_file_id(project_name, name):
-    query_list = ["""SELECT file_id FROM "%s main_files" WHERE file_name=%s """,
-                  (AsIs(project_name), name)]
-    return query_list
-
-
-def insert_support_file_info(project_name, file_name, file_type, main_file_id):
-    query_list = ["""INSERT INTO "%s support_files" (file_name, file_type, main_file_id) VALUES (%s, %s, %s)""",
-                  (AsIs(project_name), file_name, file_type, main_file_id)]
-    return query_list
-
-
-def get_doc_and_file_info(project_name, doc_id):
-    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" INNER JOIN "%s main_files" ON 
-    "%s docs".doc_id = "%s main_files".doc_id
-    WHERE "%s docs".doc_id=%s) row)""",
-                  (AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name),
-                   doc_id)]
-    return query_list
-
-
-def get_support_files_info(project_name):
-    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s support_files") row)""",
-                  (AsIs(project_name),)]
-    return query_list
-
-
-def get_user_data_by_user_id(user_id):
-    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM users WHERE user_id=%s) row)""",
-                  (user_id,)]
-    return query_list
-
-
-def get_doc_info(project_name, doc_id):
-    query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" WHERE doc_id=%s) row)""",
-                  (AsIs(project_name), doc_id)]
-    return query_list
-
-
-def set_ntfcn_func_and_trigger(email):
-    query_list = ["""create function "%s_MESSAGE"() returns trigger
-                        language plpgsql
-                        as
-                        $$
-                        DECLARE 
-                            payload text;
-                        BEGIN payload := json_build_object('project_id',NEW.project_id, 'doc_id', NEW.doc_id, 
-                            'sender_id', NEW.sender_id,'ntfcn_id', NEW.ntfcn_id, 'comments', NEW.comments, 
-                            'receive_status', NEW.receive_status, 'type', NEW.type, 'time_send', NEW.time_send, 
-                            'time_limit', NEW.time_limit, 'text', NEW.text, 'doc_type', NEW.doc_type, 
-                            'place_id', NEW.place_id, 'read_status', NEW.read_status);
-                        PERFORM pg_notify('%s_msg_channel', payload);
-                        RETURN NEW;
-                        END;$$;
-
-                        CREATE TRIGGER "%s_MESSAGES_TRG"
-                        AFTER INSERT ON "%s_notification"
-                        FOR EACH ROW
-                        EXECUTE PROCEDURE "%s_MESSAGE"();""", (AsIs(email), AsIs(email), AsIs(email), AsIs(email),
-                                                               AsIs(email))]
-    return query_list
-
-
-def set_receive_status(email, ntfcn_id):
-    query = ["""UPDATE public."%s_notification" SET receive_status = true WHERE ntfcn_id = %s;""",
-             (AsIs(email), ntfcn_id)]
-    return query
-
-
-def set_read_status(email, ntfcn_id):
-    query = ["""UPDATE public."%s_notification" SET read_status = true WHERE ntfcn_id = %s;""",
-             (AsIs(email), ntfcn_id)]
-    return query
-
-
-def move_to_folder(project_name, doc_id, new_folder_place_id):
-    query = ["""UPDATE "%s docs" SET place_id = %s WHERE doc_id = %s""",
-             (AsIs(project_name), new_folder_place_id, doc_id)]
-    return query
-
-
-def get_all_users_ntfcn_tables():
-    query = ["""SELECT notification_table FROM users """]
-    return query
-
-
-def get_users_data_on_project(project_id):
-    query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users_projects_party 
-    INNER JOIN users ON users_projects_party.user_id = users.user_id WHERE project_id = %s) row)""", (project_id,)]
-    return query
-
-
-def send_notification(receiver_ntfcn_table, project_id, doc_id, sender_id, type, comments, time_send, time_limit, text,
-                      doc_type, place_id):
-    query = ["""INSERT INTO "%s" (project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type, 
-    place_id) 
-    VALUES (%s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s')""",
-             (AsIs(receiver_ntfcn_table), project_id, doc_id, sender_id,
-              AsIs(type), AsIs(comments), AsIs(time_send),
-              AsIs(time_limit), AsIs(text), AsIs(doc_type), AsIs(place_id))]
-    return query
+# from psycopg2.extensions import AsIs
+#
+#
+# def user_data():
+#     query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM users WHERE email = %s) row)'''
+#     return query
+#
+#
+# def create_notification_table(email):
+#     query = ['''CREATE TABLE IF NOT EXISTS "%s_notification"
+#             (
+#             ntfcn_id serial PRIMARY KEY,
+#             project_id integer,
+#             doc_id varchar,
+#             sender_id integer,
+#             type varchar,
+#             comments varchar,
+#             text varchar,
+#             time_send varchar,
+#             time_limit varchar,
+#             receive_status bool,
+#             read_status bool,
+#             doc_type varchar,
+#             place_id varchar,
+#             FOREIGN KEY (sender_id) REFERENCES users (user_id),
+#             FOREIGN KEY (project_id) REFERENCES projects (project_id)
+#             );
+#             GRANT SELECT, UPDATE, INSERT ON TABLE "%s_notification" TO "%s" ''',
+#              (AsIs(email), AsIs(email), AsIs(email))]
+#     return query
+#
+#
+# def get_notifications(email):
+#     query = [
+#         """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification"
+#         WHERE receive_status IS null) row)""",
+#         (AsIs(email),)]
+#     return query
+#
+#
+# def get_old_notifications(email, start, end):
+#     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification" WHERE receive_status IS true
+#     AND ntfcn_id BETWEEN %s AND %s) row)""", (AsIs(email), start, end)]
+#     return query
+#
+#
+# def get_last_ten_notifications(email):
+#     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM "%s_notification"
+#                 ORDER BY ntfcn_id DESC LIMIT 10) row)""", (AsIs(email),)]
+#     return query
+#
+#
+# def create_user_projects_access_table():
+#     query = """CREATE TABLE IF NOT EXISTS "%s_projects"
+#             (
+#             access_id serial PRIMARY KEY,
+#             project_id integer,
+#             FOREIGN KEY (project_id) REFERENCES projects (project_id) ON DELETE CASCADE
+#             )"""
+#     return query
+#
+#
+# def grant_privs_to_user():
+#     query = 'GRANT SELECT ON TABLE public.users TO "%s"'
+#     return query
+#
+#
+# def grant_select_privs_to_user_on_project():
+#     query = 'GRANT SELECT ON TABLE %s TO "%s"'
+#     return query
+#
+#
+# def grant_select_update_insert_privs_to_user_on_project(table_name, user_email):
+#     query = ['GRANT SELECT, UPDATE, INSERT ON TABLE %s TO "%s"', (table_name, user_email)]
+#     return query
+#
+#
+# def grant_privs_to_project_engineer():
+#     query = 'GRANT SELECT, UPDATE, INSERT ON ALL TABLES IN SCHEMA public TO "%s"'
+#     return query
+#
+#
+# def grant_seq_privs_to_project_engineer():
+#     query = 'GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO "%s"'
+#     return query
+#
+#
+# def reg_new_project(picture, name, owner_id, address, time_limits, status, repo_id):
+#     query_list = ["""INSERT INTO projects (picture, project_name, owner_id, address, time_limits, status,
+#                                     repo_id, docs_table, main_files_table, support_files_table, doc_structure_table)
+#                     VALUES (%s, %s, %s, %s, %s, %s, %s, '%s docs', '%s main_files',
+#                             '%s support_files', '%s docs_structure')""",
+#                   (picture, name, owner_id, address, time_limits, status, repo_id, AsIs(name)
+#                    , AsIs(name), AsIs(name), AsIs(name))]
+#     return query_list
+#
+#
+# def get_new_project_id():
+#     query = """SELECT project_id FROM projects WHERE project_name = %s"""
+#     return query
+#
+#
+# def insert_into_users_projects_party(user_id, project_id, job_title):
+#     query = ["""INSERT INTO users_projects_party (user_id, project_id, job_title) VALUES (%s, %s, %s)""",
+#              (user_id, project_id, job_title)]
+#     return query
+#
+#
+# def reg_new_docs_table(name):
+#     query_list = ["""CREATE TABLE "%s docs" (
+#             doc_id serial PRIMARY KEY,
+#             document_type varchar,
+#             document_name varchar,
+#             document_cypher varchar,
+#             release_to_work_date varchar,
+#             start_develop_date varchar,
+#             end_develop_date varchar,
+#             document_status varchar,
+#             status_time_set varchar,
+#             place_id varchar,
+#             document_folder varchar
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def grant_usage_on_sequence(seq_name, user_email):
+#     query = 'GRANT USAGE ON SEQUENCE "{}" TO "{}"'.format(seq_name, user_email)
+#     return query
+#
+#
+# def reg_new_design_project_docs_structure(name):
+#     query_list = ["""CREATE TABLE "%s ddocs_structure" (
+#             place_id serial PRIMARY KEY
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def reg_new_main_files_table(name):
+#     query_list = ["""CREATE TABLE "%s main_files" (
+#             file_id serial PRIMARY KEY,
+#             file_path varchar,
+#             file_name varchar,
+#             rev_num integer,
+#             ver_num integer,
+#             document_status varchar,
+#             status_time_set varchar,
+#             status_time_delta varchar,
+#             loading_time varchar,
+#             user_id integer,
+#             doc_id integer,
+#             FOREIGN KEY (doc_id) REFERENCES "%s docs" (doc_id),
+#             FOREIGN KEY (user_id) REFERENCES users (user_id)
+#             )""", (AsIs(name), AsIs(name))]
+#     return query_list
+#
+#
+# def reg_new_construction_project_docs_structure(name):
+#     query_list = ["""CREATE TABLE "%s cdocs_structure" (
+#             place_id serial PRIMARY KEY
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def reg_new_support_files_table(name):
+#     query_list = ["""CREATE TABLE "%s support_files" (
+#             id serial PRIMARY KEY,
+#             file_name varchar,
+#             file_type varchar,
+#             loading_time varchar,
+#             main_file_id integer,
+#             FOREIGN KEY (main_file_id) REFERENCES "%s main_files" (file_id)
+#             )""", (AsIs(name), AsIs(name))]
+#     return query_list
+#
+#
+# def reg_new_initial_permit_project_docs_structure(name):
+#     query_list = ["""CREATE TABLE "%s ipdocs_structure" (
+#             place_id serial PRIMARY KEY
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def reg_new_docs_structure(name):
+#     query_list = ["""CREATE TABLE "%s docs_structure" (
+#             place_id serial PRIMARY KEY,
+#             doc_type varchar
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def reg_new_users_access_table(name):
+#     query_list = ["""CREATE TABLE "%s users" (
+#             table_user_id serial PRIMARY KEY,
+#             email varchar,
+#             first_name varchar,
+#             last_name varchar,
+#             company_name varchar,
+#             job_title varchar
+#             )""", (AsIs(name),)]
+#     return query_list
+#
+#
+# def push_users_data_to_users_access_table(project_name, email, first_name, last_name, company_name, job_title):
+#     query_list = ["""INSERT INTO "%s users" (email, first_name, last_name, company_name, job_title)
+#             VALUES (%s, %s, %s, %s, %s)""", (AsIs(project_name), email, first_name, last_name, company_name, job_title)]
+#     return query_list
+#
+#
+# def exist_project_check():
+#     query = """SELECT project_name FROM projects"""
+#     return query
+#
+#
+# def retrieve_company_list():
+#     query = """SELECT DISTINCT company_name FROM users"""
+#     return query
+#
+#
+# def retrieve_company_users_list():
+#     query = """SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users) row)"""
+#     return query
+#
+#
+# def get_user_data():
+#     query = """SELECT email, first_name, last_name, company_name FROM users WHERE user_id = %s"""
+#     return query
+#
+#
+# def get_projects_ids_and_roles():
+#     query = """SELECT project_id, job_title FROM users_projects_party WHERE user_id = %s"""
+#     return query
+#
+#
+# def get_project():
+#     query = """SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM projects WHERE project_id = %s) row)"""
+#     return query
+#
+#
+# def get_docs_structure_tablenames():
+#     query = """SELECT design_docs_structure, construction_docs_structure, initial_permit_docs_structure
+#                                                                     FROM projects WHERE project_id = %s"""
+#     return query
+#
+#
+# def get_structure():
+#     query_list = '''SELECT * FROM "%s" WHERE doc_type = %s'''
+#     return query_list
+#
+#
+# def add_column():
+#     query_list = 'ALTER TABLE "%s" ADD COLUMN IF NOT EXISTS "%s" varchar'
+#     return query_list
+#
+#
+# def columns_names():
+#     query = "SELECT column_name FROM information_schema.columns where table_name = '%s'"
+#     return query
+#
+#
+# def get_docs_patterns():
+#     query = '''SELECT * FROM "%s"'''
+#     return query
+#
+#
+# def delete_pattern():
+#     query = '''DELETE FROM "%s" WHERE place_id = %s AND doc_type = %s'''
+#     return query
+#
+#
+# def insert_pattern():
+#     query = '''INSERT INTO "%s" (%s, %s) VALUES (%s, %s)'''
+#     return query
+#
+#
+# def insert_pattern_one_value():
+#     query = '''INSERT INTO "%s" (%s, %s) VALUES (%s, %s)'''
+#     return query
+#
+#
+# def update_pattern_folder_name():
+#     query = '''UPDATE %s SET %s = %s WHERE place_id IN %s AND doc_type = %s'''
+#     return query
+#
+#
+# def exclude_cell():
+#     query = '''UPDATE %s SET %s = %s WHERE place_id = %s AND doc_type = %s'''
+#     return query
+#
+#
+# def add_doc(table, document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
+#             end_develop_date, document_status, status_time_set, place_id, document_folder):
+#     query = ['''INSERT INTO "%s" (document_type, document_name, document_cypher, release_to_work_date,
+#     start_develop_date, end_develop_date, document_status, status_time_set, place_id, document_folder) VALUES (%s, %s,
+#     %s, %s, %s, %s, %s, %s, %s, %s)''',
+#              (AsIs(table), document_type, document_name, document_cypher, release_to_work_date, start_develop_date,
+#               end_develop_date, document_status, status_time_set, place_id, document_folder)]
+#     return query
+#
+#
+# def get_docs():
+#     query = '''SELECT array( SELECT row_to_json(row) FROM (SELECT * FROM "%s docs") row)'''
+#     return query
+#
+#
+# def insert_main_file_info(project_name, user_id, doc_id, name, revision, version, status, status_set_time,
+#                           loading_time):
+#     query_list = ["""INSERT INTO "%s main_files" (file_name, rev_num, ver_num, document_status,
+#     status_time_set, loading_time, user_id, doc_id) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)""",
+#                   (AsIs(project_name), name, revision, version, status, status_set_time, loading_time, user_id, doc_id)]
+#     return query_list
+#
+#
+# def get_main_file_id(project_name, name):
+#     query_list = ["""SELECT file_id FROM "%s main_files" WHERE file_name=%s """,
+#                   (AsIs(project_name), name)]
+#     return query_list
+#
+#
+# def insert_support_file_info(project_name, file_name, file_type, main_file_id):
+#     query_list = ["""INSERT INTO "%s support_files" (file_name, file_type, main_file_id) VALUES (%s, %s, %s)""",
+#                   (AsIs(project_name), file_name, file_type, main_file_id)]
+#     return query_list
+#
+#
+# def get_doc_and_file_info(project_name, doc_id):
+#     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" INNER JOIN "%s main_files" ON
+#     "%s docs".doc_id = "%s main_files".doc_id
+#     WHERE "%s docs".doc_id=%s) row)""",
+#                   (AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name), AsIs(project_name),
+#                    doc_id)]
+#     return query_list
+#
+#
+# def get_support_files_info(project_name):
+#     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s support_files") row)""",
+#                   (AsIs(project_name),)]
+#     return query_list
+#
+#
+# def get_user_data_by_user_id(user_id):
+#     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM users WHERE user_id=%s) row)""",
+#                   (user_id,)]
+#     return query_list
+#
+#
+# def get_doc_info(project_name, doc_id):
+#     query_list = ["""SELECT array(SELECT row_to_json(row) FROM (SELECT * FROM "%s docs" WHERE doc_id=%s) row)""",
+#                   (AsIs(project_name), doc_id)]
+#     return query_list
+#
+#
+# def set_ntfcn_func_and_trigger(email):
+#     query_list = ["""create function "%s_MESSAGE"() returns trigger
+#                         language plpgsql
+#                         as
+#                         $$
+#                         DECLARE
+#                             payload text;
+#                         BEGIN payload := json_build_object('project_id',NEW.project_id, 'doc_id', NEW.doc_id,
+#                             'sender_id', NEW.sender_id,'ntfcn_id', NEW.ntfcn_id, 'comments', NEW.comments,
+#                             'receive_status', NEW.receive_status, 'type', NEW.type, 'time_send', NEW.time_send,
+#                             'time_limit', NEW.time_limit, 'text', NEW.text, 'doc_type', NEW.doc_type,
+#                             'place_id', NEW.place_id, 'read_status', NEW.read_status);
+#                         PERFORM pg_notify('%s_msg_channel', payload);
+#                         RETURN NEW;
+#                         END;$$;
+#
+#                         CREATE TRIGGER "%s_MESSAGES_TRG"
+#                         AFTER INSERT ON "%s_notification"
+#                         FOR EACH ROW
+#                         EXECUTE PROCEDURE "%s_MESSAGE"();""", (AsIs(email), AsIs(email), AsIs(email), AsIs(email),
+#                                                                AsIs(email))]
+#     return query_list
+#
+#
+# def set_receive_status(email, ntfcn_id):
+#     query = ["""UPDATE public."%s_notification" SET receive_status = true WHERE ntfcn_id = %s;""",
+#              (AsIs(email), ntfcn_id)]
+#     return query
+#
+#
+# def set_read_status(email, ntfcn_id):
+#     query = ["""UPDATE public."%s_notification" SET read_status = true WHERE ntfcn_id = %s;""",
+#              (AsIs(email), ntfcn_id)]
+#     return query
+#
+#
+# def move_to_folder(project_name, doc_id, new_folder_place_id):
+#     query = ["""UPDATE "%s docs" SET place_id = %s WHERE doc_id = %s""",
+#              (AsIs(project_name), new_folder_place_id, doc_id)]
+#     return query
+#
+#
+# def get_all_users_ntfcn_tables():
+#     query = ["""SELECT notification_table FROM users """]
+#     return query
+#
+#
+# def get_users_data_on_project(project_id):
+#     query = ["""SELECT array(SELECT row_to_json(row) FROM(SELECT * FROM users_projects_party
+#     INNER JOIN users ON users_projects_party.user_id = users.user_id WHERE project_id = %s) row)""", (project_id,)]
+#     return query
+#
+#
+# def send_notification(receiver_ntfcn_table, project_id, doc_id, sender_id, type, comments, time_send, time_limit, text,
+#                       doc_type, place_id):
+#     query = ["""INSERT INTO "%s" (project_id, doc_id, sender_id, type, comments, time_send, time_limit, text, doc_type,
+#     place_id)
+#     VALUES (%s, %s, %s, '%s', '%s', '%s', '%s', '%s', '%s', '%s')""",
+#              (AsIs(receiver_ntfcn_table), project_id, doc_id, sender_id,
+#               AsIs(type), AsIs(comments), AsIs(time_send),
+#               AsIs(time_limit), AsIs(text), AsIs(doc_type), AsIs(place_id))]
+#     return query

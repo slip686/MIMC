@@ -179,7 +179,7 @@ class Request:
     @property
     def get_structure_columns_names(self):
         response = self.session.get(f'{Request.HOST}/get_structure_columns_names')
-        return {"content": response.content, "code": response.status_code}
+        return {"content": response.json(), "code": response.status_code}
 
     def add_place(self, project_id, doctype, data):
         headers = {'Content-Type': 'application/json'}
