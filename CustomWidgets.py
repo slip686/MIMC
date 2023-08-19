@@ -3515,6 +3515,7 @@ class PDFViewer(QWidget):
         self.verticalLayout_3.setSpacing(0)
         self.verticalLayout_3.setContentsMargins(2, 2, 2, 2)
         self.bookmarkView = QTreeView(self.bookmarkTab)
+        self.bookmarkView.setStyleSheet(u'background-color: rgb(125,125,125)')
         self.bookmarkView.setHeaderHidden(True)
         self.verticalLayout_3.addWidget(self.bookmarkView)
         self.pagesTab = QWidget()
@@ -3523,7 +3524,7 @@ class PDFViewer(QWidget):
         self.verticalLayout_4.setContentsMargins(0, 0, 0, 0)
 
         self.pagesView = QScrollArea(self.pagesTab)
-        self.pagesView.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+        self.pagesView.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(125,125,125);\n'
                                                          'border-top-right-radius: 0px;\n'
                                                          'border-bottom-right-radius: 6px}'
                                                          'QScrollBar::handle:vertical {background-color: rgb(184,184,184);\n'
@@ -3532,7 +3533,7 @@ class PDFViewer(QWidget):
                                                          'QScrollBar::sub-line:vertical {border: none; background: none}'
                                                          'QScrollBar::sub-page:vertical {background: transparent}'
                                                          'QScrollBar::add-page:vertical {background: transparent}')
-        self.pagesView.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+        self.pagesView.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(125,125,125);\n'
                                                            'border-bottom-left-radius: 6px;\n'
                                                            'border-bottom-right-radius: 6px}'
                                                            'QScrollBar::handle:horizontal {background-color: rgb(184,184,184);\n'
@@ -3541,7 +3542,7 @@ class PDFViewer(QWidget):
                                                            'QScrollBar::sub-line:horizontal {border: none; background: none}'
                                                            'QScrollBar::sub-page:horizontal {background: transparent}'
                                                            'QScrollBar::add-page:horizontal {background: transparent}')
-        self.bookmarkView.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+        self.bookmarkView.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(125,125,125);\n'
                                                          'border-top-right-radius: 0px;\n'
                                                          'border-bottom-right-radius: 6px}'
                                                          'QScrollBar::handle:vertical {background-color: rgb(184,184,184);\n'
@@ -3550,7 +3551,7 @@ class PDFViewer(QWidget):
                                                          'QScrollBar::sub-line:vertical {border: none; background: none}'
                                                          'QScrollBar::sub-page:vertical {background: transparent}'
                                                          'QScrollBar::add-page:vertical {background: transparent}')
-        self.bookmarkView.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+        self.bookmarkView.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: rgb(125,125,125);\n'
                                                            'border-bottom-left-radius: 6px;\n'
                                                            'border-bottom-right-radius: 6px}'
                                                            'QScrollBar::handle:horizontal {background-color: rgb(184,184,184);\n'
@@ -3564,6 +3565,7 @@ class PDFViewer(QWidget):
         self.pagesView.setWidgetResizable(True)
         self.verticalLayout_4.addWidget(self.pagesView, Qt.AlignmentFlag.AlignHCenter)
         self.pagesView_contents = QWidget()
+        self.pagesView_contents.setStyleSheet(u'background-color: rgb(125,125,125)')
         self.pagesView.setWidget(self.pagesView_contents)
         self.preview_widgets_layout = QVBoxLayout(self.pagesView_contents)
         self.preview_widgets_layout.setSpacing(3)
