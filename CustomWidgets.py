@@ -3541,6 +3541,24 @@ class PDFViewer(QWidget):
                                                            'QScrollBar::sub-line:horizontal {border: none; background: none}'
                                                            'QScrollBar::sub-page:horizontal {background: transparent}'
                                                            'QScrollBar::add-page:horizontal {background: transparent}')
+        self.bookmarkView.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                                         'border-top-right-radius: 0px;\n'
+                                                         'border-bottom-right-radius: 6px}'
+                                                         'QScrollBar::handle:vertical {background-color: rgb(184,184,184);\n'
+                                                         'border-radius: 4px; margin: 4px}'
+                                                         'QScrollBar::add-line:vertical {border: none; background: none}'
+                                                         'QScrollBar::sub-line:vertical {border: none; background: none}'
+                                                         'QScrollBar::sub-page:vertical {background: transparent}'
+                                                         'QScrollBar::add-page:vertical {background: transparent}')
+        self.bookmarkView.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                                           'border-bottom-left-radius: 6px;\n'
+                                                           'border-bottom-right-radius: 6px}'
+                                                           'QScrollBar::handle:horizontal {background-color: rgb(184,184,184);\n'
+                                                           'border-radius: 4px; margin: 4px}'
+                                                           'QScrollBar::add-line:horizontal {border: none; background: none}'
+                                                           'QScrollBar::sub-line:horizontal {border: none; background: none}'
+                                                           'QScrollBar::sub-page:horizontal {background: transparent}'
+                                                           'QScrollBar::add-page:horizontal {background: transparent}')
 
         self.pagesView.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self.pagesView.setWidgetResizable(True)
@@ -3599,12 +3617,12 @@ class PDFViewer(QWidget):
     def zoom_in_action(self):
         factor = self.document_area.zoomFactor() * self.ZOOM_MULTIPLIER
         self.document_area.setZoomFactor(factor)
-        self.document_area.set_scroll_bar_parameters()
+        # self.document_area.set_scroll_bar_parameters()
 
     def zoom_out_action(self):
         factor = self.document_area.zoomFactor() / self.ZOOM_MULTIPLIER
         self.document_area.setZoomFactor(factor)
-        self.document_area.set_scroll_bar_parameters()
+        # self.document_area.set_scroll_bar_parameters()
 
     def load_document(self, path=None, device=None):
         if path:
@@ -3612,25 +3630,19 @@ class PDFViewer(QWidget):
         if device:
             self.document.load(device)
         self.page_selector.setMaximum(self.document.pageCount())
-        # for page in range(self.document.pageCount()):
-        #     picture = self.document.render(page, self.document.pagePointSize(page).toSize())
-        #     preview = PdfPreview(picture=picture, page_num=page,
-        #                          viewer_widget=self)
-        #     self.preview_widgets_layout.addWidget(preview, 0, Qt.AlignmentFlag.AlignHCenter)
-        #     self.preview_widgets_list.append(preview)
         self.zoom_selector.setCurrentIndex(0)
-        self.document_area.set_scroll_bar_parameters()
         self.nav.jump(0, QPoint(), self.nav.currentZoom())
         self.page_selector.setValue(1)
         self.total_pages_label.setText(f'/{self.document.pageCount()}')
         self.nav_btns_on_off()
         self.selected_page_preview_widget = self.preview_widgets_list[0]
         self.preview_widgets_list[0].set_selected()
+        # self.document_area.set_scroll_bar_parameters()
 
     def set_page_icons(self):
         for page in range(self.document.pageCount()):
             picture = self.document.render(page, self.document.pagePointSize(page).toSize())
-            preview = PdfPreview(picture=picture, page_num=page,
+            preview = PdfPreview(parent=self.pagesView_contents, picture=picture, page_num=page,
                                  viewer_widget=self)
             self.preview_widgets_layout.addWidget(preview, 0, Qt.AlignmentFlag.AlignHCenter)
             self.preview_widgets_list.append(preview)
@@ -3673,10 +3685,9 @@ class PDFViewer(QWidget):
             self.selected_page_preview_widget.unset_selected()
         self.selected_page_preview_widget = self.preview_widgets_list[self.nav.currentPage()]
         self.preview_widgets_list[self.nav.currentPage()].set_selected()
-        if self.nav.currentPage() == 0:
-            self.document_area.verticalScrollBar().setValue(0)
 
     def delete_document(self):
+        self.document_area.document().close()
         self.selected_page_num = None
         self.selected_page_preview_widget = None
         self.preview_widgets_list = []
@@ -3739,7 +3750,7 @@ class ZoomSelector(QComboBox):
     def set_zoom_factor(self, zoomFactor):
         percent = int(zoomFactor * 100)
         self.setCurrentText(f"{percent}%")
-        self.viewer_widget.document_area.set_scroll_bar_parameters()
+        # self.viewer_widget.document_area.set_scroll_bar_parameters()
 
     @Slot()
     def reset(self):
@@ -3757,7 +3768,7 @@ class ZoomSelector(QComboBox):
             factor = zoom_level / 100.0
             self.zoom_mode_changed.emit(QPdfView.ZoomMode.Custom)
             self.zoom_factor_changed.emit(factor)
-        self.viewer_widget.document_area.set_scroll_bar_parameters()
+        # self.viewer_widget.document_area.set_scroll_bar_parameters()
 
     @Slot()
     def _editing_finished(self):
@@ -3779,68 +3790,86 @@ class CQPdfView(QPdfView):
         self.setMouseTracking(True)
         self.setPageMode(QPdfView.PageMode.MultiPage)
         self.setAttribute(QtCore.Qt.WidgetAttribute.WA_AcceptTouchEvents, False)
-        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.vertical_scroll_bar = CQScrollBar2(parent=self.parent(), orientation='v')
-        self.vertical_scroll_bar.scroll_bar.setStyleSheet(u'QScrollBar{background-color: transparent;\n'
-                                                          'border-top-right-radius: 0px;\n'
-                                                          'border-bottom-right-radius: 6px}'
-                                                          'QScrollBar::handle:vertical {background-color: rgb(136,136,136);\n'
-                                                          'border-radius: 4px; margin: 4px}'
-                                                          'QScrollBar::add-line:vertical {border: none; background: none}'
-                                                          'QScrollBar::sub-line:vertical {border: none; background: none}'
-                                                          'QScrollBar::sub-page:vertical {background: transparent}'
-                                                          'QScrollBar::add-page:vertical {background: transparent}')
-        self.horizontal_scroll_bar = CQScrollBar2(parent=self.parent(), orientation='h')
-        self.parent().sizeChanged.connect(lambda: self.set_scroll_bar_parameters())
+        # self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        # self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.verticalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                                         'border-top-right-radius: 0px;\n'
+                                                         'border-bottom-right-radius: 6px}'
+                                                         'QScrollBar::handle:vertical {background-color: rgb(184,184,184);\n'
+                                                         'border-radius: 4px; margin: 4px}'
+                                                         'QScrollBar::add-line:vertical {border: none; background: none}'
+                                                         'QScrollBar::sub-line:vertical {border: none; background: none}'
+                                                         'QScrollBar::sub-page:vertical {background: transparent}'
+                                                         'QScrollBar::add-page:vertical {background: transparent}')
+        self.horizontalScrollBar().setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+                                                           'border-bottom-left-radius: 6px;\n'
+                                                           'border-bottom-right-radius: 6px}'
+                                                           'QScrollBar::handle:horizontal {background-color: rgb(184,184,184);\n'
+                                                           'border-radius: 4px; margin: 4px}'
+                                                           'QScrollBar::add-line:horizontal {border: none; background: none}'
+                                                           'QScrollBar::sub-line:horizontal {border: none; background: none}'
+                                                           'QScrollBar::sub-page:horizontal {background: transparent}'
+                                                           'QScrollBar::add-page:horizontal {background: transparent}')
+        # self.vertical_scroll_bar = CQScrollBar2(parent=self.parent(), orientation='v')
+        # self.vertical_scroll_bar.scroll_bar.setStyleSheet(u'QScrollBar{background-color: transparent;\n'
+        #                                                   'border-top-right-radius: 0px;\n'
+        #                                                   'border-bottom-right-radius: 6px}'
+        #                                                   'QScrollBar::handle:vertical {background-color: rgb(136,136,136);\n'
+        #                                                   'border-radius: 4px; margin: 4px}'
+        #                                                   'QScrollBar::add-line:vertical {border: none; background: none}'
+        #                                                   'QScrollBar::sub-line:vertical {border: none; background: none}'
+        #                                                   'QScrollBar::sub-page:vertical {background: transparent}'
+        #                                                   'QScrollBar::add-page:vertical {background: transparent}')
+        # self.horizontal_scroll_bar = CQScrollBar2(parent=self.parent(), orientation='h')
+        # self.parent().sizeChanged.connect(lambda: self.set_scroll_bar_parameters())
 
-        self.verticalScrollBar().valueChanged.connect(
-            lambda: self.vertical_scroll_bar.scroll_bar.setValue(self.verticalScrollBar().value()))
-        self.horizontalScrollBar().valueChanged.connect(
-            lambda: self.horizontal_scroll_bar.scroll_bar.setValue(self.horizontalScrollBar().value()))
-        self.vertical_scroll_bar.scroll_bar.valueChanged.connect(
-            lambda: self.verticalScrollBar().setValue(self.vertical_scroll_bar.scroll_bar.value()))
-        self.horizontal_scroll_bar.scroll_bar.valueChanged.connect(
-            lambda: self.horizontalScrollBar().setValue(self.horizontal_scroll_bar.scroll_bar.value()))
+        # self.verticalScrollBar().valueChanged.connect(
+        #     lambda: self.vertical_scroll_bar.scroll_bar.setValue(self.verticalScrollBar().value()))
+        # self.horizontalScrollBar().valueChanged.connect(
+        #     lambda: self.horizontal_scroll_bar.scroll_bar.setValue(self.horizontalScrollBar().value()))
+        # self.vertical_scroll_bar.scroll_bar.valueChanged.connect(
+        #     lambda: self.verticalScrollBar().setValue(self.vertical_scroll_bar.scroll_bar.value()))
+        # self.horizontal_scroll_bar.scroll_bar.valueChanged.connect(
+        #     lambda: self.horizontalScrollBar().setValue(self.horizontal_scroll_bar.scroll_bar.value()))
 
-    def set_scroll_bar_parameters(self):
-        self.vertical_scroll_bar.setGeometry(self.parent().width() - 16,
-                                             0, 16, self.geometry().height())
-        self.horizontal_scroll_bar.setGeometry(0, self.parent().height() - 16, self.parent().width(),
-                                               16)
-        self.vertical_scroll_bar.scroll_bar.setPageStep(self.verticalScrollBar().pageStep())
-        self.vertical_scroll_bar.scroll_bar.setRange(0, self.verticalScrollBar().maximum())
-        self.horizontal_scroll_bar.scroll_bar.setPageStep(self.horizontalScrollBar().pageStep())
-        self.horizontal_scroll_bar.scroll_bar.setRange(0, self.horizontalScrollBar().maximum())
-
-        self.horizontal_scroll_bar.scroll_bar.setValue(self.horizontalScrollBar().maximum() / 2)
+    # def set_scroll_bar_parameters(self):
+    #     self.vertical_scroll_bar.setGeometry(self.parent().width() - 16,
+    #                                          0, 16, self.geometry().height())
+    #     self.horizontal_scroll_bar.setGeometry(0, self.parent().height() - 16, self.parent().width(),
+    #                                            16)
+    #     self.vertical_scroll_bar.scroll_bar.setPageStep(self.verticalScrollBar().pageStep())
+    #     self.vertical_scroll_bar.scroll_bar.setRange(0, self.verticalScrollBar().maximum())
+    #     self.horizontal_scroll_bar.scroll_bar.setPageStep(self.horizontalScrollBar().pageStep())
+    #     self.horizontal_scroll_bar.scroll_bar.setRange(0, self.horizontalScrollBar().maximum())
+    #
+    #     self.horizontal_scroll_bar.scroll_bar.setValue(self.horizontalScrollBar().maximum() / 2)
 
     def wheelEvent(self, event):
         self.viewer_widget.nav_btns_on_off()
-        if event.angleDelta().x():
-            if self.vertical_scroll_bar.isHidden():
-                self.vertical_scroll_bar.show_animate()
-        if event.angleDelta().y():
-            if self.horizontal_scroll_bar.isHidden():
-                self.horizontal_scroll_bar.show_animate()
+        # if event.angleDelta().x():
+        #     if self.vertical_scroll_bar.isHidden():
+        #         self.vertical_scroll_bar.show_animate()
+        # if event.angleDelta().y():
+        #     if self.horizontal_scroll_bar.isHidden():
+        #         self.horizontal_scroll_bar.show_animate()
         super().wheelEvent(event)
 
-    def showEvent(self, event):
-        super().showEvent(event)
-        self.set_scroll_bar_parameters()
+    # def showEvent(self, event):
+    #     super().showEvent(event)
+    #     self.set_scroll_bar_parameters()
 
-    def mouseMoveEvent(self, event):
-        if self.horizontal_scroll_bar:
-            if self.horizontal_scroll_bar.isHidden():
-                if event.pos().x() > 0:
-                    if self.viewport().rect().height() - 14 < event.pos().y() < self.viewport().rect().height():
-                        self.horizontal_scroll_bar.show_animate()
-        if self.vertical_scroll_bar:
-            if self.vertical_scroll_bar.isHidden():
-                if event.pos().y() > 0:
-                    if self.viewport().rect().width() - 14 < event.pos().x() < self.viewport().rect().width():
-                        self.vertical_scroll_bar.show_animate()
-        super().mouseMoveEvent(event)
+    # def mouseMoveEvent(self, event):
+    #     if self.horizontal_scroll_bar:
+    #         if self.horizontal_scroll_bar.isHidden():
+    #             if event.pos().x() > 0:
+    #                 if self.viewport().rect().height() - 14 < event.pos().y() < self.viewport().rect().height():
+    #                     self.horizontal_scroll_bar.show_animate()
+    #     if self.vertical_scroll_bar:
+    #         if self.vertical_scroll_bar.isHidden():
+    #             if event.pos().y() > 0:
+    #                 if self.viewport().rect().width() - 14 < event.pos().x() < self.viewport().rect().width():
+    #                     self.vertical_scroll_bar.show_animate()
+    #     super().mouseMoveEvent(event)
 
 
 
@@ -3886,3 +3915,7 @@ class PdfPreview(QWidget):
     def select_page(self):
         self.viewer.nav.jump(self.page_number, QPoint(), self.viewer.nav.currentZoom())
         self.viewer.nav_btns_on_off()
+
+
+
+

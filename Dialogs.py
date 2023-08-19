@@ -584,8 +584,9 @@ class DocViewDialog(QDialog):
                 bytes_format=True,
                 buffer_device=self.device,
                 window_instance=self)
-            if not event.isSet():
+            if not event.is_set():
                 if download_result:
+                    self.pdf_view.delete_document()
                     self.downloaded = True
                     self.dialog.mainFileViewStackedWidget.setCurrentIndex(1)
                     self.pdf_view.delete_btn.hide()
@@ -770,8 +771,7 @@ class DocViewDialog(QDialog):
         if self.main_file_path:
             self.uploading_main_file = ProjectMainFile(cypher=self.doc_info['document_cypher'],
                                                        doc_id=self.doc_info['doc_id'],
-                                                       project_name=self.main_window.current_project_data_dict[
-                                                           'project_name'],
+                                                       project_id=self.main_window.current_project_data_dict['id'],
                                                        user_id=self.main_window.logged_user_data['user_id'],
                                                        revision=rev, version=ver)
         if self.zipped_archive_file_path:
@@ -802,7 +802,6 @@ class DocViewDialog(QDialog):
                                                                       self.main_window.ui.statusLabel2)
                 if upload_result:
                     main_file_object.insert_data_to_db(self.main_window.session)
-                    main_file_object.get_id(self.main_window.session)
                     sup_doc = None
                     sup_archive = None
                     local_addresses_list = []
