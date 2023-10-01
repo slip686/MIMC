@@ -187,16 +187,16 @@ class Request:
         return {"content": response.content, "code": response.status_code}
 
     def unread_messages(self, user_id):
-        response = self.session.get(f'{Request.HOST}/messages/{user_id}')
+        response = self.session.get(f'{Request.HOST}/messages/new/{user_id}')
         if response.status_code == 200:
             return {"content": response.json(), "code": response.status_code}
 
-    def get_old_messages(self, user_id):
-        response = self.session.get(f'{Request.HOST}/messages/{user_id}/offset')
-        return {"content": response.json(), "code": response.status_code}
+    # def get_old_messages(self, user_id):
+    #     response = self.session.get(f'{Request.HOST}/messages/{user_id}/offset')
+    #     return {"content": response.json(), "code": response.status_code}
 
-    def get_ten_old_messages(self, user_id):
-        response = self.session.get(f'{Request.HOST}/messages/{user_id}/last_ten')
+    def get_ten_old_messages(self, user_id, offset=None):
+        response = self.session.get(f'{Request.HOST}/messages/old/{user_id}?offset={offset}')
         return {"content": response.json(), "code": response.status_code}
 
     def add_doc(self, data):
@@ -231,14 +231,19 @@ class Request:
 
     def add_main_file(self, data):
         headers = {'Content-Type': 'application/json'}
-        print(data)
         response = self.session.post(f'{Request.HOST}/add_main_file', headers=headers, json=data)
-        print('poop4')
         return {"content": response.json(), "code": response.status_code}
 
     def add_support_file(self, data):
         headers = {'Content-Type': 'application/json'}
         response = self.session.post(f'{Request.HOST}/add_support_file', headers=headers, json=data)
         return {"content": response.json(), "code": response.status_code}
+
+    def restore_password(self, data):
+        headers = {'Content-Type': 'application/json'}
+        response = self.session.put(f'{Request.HOST}/users/restore', headers=headers, json=data)
+        return {"content": response.text, "code": response.status_code}
+
+
 
 

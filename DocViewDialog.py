@@ -17,11 +17,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QPalette, QPixmap, QRadialGradient, QTransform)
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QFrame, QGroupBox, QHBoxLayout, QLabel,
-    QPushButton, QSizePolicy, QSpacerItem, QStackedWidget,
-    QTabWidget, QVBoxLayout, QWidget)
+    QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
+    QStackedWidget, QTabWidget, QVBoxLayout, QWidget)
 
-from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, CQScrollArea, CQWidget,
-    QCustomSlideFrame, QCustomSlideFrame3, QCustomTitleBar)
+from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, CQWidget, QCustomSlideFrame,
+    QCustomSlideFrame3, QCustomTitleBar)
 import resources_rc_rc
 
 class Ui_Dialog(object):
@@ -374,7 +374,7 @@ class Ui_Dialog(object):
         self.verticalLayout_6.setSpacing(0)
         self.verticalLayout_6.setObjectName(u"verticalLayout_6")
         self.verticalLayout_6.setContentsMargins(0, 0, 0, 0)
-        self.scrollArea = CQScrollArea(self.page_3)
+        self.scrollArea = QScrollArea(self.page_3)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()

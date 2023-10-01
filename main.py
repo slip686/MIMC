@@ -35,11 +35,11 @@ class MainWindow(QMainWindow):
         self.current_project_users_data = None
         self.received_notifications = None
         self.project_widget_list = []
+        self.selected_project = None
         self.ui.designDocsStructureTreeWidget.patterns_list = []
         self.ui.constructionDocsStructureTreeWidget.patterns_list = []
         self.ui.initialPermitDocsStructureTreeWidget.patterns_list = []
         self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
-        self.ui.homeBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(1))
         self.ui.flowlayout = FlowLayout(parent=self.ui.widget_4, margin=40, spacing=25)
         self.ui.scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.ui.homeBtn.hide()
@@ -70,18 +70,18 @@ class MainWindow(QMainWindow):
         self.ui.NotificationsMenu.session_object = self.session
         self.ui.NotificationsMenu.main_window = self
 
-        if get_platform() == 'win':
-            self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
-                                            "#tabWidget ::tab::!selected {background-color: rgb(136, 136, 136)}\n"
-                                            "#tabWidget ::tab::selected {border: 2px solid rgb(67, 67, 67)}\n"
-                                            "#tabWidget ::tab::selected {border-radius: 6px }\n"
-                                            "#tabWidget ::tab::selected {padding: 3px }\n"
-                                            "\n"
-                                            "\n"
-                                            "QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165, 165);}\n"
-                                            ""
-                                            u'QTabWidget::tab-bar {alignment: center;}'
-                                            u'QTabBar {color: white}')
+        # if get_platform() == 'win':
+        self.ui.tabWidget.setStyleSheet(u"#tabWidget::pane {background-color: rgb(136,136,136)}\n"
+                                        "#tabWidget ::tab::!selected {background-color: rgb(136, 136, 136)}\n"
+                                        "#tabWidget ::tab::selected {border: 2px solid rgb(67, 67, 67)}\n"
+                                        "#tabWidget ::tab::selected {border-radius: 6px }\n"
+                                        "#tabWidget ::tab::selected {padding: 3px }\n"
+                                        "\n"
+                                        "\n"
+                                        "QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165, 165);}\n"
+                                        ""
+                                        u'QTabWidget::tab-bar {alignment: center;}'
+                                        u'QTabBar {color: white}')
 
         ############################################################################################
         # getting advice
@@ -138,17 +138,18 @@ class MainWindow(QMainWindow):
                     if project_data.get("code") == 200:
                         project_data_dict = project_data.get("content")
                         project_owner = self.session.api.get_user_data(project_data_dict.get("owner_id"))
-                        self.project_widget = ProjectCard(data_dict=project_data_dict,
+                        project_widget = ProjectCard(data_dict=project_data_dict,
                                                           main_window=self,
                                                           role=user_projects.get(key))
-                        self.project_widget.project_id = project_data_dict['id']
-                        self.project_widget.projectName.setText(project_data_dict['project_name'])
-                        self.project_widget.Owner.setText(f'Owner: {project_owner.get("content").get("first_name")} '
+                        project_widget.project_id = project_data_dict['id']
+                        project_widget.projectName.setText(project_data_dict['project_name'])
+                        project_widget.Owner.setText(f'Owner: {project_owner.get("content").get("first_name")} '
                                                           f'{project_owner.get("content").get("last_name")}')
-                        self.project_widget.ConstrucionStatus.setText(project_data_dict['status'])
-                        self.project_widget.Time.setText(project_data_dict['time_limits'])
-                        self.project_widget.project_picture = project_data_dict['picture']
-                        self.project_widget_list.append(self.project_widget)
+                        project_widget.ConstrucionStatus.setText(project_data_dict['status'])
+                        project_widget.Time.setText(project_data_dict['time_limits'])
+                        project_widget.project_picture = project_data_dict['picture']
+                        self.project_widget_list.append(project_widget)
+
 
                 for i in self.project_widget_list:
                     self.ui.flowlayout.addWidget(i)
@@ -184,8 +185,6 @@ class MainWindow(QMainWindow):
                                                 name=f'picture thread {i}')
                     set_picture_thread.start()
 
-                self.ui.flowlayout.parent().parent().parent().parent().set_scroll_bar_parameters()
-
             else:
                 self.ui.statusLabel.setText('No projects yet')
 
@@ -197,7 +196,7 @@ class MainWindow(QMainWindow):
             connection = self.session.session()
 
             if connection == 'connected':
-                self.ui.mainMenuStack.slideInIdx(1)
+                self.ui.mainMenuStack.slideInIdx(2)
                 self.ui.interfaceBodyStackedWidget.setCurrentIndex(1)
                 self.ui.emailEntering.setText('')
                 self.ui.passEntering.setText('')
@@ -268,7 +267,7 @@ class MainWindow(QMainWindow):
             self.exist_user.Email = self.ui.emailRegEntering_2.text()
             key = get_key(self.exist_user.Email)
             self.exist_user.Hash_key = hash(key)
-            sending_process = Email_recover_sending(self.exist_user.Email, key)
+            sending_process = Email_recover_sending(self.exist_user.Email, key, self.session)
             sending_process.start()
             if not sending_process.correct_email:
                 self.ui.infoLabel_7.setText('Incorrect e-mail address')
@@ -276,6 +275,7 @@ class MainWindow(QMainWindow):
                 self.ui.infoLabel_7.setText('No internet connection')
             else:
                 self.ui.regStackedWidget.slideInIdx(7)
+                self.ui.emailRegEntering_2.setText('')
 
         def key_accepting():
             self.ui.infoLabel_4.setText('')
@@ -290,6 +290,7 @@ class MainWindow(QMainWindow):
             if hash(self.ui.keyEntering_2.text()) == self.exist_user.Hash_key:
                 self.ui.infoLabel_9.setText('Key accepted')
                 self.ui.regStackedWidget.slideInIdx(8)
+                self.ui.keyEntering_2.setText('')
             else:
                 self.ui.infoLabel_9.setText('Wrong key')
 
@@ -300,21 +301,6 @@ class MainWindow(QMainWindow):
                 self.ui.regStackedWidget.slideInIdx(4)
             else:
                 self.ui.infoLabel_5.setText('Passwords are mismatch, try again')
-
-        # def user_password_recover():
-        #     self.ui.infoLabel_10.setText('')
-        #     self.exist_user.password = self.ui.passEntering_3.text()
-        #     # self.recover_process = push_recover_user_data(self.exist_user.Email,
-        #     #                                               self.exist_user.password)
-        #     if self.ui.passRepeatEntering_2.text() == self.exist_user.password:
-        #         self.recover_process.start()
-        #         if self.recover_process.successful_insertion == 1:
-        #             exist_user_data_clear()
-        #             self.ui.regStackedWidget.slideInIdx(9)
-        #         else:
-        #             self.ui.infoLabel_10.setText('Something went wrong')
-        #     else:
-        #         self.ui.infoLabel_10.setText('Passwords are mismatch, try again')
 
         def new_user_data_clear():
             self.new_user = Reg_data(None, None)
@@ -863,11 +849,12 @@ class MainWindow(QMainWindow):
             docs_structure_list = self.session.api.get_structure(self.current_project_data_dict['id'],
                                                                  docs_type).get("content")
             structure_list_for_dict = []
-            for i in docs_structure_list:
-                del i[1]
-                del i[1]
-                structure_list_for_dict.append(i)
             if docs_structure_list:
+                for i in docs_structure_list:
+                    del i[1]
+                    del i[1]
+                    structure_list_for_dict.append(i)
+
                 place_id_dict = self.get_place_id_dict(structure_list_for_dict)
 
                 self.iterator = QTreeWidgetItemIterator(tree)
@@ -1193,7 +1180,7 @@ class MainWindow(QMainWindow):
         self.ui.goLoginBtn.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
 
         # regPage6 buttons
-        self.ui.restorePasswordBtn.clicked.connect(lambda: sending_recover_key())
+        self.ui.sendRestoreKeyBtn.clicked.connect(lambda: sending_recover_key())
         self.ui.cancelRegBtn_5.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
         self.ui.cancelRegBtn_5.clicked.connect(lambda: exist_user_data_clear())
 
@@ -1203,7 +1190,7 @@ class MainWindow(QMainWindow):
         self.ui.cancelRegBtn_6.clicked.connect(lambda: exist_user_data_clear())
 
         # regPage8 buttons
-        # self.ui.proceedBtn_5.clicked.connect(lambda: user_password_recover())
+        self.ui.proceedBtn_5.clicked.connect(lambda: self.user_password_recover())
         self.ui.cancelRegBtn_7.clicked.connect(lambda: self.ui.regStackedWidget.slideInIdx(0))
         self.ui.cancelRegBtn_7.clicked.connect(lambda: exist_user_data_clear())
 
@@ -1219,6 +1206,11 @@ class MainWindow(QMainWindow):
         self.ui.logOutBtn.clicked.connect(self.clear_projects)
         self.ui.loginBtn.clicked.connect(lambda: self.ui.rememberCheckBox.setChecked(False))
         self.ui.notificationsBtn.clicked.connect(lambda: self.ui.NotificationsMenu.hide_show_func())
+        self.ui.editProjectCardBtn.clicked.connect(lambda: self.edit_project_info())
+
+        # project edit page
+
+        self.ui.cancelEditProjectBtn.clicked.connect(lambda: self.ui.mainMenuStack.setCurrentIndex(2))
 
         # new project creation
         self.ui.newProjectBtn.clicked.connect(lambda: self.ui.interfaceBodyStackedWidget.slideInIdx(0))
@@ -1265,17 +1257,12 @@ class MainWindow(QMainWindow):
             else:
                 self.ui.leftSidePopUpMenu.hide_animate()
 
-        def show_or_hide_left_side_menu_for_home_btn():
-            if not self.ui.leftSidePopUpMenu.isHidden():
-                self.ui.leftSidePopUpMenu.hide()
+        # def show_or_hide_left_side_menu_for_home_btn():
+        #     if not self.ui.leftSidePopUpMenu.isHidden():
+        #         self.ui.leftSidePopUpMenu.hide()
 
-        self.ui.homeBtn.clicked.connect(lambda: self.ui.homeBtn.hide())
-        self.ui.homeBtn.clicked.connect(lambda: self.ui.leftSideMenuBtn.hide())
+        self.ui.homeBtn.clicked.connect(lambda: self.go_home())
         self.ui.leftSideMenuBtn.clicked.connect(lambda: show_or_hide_left_side_menu_for_trigger())
-        self.ui.homeBtn.clicked.connect(lambda: self.ui.newProjectBtn.show())
-        self.ui.homeBtn.clicked.connect(lambda: self.ui.editProjectCardBtn.show())
-        self.ui.homeBtn.clicked.connect(self.clear_tables)
-        self.ui.homeBtn.clicked.connect(lambda: show_or_hide_left_side_menu_for_home_btn())
         self.ui.editStructureBtn.clicked.connect(lambda: self.ui.stackedWidget_4.slideInIdx(1))
         self.ui.editStructureBtn.clicked.connect(lambda: edit_structure())
         self.ui.editStructureBtn_2.clicked.connect(lambda: self.ui.stackedWidget_5.slideInIdx(1))
@@ -1498,9 +1485,6 @@ class MainWindow(QMainWindow):
 
     def add_child(self, parent, name, place_id_list):
         child = RowElement(parent, window_object=self)
-        child.lineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.NoTextInteraction)
-        child.lineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditorInteraction)
-        child.lineEdit.setTextInteractionFlags(Qt.TextInteractionFlag.TextEditable)
         child.lineEdit.setCursorWidth(0)
         child.lineEdit.insertPlainText(name.strip())
         child.folder_name = name
@@ -1922,15 +1906,15 @@ class MainWindow(QMainWindow):
                 if table == self.ui.initDocsTableWidget:
                     pass
 
-            def prepare_table(table_object: QCustomTableWidget):
-                table_object.horizontalHeader().show_hide_scrollbars()
-                table_object.get_region()
+            # def prepare_table(table_object: QCustomTableWidget):
+            #     table_object.horizontalHeader().show_hide_scrollbars()
+            #     table_object.get_region()
                 # table_object.set_mask(corners='LR')
 
-            if self.ui.interfaceBodyStackedWidget.anim_group:
-                self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: prepare_table(table))
-            else:
-                prepare_table(table)
+            # if self.ui.interfaceBodyStackedWidget.anim_group:
+            #     self.ui.interfaceBodyStackedWidget.anim_group.finished.connect(lambda: prepare_table(table))
+            # else:
+            #     prepare_table(table)
 
             #######################################################################
             # FILL ROWS IN SIDE TABLES IF SUCH TABLES EXISTS
@@ -1966,6 +1950,34 @@ class MainWindow(QMainWindow):
             self.ui.NotificationsMenu.hide()
         if not log_out:
             self.stop = True
+
+    def go_home(self):
+        self.ui.homeBtn.hide()
+        self.ui.leftSideMenuBtn.hide()
+        self.ui.newProjectBtn.show()
+        self.ui.editProjectCardBtn.show()
+        self.clear_tables()
+        if not self.ui.leftSidePopUpMenu.isHidden():
+            self.ui.leftSidePopUpMenu.hide()
+        self.ui.interfaceBodyStackedWidget.slideInIdx(1)
+        self.ui.designDocsTableWidget.setRowCount(0)
+        self.ui.constructionDocsTableWidget.setRowCount(0)
+        self.ui.initDocsTableWidget.setRowCount(0)
+
+    def user_password_recover(self):
+        if self.ui.passEntering_3.text() == self.ui.passRepeatEntering_2.text():
+            data = {"email": self.exist_user.Email, "password": self.ui.passEntering_3.text()}
+            response = self.session.api.restore_password(data)
+            if response.get('code') == 200:
+                self.ui.regStackedWidget.slideInIdx(9)
+        else:
+            self.ui.infoLabel_10.setText('Passwords are mismatch')
+
+    def edit_project_info(self):
+        self.ui.mainMenuStack.setCurrentIndex(1)
+        pixmap = self.selected_project.label.pixmap()
+        self.ui.picture_3.setPixmap(pixmap)
+
 
 
 if __name__ == "__main__":

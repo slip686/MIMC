@@ -36,6 +36,7 @@ class AddDocDialog(QDialog):
         self.dialog.mainHeader.MIMC.setAlignment(Qt.AlignCenter)
         self.dialog.revisionLabel.hide()
         self.dialog.versionLabel.hide()
+        self.dialog.infoLabel.hide()
         self.parent_window = None
         self.dialog.mainHeader.minimizeBtn.hide()
         self.uploading_finished = False
@@ -179,10 +180,18 @@ class AddDocDialog(QDialog):
             self.document.place_id = self.place_id
 
     def set_doc_name(self):
+        if self.dialog.infoLabel.isVisible():
+            self.dialog.infoLabel.hide()
         self.document.document_name = self.dialog.docNameLineEdit.text()
+        self.dialog.docNameLineEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+                                                  "border-radius: 6px;")
 
     def set_doc_cypher(self):
+        if self.dialog.infoLabel.isVisible():
+            self.dialog.infoLabel.hide()
         self.document.document_cypher = self.dialog.cypherLineEdit.text()
+        self.dialog.cypherLineEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+                                                  "border-radius: 6px;")
 
     def set_main_doc_file_path(self):
         if self.dialog.dropMainDocFrame.suitable_format:
@@ -277,97 +286,109 @@ class AddDocDialog(QDialog):
                 insert_data_to_db(window_object=self.window_object)
 
         else:
-            valid_data = check_cypher_and_create_folders(self.parent())
-            if valid_data:
-                if self.parent().isVisible():
+            if self.document.document_name and self.document.document_cypher:
+                valid_data = check_cypher_and_create_folders(self.parent())
+                if valid_data:
+                    if self.parent().isVisible():
 
-                    # insert new doc info to db and update table
-                    #           |
-                    # run thread upload_main_file.
-                    #        /          \
-                    #   success         failure__________
-                    #       |                            \
-                    # insert main_file_info to db        show failure message
-                    #       |
-                    # get new_main_file_id
-                    #       |
-                    # run thread upload_support_files
-                    #       |           \
-                    #    success        failure_____________
-                    #       |                               \
-                    # insert support_file_info to db        show failure message
+                        # insert new doc info to db and update table
+                        #           |
+                        # run thread upload_main_file.
+                        #        /          \
+                        #   success         failure__________
+                        #       |                            \
+                        # insert main_file_info to db        show failure message
+                        #       |
+                        # get new_main_file_id
+                        #       |
+                        # run thread upload_support_files
+                        #       |           \
+                        #    success        failure_____________
+                        #       |                               \
+                        # insert support_file_info to db        show failure message
 
-                    insert_data_to_db(window_object=self.window_object)
-                    self.window_object.get_current_project_docs_dicts_list()
-                    if self.document.type == 'design':
-                        self.window_object.fill_table(doc_type='design')
-                    if self.document.type == 'construction':
-                        self.window_object.fill_table(doc_type='construction')
-                    if self.document.type == 'init_permit':
-                        self.window_object.fill_table(doc_type='init_permit')
+                        insert_data_to_db(window_object=self.window_object)
+                        self.window_object.get_current_project_docs_dicts_list()
+                        if self.document.type == 'design':
+                            self.window_object.fill_table(doc_type='design')
+                        if self.document.type == 'construction':
+                            self.window_object.fill_table(doc_type='construction')
+                        if self.document.type == 'init_permit':
+                            self.window_object.fill_table(doc_type='init_permit')
 
-                    if document.main_doc_file_path:
-                        repo_id = self.window_object.current_project_data_dict['repo_id']
-                        doc_id = None
-                        for item in self.window_object.current_project_docs_dicts_list:
-                            if document.type == item['document_type'] \
-                                    and document.document_cypher == item['document_cypher']:
-                                doc_id = item['doc_id']
+                        if document.main_doc_file_path:
+                            repo_id = self.window_object.current_project_data_dict['repo_id']
+                            doc_id = None
+                            for item in self.window_object.current_project_docs_dicts_list:
+                                if document.type == item['document_type'] \
+                                        and document.document_cypher == item['document_cypher']:
+                                    doc_id = item['doc_id']
 
-                        local_addresses_list = []
-                        uploading_file_names_list = []
+                            local_addresses_list = []
+                            uploading_file_names_list = []
 
-                        doc_types_and_folders = {'design': 'ddocs', 'construction': 'cdocs', 'init_permit': 'ipdocs'}
-                        main_file = ProjectMainFile(doc_id=doc_id, cypher=document.document_cypher,
-                                                    project_id=self.window_object.current_project_data_dict[
-                                                        'id'],
-                                                    user_id=self.window_object.logged_user_data['user_id'])
+                            doc_types_and_folders = {'design': 'ddocs', 'construction': 'cdocs', 'init_permit': 'ipdocs'}
+                            main_file = ProjectMainFile(doc_id=doc_id, cypher=document.document_cypher,
+                                                        project_id=self.window_object.current_project_data_dict[
+                                                            'id'],
+                                                        user_id=self.window_object.logged_user_data['user_id'])
 
-                        local_addresses_list.append(document.main_doc_file_path)
-                        uploading_file_names_list.append(main_file.name)
+                            local_addresses_list.append(document.main_doc_file_path)
+                            uploading_file_names_list.append(main_file.name)
 
-                        def uploading_new_files():
-                            upload_main_file_result = self.window_object.session.start_upload(repo_id,
-                                                                                              local_addresses_list,
-                                                                                              f'/{doc_types_and_folders[document.type]}/'
-                                                                                              f'{document.file_folder}',
-                                                                                              uploading_file_names_list,
-                                                                                              self.window_object.ui.statusLabel2)
-                            if upload_main_file_result:
-                                main_file.insert_data_to_db(self.window_object.session)
-                                local_addresses_list.clear()
-                                uploading_file_names_list.clear()
-                                support_zip_file = None
-                                support_doc_file = None
+                            def uploading_new_files():
+                                upload_main_file_result = self.window_object.session.start_upload(repo_id,
+                                                                                                  local_addresses_list,
+                                                                                                  f'/{doc_types_and_folders[document.type]}/'
+                                                                                                  f'{document.file_folder}',
+                                                                                                  uploading_file_names_list,
+                                                                                                  self.window_object.ui.statusLabel2)
+                                if upload_main_file_result:
+                                    main_file.insert_data_to_db(self.window_object.session)
+                                    local_addresses_list.clear()
+                                    uploading_file_names_list.clear()
+                                    support_zip_file = None
+                                    support_doc_file = None
 
-                                if document.zipped_archive_file_path:
-                                    local_addresses_list.append(document.zipped_archive_file_path)
-                                    support_zip_file = Support_File(file_type=Support_File.ARCHIVE,
-                                                                    main_file_object=main_file)
-                                    uploading_file_names_list.append(support_zip_file.name)
-                                if document.support_doc_file_path:
-                                    local_addresses_list.append(document.support_doc_file_path)
-                                    support_doc_file = Support_File(file_type=Support_File.DOC,
-                                                                    main_file_object=main_file)
-                                    uploading_file_names_list.append(support_doc_file.name)
-                                upload_support_files_result = self.window_object.session.start_upload(repo_id,
-                                                                                                      local_addresses_list,
-                                                                                                      f'/{doc_types_and_folders[document.type]}/'
-                                                                                                      f'{document.file_folder}',
-                                                                                                      uploading_file_names_list,
-                                                                                                      self.window_object.ui.statusLabel2)
-                                for result in upload_support_files_result:
-                                    if result == document.zipped_archive_file_path:
-                                        support_zip_file.insert_data_to_db(self.window_object.session)
-                                    if result == document.support_doc_file_path:
-                                        support_doc_file.insert_data_to_db(self.window_object.session)
+                                    if document.zipped_archive_file_path:
+                                        local_addresses_list.append(document.zipped_archive_file_path)
+                                        support_zip_file = Support_File(file_type=Support_File.ARCHIVE,
+                                                                        main_file_object=main_file)
+                                        uploading_file_names_list.append(support_zip_file.name)
+                                    if document.support_doc_file_path:
+                                        local_addresses_list.append(document.support_doc_file_path)
+                                        support_doc_file = Support_File(file_type=Support_File.DOC,
+                                                                        main_file_object=main_file)
+                                        uploading_file_names_list.append(support_doc_file.name)
+                                    upload_support_files_result = self.window_object.session.start_upload(repo_id,
+                                                                                                          local_addresses_list,
+                                                                                                          f'/{doc_types_and_folders[document.type]}/'
+                                                                                                          f'{document.file_folder}',
+                                                                                                          uploading_file_names_list,
+                                                                                                          self.window_object.ui.statusLabel2)
+                                    for result in upload_support_files_result:
+                                        if result == document.zipped_archive_file_path:
+                                            support_zip_file.insert_data_to_db(self.window_object.session)
+                                        if result == document.support_doc_file_path:
+                                            support_doc_file.insert_data_to_db(self.window_object.session)
 
-                        executor = ThreadPoolExecutor(max_workers=1)
-                        executor.submit(uploading_new_files)
+                            executor = ThreadPoolExecutor(max_workers=1)
+                            executor.submit(uploading_new_files)
 
-                self.close()
-            else:
-                print('Cypher already exists')
+                    self.close()
+                else:
+                    self.dialog.infoLabel.show()
+                    self.dialog.infoLabel.setText('Cypher already exists')
+            elif not self.document.document_name:
+                self.dialog.infoLabel.show()
+                self.dialog.infoLabel.setText('Document name is necessary')
+                self.dialog.docNameLineEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+                                                            "border-radius: 6px; border: 2px solid rgb(93,0,23)")
+            elif not self.document.document_cypher:
+                self.dialog.infoLabel.show()
+                self.dialog.infoLabel.setText('Document cypher is necessary')
+                self.dialog.cypherLineEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+                                                            "border-radius: 6px; border: 2px solid rgb(93,0,23)")
 
     def add_document(self):
         if not self.multiple_loading_dict:
@@ -526,6 +547,9 @@ class DocViewDialog(QDialog):
 
         self.files_sorted_info = self.get_files_sorted_info()
 
+        self.dialog.docNameLabel.setText(self.doc_info['document_name'])
+        self.dialog.docCypherLabel.setText(self.doc_info['document_cypher'])
+
         if self.files_sorted_info:
             self.latest_file = self.files_sorted_info[0]
             self.actual_revision = self.latest_file['main_file_info']['rev_num']
@@ -565,6 +589,8 @@ class DocViewDialog(QDialog):
                 self.doc_info = response.get('content')
 
         self.downloaded = False
+
+        # print(self.dialog.docRevisionComboBox.view().indica)
 
     def download_main_file(self, file, event: Event):
         if self.main_window.session.connection_success:
@@ -862,8 +888,6 @@ class DocViewDialog(QDialog):
                 self.dialog.renewMainFileBtn.setEnabled(False)
 
     def set_meta_info(self, info):
-        self.dialog.docNameLabel.setText(info['main_file_info']['document_name'])
-        self.dialog.docCypherLabel.setText(info['main_file_info']['document_cypher'])
         self.dialog.docStatusLabel.setText(f"Status: {info['main_file_info']['document_status']}")
         self.dialog.authorLabel.setText(
             f"Author: {self.get_author_name(info['main_file_info']['user_id'])}")

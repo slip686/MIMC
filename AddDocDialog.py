@@ -304,7 +304,8 @@ class Ui_Dialog(object):
         self.releaseToWorkDateEdit.setObjectName(u"releaseToWorkDateEdit")
         self.releaseToWorkDateEdit.setMinimumSize(QSize(0, 30))
         self.releaseToWorkDateEdit.setMaximumSize(QSize(16777215, 30))
-        self.releaseToWorkDateEdit.setStyleSheet(u"")
+        self.releaseToWorkDateEdit.setStyleSheet(u"background-color: rgb(184, 184, 184); color : black;\n"
+"border-radius: 6px")
         self.releaseToWorkDateEdit.setCalendarPopup(True)
 
         self.verticalLayout_8.addWidget(self.releaseToWorkDateEdit)
@@ -618,6 +619,12 @@ class Ui_Dialog(object):
 
         self.verticalLayout_18.addWidget(self.checkBox)
 
+        self.infoLabel = QLabel(self.frame_20)
+        self.infoLabel.setObjectName(u"infoLabel")
+        self.infoLabel.setStyleSheet(u"color: rgb(93,0,23)")
+
+        self.verticalLayout_18.addWidget(self.infoLabel)
+
         self.addDocBtn = QPushButton(self.frame_20)
         self.addDocBtn.setObjectName(u"addDocBtn")
         self.addDocBtn.setMinimumSize(QSize(200, 40))
@@ -680,6 +687,7 @@ class Ui_Dialog(object):
         self.supportDocFileAddressLabel.setText(QCoreApplication.translate("Dialog", u"File Address", None))
         self.deleteAdditionalDoc.setText("")
         self.checkBox.setText(QCoreApplication.translate("Dialog", u"Sign file", None))
+        self.infoLabel.setText(QCoreApplication.translate("Dialog", u"InfoLabel", None))
         self.addDocBtn.setText(QCoreApplication.translate("Dialog", u"ADD DOCUMENT", None))
     # retranslateUi
 

@@ -148,28 +148,23 @@ class Email_reg_sending:
 
 
 class Email_recover_sending:
-    def __init__(self, email_address, key):
+    def __init__(self, email_address, key, session_object):
         self.key = key
         self.email_address = email_address
         self.correct_email = 1
         self.successfully_sent = 1
         self.duplicate_email = 0
+        self.session = session_object
 
     def start(self):
-        if validate(
-                email_address=self.email_address,
-                check_format=True,
-                check_blacklist=True,
-                check_dns=True,
-                dns_timeout=10,
-                check_smtp=False,
-                smtp_debug=False):
-            # create message object instance
+        check_email = self.session.api.check_email(self.email_address)
+        if check_email.get("code") == 200:
             msg = MIMEMultipart()
 
             message = self.key
+            print(message)
 
-            # setup the parameters of the message
+            # set up the parameters of the message
             password = "lboxuldvmrxzorna"
             msg['From'] = "MIMCProjects@yandex.ru"
             msg['To'] = self.email_address
@@ -330,6 +325,8 @@ class user_connection:
                 pass
             except OSError:
                 pass
+            except AssertionError:
+                pass
         if self.api:
             self.api.close_session()
         self.set_stop_checking()
@@ -463,112 +460,6 @@ class user_connection:
         requests.post(f'{self.stash_url}/api2/repos/{repo_id}/dir/?p=/{folder}', headers=headers, data=data, )
 
 
-# class push_user_data:
-#     def __init__(self, email, password, name, last_name, company_name, TIN):
-#         self.company_name = company_name
-#         self.last_name = last_name
-#         self.name = name
-#         self.password = password
-#         self.email = email
-#         self.TIN = TIN
-#         self.successful_insertion = False
-#         self.stash_url = None
-#         self.msg_broker_url = None
-#         self.conn = None
-#         self.cur = None
-#
-#     def start(self):
-#
-#         ##############################################################
-#         # INSERT USER DATA TO DATABASE
-#         ##############################################################
-#
-#         try:
-
-#     self.conn = psycopg2.connect(user=template["user"],
-#                                  password=template["password"],
-#                                  host=template["host"],
-#                                  port=template["port"],
-#                                  database=template["database"])
-#     self.cur = self.conn.cursor()
-#     self.cur.execute("""INSERT INTO users (email, first_name, last_name, company_name,
-#                     notification_table, tin, ntfcn_channel) VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-#                      (self.email, self.name, self.last_name, self.company_name, self.email +
-#                       '_notification', self.TIN, self.email + '_msg_channel'))
-#
-#     self.cur.execute(sql.SQL("CREATE ROLE {0} LOGIN PASSWORD {1} IN GROUP viewer").format(
-#         sql.Identifier(self.email), sql.Literal(self.password)))
-#
-#     self.cur.execute(*create_notification_table(self.email))
-#     self.cur.execute(*set_ntfcn_func_and_trigger(self.email))
-#     self.conn.commit()
-#
-#     ##############################################################
-#     # REGISTRATION ON CLOUD FILE STASH
-#     ##############################################################
-#
-#     headers = {
-#         'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
-#         'Accept': 'application/json; charset=utf-8; indent=4',
-#         'Content-Type': 'application/x-www-form-urlencoded',
-#     }
-#     # print(self.email, self.password)
-#     data = f'email={self.email}&password={self.password}'
-#     requests.post(f'{self.stash_url}/api/v2.1/admin/users/', headers=headers, data=data)
-#
-#     ##############################################################
-#     # REGISTRATION ON MESSAGE BROKER
-#     ##############################################################
-#     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-#     data = {"password": self.password, "tags": "management"}
-#     response = requests.put(f'http://{self.msg_broker_url}/api/users/{self.email}',
-#                             auth=('slip686', 'ddtlbnt yjdsq'),
-#                             json=data, headers=headers)
-#     headers = {'Accept': 'application/json', 'Content-Type': 'application/json'}
-#     data = {"configure": ".*", "read": ".*", "write": ".*"}
-#     response = requests.put(f'http://{self.msg_broker_url}/api/permissions/%2F/{self.email}',
-#                             auth=('slip686', 'ddtlbnt yjdsq'),
-#                             json=data, headers=headers)
-#
-#     self.successful_insertion = True
-# except (Exception, Error) as error:
-#     print("Something wrong", error)
-# finally:
-#     if self.conn:
-#         self.cur.close()
-#         self.conn.close()
-
-
-# class push_recover_user_data:
-#     def __init__(self, email, password):
-#         self.password = password
-#         self.email = email
-#         self.successful_insertion = 0
-#
-#     def start(self):
-#         with open(get_paths()['connection_config_json']) as f:
-#             file_content = f.read()
-#             template = json.loads(file_content)
-#
-#         try:
-#             conn = psycopg2.connect(user=template["user"],
-#                                     password=template["password"],
-#                                     host=template["host"],
-#                                     port=template["port"],
-#                                     database=template["database"])
-#             cur = conn.cursor()
-#             cur.execute(sql.SQL("ALTER ROLE {0} LOGIN PASSWORD {1}").format(sql.Identifier(self.email),
-#                                                                             sql.Literal(self.password)))
-#             conn.commit()
-#             self.successful_insertion = 1
-#         except (Exception, Error) as error:
-#             print("Error while working with PostgreSQL", error)
-#         finally:
-#             if conn:
-#                 cur.close()
-#                 conn.close()
-
-
 class User:
     def __init__(self):
         self.user_id = None
@@ -661,8 +552,10 @@ class Project(User):
             'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Accept': 'application/json; indent=4',
             'Content-Type': 'application/x-www-form-urlencoded'}
-        data = f'group_name={self.name.encode("utf-8").decode("latin-1")}&group_owner='
-        requests.post(f'{self.stash_url}/api/v2.1/admin/groups/', headers=headers, data=data)
+        data = f'group_name={self.name}&group_owner='
+        response = requests.post(f'{self.stash_url}/api/v2.1/admin/groups/', headers=headers, data=data)
+        self.stash_group_id = response.json().get("id")
+
 
         #########################################################
         # SHARE LIBRARY TO A GROUP
@@ -671,26 +564,9 @@ class Project(User):
         headers = {
             'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
             'Accept': 'application/json; indent=4'}
-        group_id = self.get_stash_group_id()
-        data = {'repo_id': self.repo_id, 'share_type': 'group', 'permission': 'rw', 'share_to': [group_id]}
+        data = {'repo_id': self.repo_id, 'share_type': 'group', 'permission': 'rw', 'share_to': [self.stash_group_id]}
         requests.post(f'{self.stash_url}/api/v2.1/admin/shares/', headers=headers, data=data)
 
-    def get_stash_group_id(self):
-
-        #########################################################
-        # GET STASH GROUP ID
-        #########################################################
-
-        headers = {
-            'Authorization': 'Token 176dee369b20d91944f6a922d2d590ef8143edb7',
-            'Accept': 'application/json; indent=4'}
-        params = {'page': '1'}
-        response = requests.get(f'{self.stash_url}/api/v2.1/admin/groups/', params=params, headers=headers)
-        group_list = response.json()["groups"]
-        for i in group_list:
-            if i["name"] == self.name:
-                self.stash_group_id = i["id"]
-        return self.stash_group_id
 
     def add_user_to_stash_group(self, email):
 
@@ -707,7 +583,7 @@ class Project(User):
     def pick_picture(self):
         filename = self.picture.split("/")[-1]
         image = Image.open(self.picture)
-        image = image.resize((410, 250), Image.ANTIALIAS)
+        image = image.resize((410, 250), Image.Resampling.LANCZOS)
         ops = platform.platform()[:3].lower()
         filepath = None
         if ops == 'mac':

@@ -595,7 +595,8 @@ border-radius: 3px</string>
                      </size>
                     </property>
                     <property name="styleSheet">
-                     <string notr="true"/>
+                     <string notr="true">background-color: rgb(184, 184, 184); color : black;
+border-radius: 6px</string>
                     </property>
                     <property name="calendarPopup">
                      <bool>true</bool>
@@ -1255,6 +1256,16 @@ border-radius: 3px</string>
                    <widget class="QCheckBox" name="checkBox">
                     <property name="text">
                      <string>Sign file</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QLabel" name="infoLabel">
+                    <property name="styleSheet">
+                     <string notr="true">color: rgb(93,0,23)</string>
+                    </property>
+                    <property name="text">
+                     <string>InfoLabel</string>
                     </property>
                    </widget>
                   </item>
