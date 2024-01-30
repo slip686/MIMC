@@ -8,7 +8,7 @@ a = Analysis(
     ['main.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('/Users/slip686/Documents/PROJECTS/Exon6/data/config.py', 'data')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -19,9 +19,6 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
-a.datas += [('data/connection_config.json','/Users/slip686/Desktop/Exon6/data/connection_config.json', "DATA"),
-('data/MIMC-LogoEng-Main-RGB_PNG.png','/Users/slip686/Desktop/Exon6/data/MIMC-LogoEng-Main-RGB_PNG.png', "DATA"),
-('data/resources_rc.qrc','/Users/slip686/Desktop/Exon6/data/resources_rc.qrc', "DATA")]
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(

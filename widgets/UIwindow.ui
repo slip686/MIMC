@@ -74,7 +74,7 @@ QPushButton:pressed {
      <number>0</number>
     </property>
     <item>
-     <widget class="QCustomTitleBar" name="mainHeader" native="true">
+     <widget class="TitleBar" name="mainHeader" native="true">
       <property name="enabled">
        <bool>true</bool>
       </property>
@@ -101,9 +101,9 @@ QPushButton:pressed {
      </widget>
     </item>
     <item>
-     <widget class="QCustomStackedWidget" name="mainMenuStack">
+     <widget class="StackedWidget" name="mainMenuStack">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="loginMenu">
        <layout class="QHBoxLayout" name="horizontalLayout_6">
@@ -212,7 +212,7 @@ QPushButton:pressed {
                        <string/>
                       </property>
                       <property name="pixmap">
-                       <pixmap resource="resources_rc.qrc">:/icon/data/MIMC-LogoEng-Main-RGB_PNG.png</pixmap>
+                       <pixmap resource="custom_widgets/resources/resources_rc.qrc">:/logo/logo.png</pixmap>
                       </property>
                       <property name="scaledContents">
                        <bool>true</bool>
@@ -226,7 +226,7 @@ QPushButton:pressed {
                </widget>
               </item>
               <item alignment="Qt::AlignHCenter">
-               <widget class="QCustomStackedWidget" name="regStackedWidget">
+               <widget class="StackedWidget" name="regStackedWidget">
                 <property name="styleSheet">
                  <string notr="true"/>
                 </property>
@@ -2928,7 +2928,7 @@ QDateEdit::down-arrow {
                            </widget>
                           </item>
                           <item alignment="Qt::AlignHCenter">
-                           <widget class="CQLineEdit" name="lineEdit_20">
+                           <widget class="SingleLineEdit" name="lineEdit_20">
                             <property name="minimumSize">
                              <size>
                               <width>270</width>
@@ -5122,7 +5122,7 @@ border-radius: 6px</string>
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset resource="resources_rc.qrc">
+                       <iconset resource="custom_widgets/resources/resources_rc.qrc">
                         <normaloff>:/icon/icons/home.svg</normaloff>:/icon/icons/home.svg</iconset>
                       </property>
                       <property name="iconSize">
@@ -5160,7 +5160,7 @@ border-radius: 6px</string>
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset resource="resources_rc.qrc">
+                       <iconset resource="custom_widgets/resources/resources_rc.qrc">
                         <normaloff>:/icon/icons/list.svg</normaloff>:/icon/icons/list.svg</iconset>
                       </property>
                       <property name="iconSize">
@@ -5262,7 +5262,7 @@ border-radius: 6px</string>
                            <string/>
                           </property>
                           <property name="icon">
-                           <iconset resource="resources_rc.qrc">
+                           <iconset resource="custom_widgets/resources/resources_rc.qrc">
                             <normaloff>:/icon/icons/file-plus.svg</normaloff>:/icon/icons/file-plus.svg</iconset>
                           </property>
                           <property name="iconSize">
@@ -5297,7 +5297,7 @@ border-radius: 6px</string>
                            <string/>
                           </property>
                           <property name="icon">
-                           <iconset resource="resources_rc.qrc">
+                           <iconset resource="custom_widgets/resources/resources_rc.qrc">
                             <normaloff>:/icon/icons/edit-2.svg</normaloff>:/icon/icons/edit-2.svg</iconset>
                           </property>
                           <property name="iconSize">
@@ -5437,7 +5437,7 @@ border-radius: 6px</string>
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset resource="resources_rc.qrc">
+                       <iconset resource="custom_widgets/resources/resources_rc.qrc">
                         <normaloff>:/icon/icons/user.svg</normaloff>:/icon/icons/user.svg</iconset>
                       </property>
                       <property name="iconSize">
@@ -5469,7 +5469,7 @@ border-radius: 6px</string>
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset resource="resources_rc.qrc">
+                       <iconset resource="custom_widgets/resources/resources_rc.qrc">
                         <normaloff>:/icon/icons/bell.svg</normaloff>:/icon/icons/bell.svg</iconset>
                       </property>
                       <property name="iconSize">
@@ -5507,7 +5507,7 @@ border-radius: 6px</string>
                        <string/>
                       </property>
                       <property name="icon">
-                       <iconset resource="resources_rc.qrc">
+                       <iconset resource="custom_widgets/resources/resources_rc.qrc">
                         <normaloff>:/icon/icons/log-out.svg</normaloff>:/icon/icons/log-out.svg</iconset>
                       </property>
                       <property name="iconSize">
@@ -5585,7 +5585,7 @@ border-radius: 6px</string>
                <number>0</number>
               </property>
               <item>
-               <widget class="QCustomSlideFrame" name="leftSidePopUpMenu">
+               <widget class="SlideFrame" name="leftSidePopUpMenu">
                 <property name="enabled">
                  <bool>true</bool>
                 </property>
@@ -5636,7 +5636,7 @@ border-radius: 6px</string>
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QCustomStackedWidget" name="stackedWidget_3">
+                  <widget class="StackedWidget" name="stackedWidget_3">
                    <property name="currentIndex">
                     <number>2</number>
                    </property>
@@ -5740,7 +5740,7 @@ border-radius: 6px</string>
                             </widget>
                            </item>
                            <item alignment="Qt::AlignRight">
-                            <widget class="QCustomStackedWidget" name="stackedWidget_4">
+                            <widget class="StackedWidget" name="stackedWidget_4">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -5819,7 +5819,7 @@ border-radius: 6px</string>
                                      <string/>
                                     </property>
                                     <property name="icon">
-                                     <iconset resource="resources_rc.qrc">
+                                     <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                       <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                     </property>
                                     <property name="iconSize">
@@ -5859,7 +5859,7 @@ border-radius: 6px</string>
                                       <number>0</number>
                                      </property>
                                      <item>
-                                      <widget class="CQLineEdit" name="lineEdit_5">
+                                      <widget class="SingleLineEdit" name="lineEdit_5">
                                        <property name="sizePolicy">
                                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                          <horstretch>0</horstretch>
@@ -5923,7 +5923,7 @@ border-radius: 6px</string>
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -5963,7 +5963,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/edit-2.svg</normaloff>:/icon/icons/edit-2.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -6049,7 +6049,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/folder-plus.svg</normaloff>:/icon/icons/folder-plus.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -6123,7 +6123,7 @@ border-radius: 6px</string>
                              <number>0</number>
                             </property>
                             <item>
-                             <widget class="CQTreeWidget" name="designDocsStructureTreeWidget">
+                             <widget class="Tree" name="designDocsStructureTreeWidget">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                                 <horstretch>0</horstretch>
@@ -6568,7 +6568,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                             </widget>
                            </item>
                            <item alignment="Qt::AlignRight">
-                            <widget class="QCustomStackedWidget" name="stackedWidget_5">
+                            <widget class="StackedWidget" name="stackedWidget_5">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -6645,7 +6645,7 @@ QScrollBar::sub-line:vertical {border: none; background: none}
                                      <string/>
                                     </property>
                                     <property name="icon">
-                                     <iconset resource="resources_rc.qrc">
+                                     <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                       <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                     </property>
                                     <property name="iconSize">
@@ -6685,7 +6685,7 @@ border-radius: 6px</string>
                                       <number>0</number>
                                      </property>
                                      <item>
-                                      <widget class="CQLineEdit" name="lineEdit_6">
+                                      <widget class="SingleLineEdit" name="lineEdit_6">
                                        <property name="sizePolicy">
                                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                          <horstretch>0</horstretch>
@@ -6749,7 +6749,7 @@ border-radius: 6px</string>
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -6789,7 +6789,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/edit-2.svg</normaloff>:/icon/icons/edit-2.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -6875,7 +6875,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/folder-plus.svg</normaloff>:/icon/icons/folder-plus.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -6940,7 +6940,7 @@ border-radius: 6px</string>
                              <number>0</number>
                             </property>
                             <item>
-                             <widget class="CQTreeWidget" name="constructionDocsStructureTreeWidget">
+                             <widget class="Tree" name="constructionDocsStructureTreeWidget">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                 <horstretch>0</horstretch>
@@ -7194,7 +7194,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                             </widget>
                            </item>
                            <item alignment="Qt::AlignRight">
-                            <widget class="QCustomStackedWidget" name="stackedWidget_6">
+                            <widget class="StackedWidget" name="stackedWidget_6">
                              <property name="sizePolicy">
                               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                <horstretch>0</horstretch>
@@ -7273,7 +7273,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                      <string/>
                                     </property>
                                     <property name="icon">
-                                     <iconset resource="resources_rc.qrc">
+                                     <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                       <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                     </property>
                                     <property name="iconSize">
@@ -7313,7 +7313,7 @@ border-radius: 6px</string>
                                       <number>0</number>
                                      </property>
                                      <item>
-                                      <widget class="CQLineEdit" name="lineEdit_7">
+                                      <widget class="SingleLineEdit" name="lineEdit_7">
                                        <property name="sizePolicy">
                                         <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
                                          <horstretch>0</horstretch>
@@ -7377,7 +7377,7 @@ border-radius: 6px</string>
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -7417,7 +7417,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/edit-2.svg</normaloff>:/icon/icons/edit-2.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -7503,7 +7503,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/plus-circle.svg</normaloff>:/icon/icons/plus-circle.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -7568,7 +7568,7 @@ border-radius: 6px</string>
                              <number>0</number>
                             </property>
                             <item>
-                             <widget class="CQTreeWidget" name="initialPermitDocsStructureTreeWidget">
+                             <widget class="Tree" name="initialPermitDocsStructureTreeWidget">
                               <property name="sizePolicy">
                                <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                                 <horstretch>0</horstretch>
@@ -7893,7 +7893,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                   </widget>
                  </item>
                  <item alignment="Qt::AlignRight">
-                  <widget class="CQSizeGrip" name="leftSlideMenuFrame">
+                  <widget class="ResizeGrip" name="leftSlideMenuFrame">
                    <property name="minimumSize">
                     <size>
                      <width>3</width>
@@ -7949,7 +7949,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                   <number>0</number>
                  </property>
                  <item>
-                  <widget class="QCustomStackedWidget" name="interfaceBodyStackedWidget">
+                  <widget class="StackedWidget" name="interfaceBodyStackedWidget">
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                      <horstretch>0</horstretch>
@@ -7986,7 +7986,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                       <number>6</number>
                      </property>
                      <item>
-                      <widget class="QCustomStackedWidget" name="newProjectStackedWidget">
+                      <widget class="StackedWidget" name="newProjectStackedWidget">
                        <property name="currentIndex">
                         <number>1</number>
                        </property>
@@ -8198,7 +8198,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                                       </widget>
                                      </item>
                                      <item alignment="Qt::AlignHCenter">
-                                      <widget class="CQLineEdit" name="lineEdit_4">
+                                      <widget class="SingleLineEdit" name="lineEdit_4">
                                        <property name="minimumSize">
                                         <size>
                                          <width>270</width>
@@ -8642,10 +8642,7 @@ QScrollBar::sub-line:horizontal {border: none; background: none}</string>
                          <item>
                           <widget class="QWidget" name="widget_6" native="true">
                            <property name="styleSheet">
-                            <string notr="true">
-
-
-</string>
+                            <string notr="true"/>
                            </property>
                            <layout class="QVBoxLayout" name="verticalLayout_39">
                             <property name="leftMargin">
@@ -9716,7 +9713,7 @@ QComboBox::down-arrow {
                                <string>BACK</string>
                               </property>
                               <property name="icon">
-                               <iconset resource="resources_rc.qrc">
+                               <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                 <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                               </property>
                               <property name="iconSize">
@@ -9769,8 +9766,8 @@ QComboBox::down-arrow {
                          <rect>
                           <x>0</x>
                           <y>0</y>
-                          <width>612</width>
-                          <height>674</height>
+                          <width>100</width>
+                          <height>30</height>
                          </rect>
                         </property>
                         <property name="sizePolicy">
@@ -9796,7 +9793,7 @@ QComboBox::down-arrow {
                           <number>0</number>
                          </property>
                          <item>
-                          <widget class="CQWidget" name="widget_4" native="true">
+                          <widget class="ClickableWidget" name="widget_4" native="true">
                            <property name="sizePolicy">
                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                              <horstretch>0</horstretch>
@@ -10033,7 +10030,7 @@ QSplitter::handle:horizontal {border-radius: 3px; background-color: rgb(165, 165
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -10073,7 +10070,7 @@ border-radius: 6px</string>
                                          <number>0</number>
                                         </property>
                                         <item>
-                                         <widget class="CQLineEdit" name="searchDocsLine">
+                                         <widget class="SingleLineEdit" name="searchDocsLine">
                                           <property name="enabled">
                                            <bool>true</bool>
                                           </property>
@@ -10126,7 +10123,7 @@ border-radius: 6px</string>
                                            <string/>
                                           </property>
                                           <property name="icon">
-                                           <iconset resource="resources_rc.qrc">
+                                           <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                             <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                           </property>
                                           <property name="iconSize">
@@ -10169,7 +10166,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/plus-circle.svg</normaloff>:/icon/icons/plus-circle.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -10207,7 +10204,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/more-vertical.svg</normaloff>:/icon/icons/more-vertical.svg</iconset>
                                  </property>
                                 </widget>
@@ -10243,7 +10240,7 @@ border-radius: 6px</string>
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QCustomTableWidget" name="designDocsTableWidget">
+                                <widget class="Table" name="designDocsTableWidget">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                    <horstretch>0</horstretch>
@@ -10477,7 +10474,7 @@ border-bottom-right-radius: 6px;
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -10517,7 +10514,7 @@ border-radius: 6px</string>
                                          <number>0</number>
                                         </property>
                                         <item>
-                                         <widget class="CQLineEdit" name="searchDocsLine_2">
+                                         <widget class="SingleLineEdit" name="searchDocsLine_2">
                                           <property name="enabled">
                                            <bool>true</bool>
                                           </property>
@@ -10570,7 +10567,7 @@ border-radius: 6px</string>
                                            <string/>
                                           </property>
                                           <property name="icon">
-                                           <iconset resource="resources_rc.qrc">
+                                           <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                             <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                           </property>
                                           <property name="iconSize">
@@ -10613,7 +10610,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/plus-circle.svg</normaloff>:/icon/icons/plus-circle.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -10651,7 +10648,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/more-vertical.svg</normaloff>:/icon/icons/more-vertical.svg</iconset>
                                  </property>
                                 </widget>
@@ -10684,7 +10681,7 @@ border-radius: 6px</string>
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QCustomTableWidget" name="constructionDocsTableWidget">
+                                <widget class="Table" name="constructionDocsTableWidget">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                    <horstretch>0</horstretch>
@@ -10902,7 +10899,7 @@ alternate-background-color: rgb(148, 148, 148);</string>
                                         <string/>
                                        </property>
                                        <property name="icon">
-                                        <iconset resource="resources_rc.qrc">
+                                        <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                          <normaloff>:/icon/icons/search.svg</normaloff>:/icon/icons/search.svg</iconset>
                                        </property>
                                        <property name="iconSize">
@@ -10942,7 +10939,7 @@ border-radius: 6px</string>
                                          <number>0</number>
                                         </property>
                                         <item>
-                                         <widget class="CQLineEdit" name="searchDocsLine_3">
+                                         <widget class="SingleLineEdit" name="searchDocsLine_3">
                                           <property name="enabled">
                                            <bool>true</bool>
                                           </property>
@@ -10995,7 +10992,7 @@ border-radius: 6px</string>
                                            <string/>
                                           </property>
                                           <property name="icon">
-                                           <iconset resource="resources_rc.qrc">
+                                           <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                             <normaloff>:/icon/icons/arrow-left.svg</normaloff>:/icon/icons/arrow-left.svg</iconset>
                                           </property>
                                           <property name="iconSize">
@@ -11038,7 +11035,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/plus-circle.svg</normaloff>:/icon/icons/plus-circle.svg</iconset>
                                  </property>
                                  <property name="iconSize">
@@ -11076,7 +11073,7 @@ border-radius: 6px</string>
                                   <string/>
                                  </property>
                                  <property name="icon">
-                                  <iconset resource="resources_rc.qrc">
+                                  <iconset resource="custom_widgets/resources/resources_rc.qrc">
                                    <normaloff>:/icon/icons/more-vertical.svg</normaloff>:/icon/icons/more-vertical.svg</iconset>
                                  </property>
                                 </widget>
@@ -11109,7 +11106,7 @@ border-radius: 6px</string>
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QCustomTableWidget" name="initDocsTableWidget">
+                                <widget class="Table" name="initDocsTableWidget">
                                  <property name="sizePolicy">
                                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                                    <horstretch>0</horstretch>
@@ -11282,7 +11279,7 @@ alternate-background-color: rgb(148, 148, 148);</string>
            </widget>
           </item>
           <item>
-           <widget class="CQSizeGrip2" name="sizeGrip">
+           <widget class="ResizeGrip2" name="sizeGrip">
             <property name="minimumSize">
              <size>
               <width>20</width>
@@ -11308,77 +11305,77 @@ alternate-background-color: rgb(148, 148, 148);</string>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>QCustomTitleBar</class>
+   <class>TitleBar</class>
    <extends>QWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.title_bar.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QCustomSlideFrame</class>
+   <class>SlideFrame</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.sliding_frame.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>QCustomSlideFrame3</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.sliding_frame.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CQWidget</class>
+   <class>ClickableWidget</class>
    <extends>QWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.clickable_qwidget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CQLineEdit</class>
+   <class>SingleLineEdit</class>
    <extends>QLineEdit</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.text_editors.h</header>
   </customwidget>
   <customwidget>
-   <class>CQSizeGrip</class>
+   <class>ResizeGrip</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.resize_grips.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CQSizeGrip2</class>
+   <class>ResizeGrip2</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.resize_grips.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>QCustomStackedWidget</class>
+   <class>StackedWidget</class>
    <extends>QStackedWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.stacked_widget.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
-   <class>CQTreeWidget</class>
+   <class>Tree</class>
    <extends>QTreeWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.tree.h</header>
   </customwidget>
   <customwidget>
-   <class>QCustomTableWidget</class>
+   <class>Table</class>
    <extends>QTableWidget</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.table.h</header>
   </customwidget>
   <customwidget>
    <class>QFrameWithResizeSignal</class>
    <extends>QFrame</extends>
-   <header location="global">CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.frame_with_resize_signal.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>NotificationsSlideFrame</class>
    <extends>QFrame</extends>
-   <header>CustomWidgets.h</header>
+   <header location="global">widgets.custom_widgets.notifications_frame.h</header>
    <container>1</container>
   </customwidget>
  </customwidgets>
  <resources>
-  <include location="resources_rc.qrc"/>
+  <include location="custom_widgets/resources/resources_rc.qrc"/>
  </resources>
  <connections/>
 </ui>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'UIwindow.ui'
+## Form generated from reading UI file 'UIwindowmTaFVu.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.3.1
 ##
@@ -22,10 +22,17 @@ from PySide6.QtWidgets import (QAbstractItemView, QAbstractScrollArea, QApplicat
     QSizePolicy, QSpacerItem, QStackedWidget, QTabWidget,
     QTableWidgetItem, QTreeWidgetItem, QVBoxLayout, QWidget)
 
-from CustomWidgets import (CQLineEdit, CQSizeGrip, CQSizeGrip2, CQTreeWidget,
-    CQWidget, NotificationsSlideFrame, QCustomSlideFrame, QCustomSlideFrame3,
-    QCustomStackedWidget, QCustomTableWidget, QCustomTitleBar, QFrameWithResizeSignal)
-import resources_rc_rc
+from widgets.custom_widgets.clickable_qwidget import ClickableWidget
+from widgets.custom_widgets.frame_with_resize_signal import QFrameWithResizeSignal
+from widgets.custom_widgets.notifications_frame import NotificationsSlideFrame
+from widgets.custom_widgets.resize_grips import (ResizeGrip, ResizeGrip2)
+from widgets.custom_widgets.sliding_frame import (QCustomSlideFrame3, SlideFrame)
+from widgets.custom_widgets.stacked_widget import StackedWidget
+from widgets.custom_widgets.table import Table
+from widgets.custom_widgets.text_editors import SingleLineEdit
+from widgets.custom_widgets.title_bar import TitleBar
+from widgets.custom_widgets.tree import Tree
+import widgets.custom_widgets.resources.resources_rc
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -70,7 +77,7 @@ class Ui_MainWindow(object):
         self.verticalLayout.setSpacing(0)
         self.verticalLayout.setObjectName(u"verticalLayout")
         self.verticalLayout.setContentsMargins(0, 0, 0, 0)
-        self.mainHeader = QCustomTitleBar(self.centralwidget)
+        self.mainHeader = TitleBar(self.centralwidget)
         self.mainHeader.setObjectName(u"mainHeader")
         self.mainHeader.setEnabled(True)
         self.mainHeader.setStyleSheet(u"#mainHeader {background-color: rgb(67, 67, 67);\n"
@@ -94,7 +101,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addWidget(self.mainHeader)
 
-        self.mainMenuStack = QCustomStackedWidget(self.centralwidget)
+        self.mainMenuStack = StackedWidget(self.centralwidget)
         self.mainMenuStack.setObjectName(u"mainMenuStack")
         self.loginMenu = QWidget()
         self.loginMenu.setObjectName(u"loginMenu")
@@ -134,7 +141,7 @@ class Ui_MainWindow(object):
         self.label_4 = QLabel(self.frame_2)
         self.label_4.setObjectName(u"label_4")
         self.label_4.setMaximumSize(QSize(400, 240))
-        self.label_4.setPixmap(QPixmap(u":/icon/data/MIMC-LogoEng-Main-RGB_PNG.png"))
+        self.label_4.setPixmap(QPixmap(u":/logo/logo.png"))
         self.label_4.setScaledContents(True)
 
         self.horizontalLayout_19.addWidget(self.label_4, 0, Qt.AlignHCenter|Qt.AlignVCenter)
@@ -145,7 +152,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_9.addWidget(self.widget_3, 0, Qt.AlignHCenter)
 
-        self.regStackedWidget = QCustomStackedWidget(self.mainLoginSubContainer)
+        self.regStackedWidget = StackedWidget(self.mainLoginSubContainer)
         self.regStackedWidget.setObjectName(u"regStackedWidget")
         self.regStackedWidget.setStyleSheet(u"")
         self.loginPage = QWidget()
@@ -1177,7 +1184,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_113.addWidget(self.label_41)
 
-        self.lineEdit_20 = CQLineEdit(self.frame_72)
+        self.lineEdit_20 = SingleLineEdit(self.frame_72)
         self.lineEdit_20.setObjectName(u"lineEdit_20")
         self.lineEdit_20.setMinimumSize(QSize(270, 30))
         self.lineEdit_20.setMaximumSize(QSize(270, 30))
@@ -2187,7 +2194,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_57.setSpacing(0)
         self.horizontalLayout_57.setObjectName(u"horizontalLayout_57")
         self.horizontalLayout_57.setContentsMargins(0, 0, 0, 0)
-        self.leftSidePopUpMenu = QCustomSlideFrame(self.interfaceBodySubContainer)
+        self.leftSidePopUpMenu = SlideFrame(self.interfaceBodySubContainer)
         self.leftSidePopUpMenu.setObjectName(u"leftSidePopUpMenu")
         self.leftSidePopUpMenu.setEnabled(True)
         sizePolicy.setHeightForWidth(self.leftSidePopUpMenu.sizePolicy().hasHeightForWidth())
@@ -2201,7 +2208,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_32.setSpacing(0)
         self.horizontalLayout_32.setObjectName(u"horizontalLayout_32")
         self.horizontalLayout_32.setContentsMargins(0, 0, 0, 0)
-        self.stackedWidget_3 = QCustomStackedWidget(self.leftSidePopUpMenu)
+        self.stackedWidget_3 = StackedWidget(self.leftSidePopUpMenu)
         self.stackedWidget_3.setObjectName(u"stackedWidget_3")
         self.designDocsStructure = QWidget()
         self.designDocsStructure.setObjectName(u"designDocsStructure")
@@ -2236,7 +2243,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_29.addWidget(self.label_18)
 
-        self.stackedWidget_4 = QCustomStackedWidget(self.frame_28)
+        self.stackedWidget_4 = StackedWidget(self.frame_28)
         self.stackedWidget_4.setObjectName(u"stackedWidget_4")
         sizePolicy.setHeightForWidth(self.stackedWidget_4.sizePolicy().hasHeightForWidth())
         self.stackedWidget_4.setSizePolicy(sizePolicy)
@@ -2282,7 +2289,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_40.setSpacing(0)
         self.horizontalLayout_40.setObjectName(u"horizontalLayout_40")
         self.horizontalLayout_40.setContentsMargins(0, 0, 0, 0)
-        self.lineEdit_5 = CQLineEdit(self.frame_4)
+        self.lineEdit_5 = SingleLineEdit(self.frame_4)
         self.lineEdit_5.setObjectName(u"lineEdit_5")
         sizePolicy3 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
         sizePolicy3.setHorizontalStretch(0)
@@ -2398,7 +2405,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_45.setSpacing(0)
         self.verticalLayout_45.setObjectName(u"verticalLayout_45")
         self.verticalLayout_45.setContentsMargins(0, 0, 0, 0)
-        self.designDocsStructureTreeWidget = CQTreeWidget(self.page_7)
+        self.designDocsStructureTreeWidget = Tree(self.page_7)
         __qtreewidgetitem = QTreeWidgetItem()
         __qtreewidgetitem.setText(0, u"1");
         self.designDocsStructureTreeWidget.setHeaderItem(__qtreewidgetitem)
@@ -2565,7 +2572,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_35.addWidget(self.label_24)
 
-        self.stackedWidget_5 = QCustomStackedWidget(self.frame_31)
+        self.stackedWidget_5 = StackedWidget(self.frame_31)
         self.stackedWidget_5.setObjectName(u"stackedWidget_5")
         sizePolicy.setHeightForWidth(self.stackedWidget_5.sizePolicy().hasHeightForWidth())
         self.stackedWidget_5.setSizePolicy(sizePolicy)
@@ -2607,7 +2614,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_44.setSpacing(0)
         self.horizontalLayout_44.setObjectName(u"horizontalLayout_44")
         self.horizontalLayout_44.setContentsMargins(0, 0, 0, 0)
-        self.lineEdit_6 = CQLineEdit(self.frame_49)
+        self.lineEdit_6 = SingleLineEdit(self.frame_49)
         self.lineEdit_6.setObjectName(u"lineEdit_6")
         sizePolicy3.setHeightForWidth(self.lineEdit_6.sizePolicy().hasHeightForWidth())
         self.lineEdit_6.setSizePolicy(sizePolicy3)
@@ -2709,7 +2716,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_76.setSpacing(0)
         self.verticalLayout_76.setObjectName(u"verticalLayout_76")
         self.verticalLayout_76.setContentsMargins(0, 0, 0, 0)
-        self.constructionDocsStructureTreeWidget = CQTreeWidget(self.page_16)
+        self.constructionDocsStructureTreeWidget = Tree(self.page_16)
         __qtreewidgetitem1 = QTreeWidgetItem()
         __qtreewidgetitem1.setText(0, u"1");
         self.constructionDocsStructureTreeWidget.setHeaderItem(__qtreewidgetitem1)
@@ -2815,7 +2822,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_39.addWidget(self.label_26)
 
-        self.stackedWidget_6 = QCustomStackedWidget(self.frame_34)
+        self.stackedWidget_6 = StackedWidget(self.frame_34)
         self.stackedWidget_6.setObjectName(u"stackedWidget_6")
         sizePolicy.setHeightForWidth(self.stackedWidget_6.sizePolicy().hasHeightForWidth())
         self.stackedWidget_6.setSizePolicy(sizePolicy)
@@ -2859,7 +2866,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_55.setSpacing(0)
         self.horizontalLayout_55.setObjectName(u"horizontalLayout_55")
         self.horizontalLayout_55.setContentsMargins(0, 0, 0, 0)
-        self.lineEdit_7 = CQLineEdit(self.frame_50)
+        self.lineEdit_7 = SingleLineEdit(self.frame_50)
         self.lineEdit_7.setObjectName(u"lineEdit_7")
         sizePolicy3.setHeightForWidth(self.lineEdit_7.sizePolicy().hasHeightForWidth())
         self.lineEdit_7.setSizePolicy(sizePolicy3)
@@ -2964,7 +2971,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_79.setSpacing(0)
         self.verticalLayout_79.setObjectName(u"verticalLayout_79")
         self.verticalLayout_79.setContentsMargins(0, 0, 0, 0)
-        self.initialPermitDocsStructureTreeWidget = CQTreeWidget(self.page_20)
+        self.initialPermitDocsStructureTreeWidget = Tree(self.page_20)
         __qtreewidgetitem2 = QTreeWidgetItem()
         __qtreewidgetitem2.setText(0, u"1");
         self.initialPermitDocsStructureTreeWidget.setHeaderItem(__qtreewidgetitem2)
@@ -3085,7 +3092,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_32.addWidget(self.stackedWidget_3)
 
-        self.leftSlideMenuFrame = CQSizeGrip(self.leftSidePopUpMenu)
+        self.leftSlideMenuFrame = ResizeGrip(self.leftSidePopUpMenu)
         self.leftSlideMenuFrame.setObjectName(u"leftSlideMenuFrame")
         self.leftSlideMenuFrame.setMinimumSize(QSize(3, 0))
         self.leftSlideMenuFrame.setMaximumSize(QSize(3, 16777215))
@@ -3108,7 +3115,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_24.setSpacing(0)
         self.horizontalLayout_24.setObjectName(u"horizontalLayout_24")
         self.horizontalLayout_24.setContentsMargins(0, 0, 0, 0)
-        self.interfaceBodyStackedWidget = QCustomStackedWidget(self.interfaceBodyStackedWidgetFrame)
+        self.interfaceBodyStackedWidget = StackedWidget(self.interfaceBodyStackedWidgetFrame)
         self.interfaceBodyStackedWidget.setObjectName(u"interfaceBodyStackedWidget")
         sizePolicy.setHeightForWidth(self.interfaceBodyStackedWidget.sizePolicy().hasHeightForWidth())
         self.interfaceBodyStackedWidget.setSizePolicy(sizePolicy)
@@ -3120,7 +3127,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_40.setSpacing(6)
         self.verticalLayout_40.setObjectName(u"verticalLayout_40")
         self.verticalLayout_40.setContentsMargins(6, 6, 6, 6)
-        self.newProjectStackedWidget = QCustomStackedWidget(self.page)
+        self.newProjectStackedWidget = StackedWidget(self.page)
         self.newProjectStackedWidget.setObjectName(u"newProjectStackedWidget")
         self.page_9 = QWidget()
         self.page_9.setObjectName(u"page_9")
@@ -3187,7 +3194,7 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_53.addWidget(self.label_9)
 
-        self.lineEdit_4 = CQLineEdit(self.frame_10)
+        self.lineEdit_4 = SingleLineEdit(self.frame_10)
         self.lineEdit_4.setObjectName(u"lineEdit_4")
         self.lineEdit_4.setMinimumSize(QSize(270, 30))
         self.lineEdit_4.setMaximumSize(QSize(270, 30))
@@ -3766,14 +3773,14 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 612, 674))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 100, 30))
         sizePolicy.setHeightForWidth(self.scrollAreaWidgetContents_2.sizePolicy().hasHeightForWidth())
         self.scrollAreaWidgetContents_2.setSizePolicy(sizePolicy)
         self.verticalLayout_46 = QVBoxLayout(self.scrollAreaWidgetContents_2)
         self.verticalLayout_46.setSpacing(0)
         self.verticalLayout_46.setObjectName(u"verticalLayout_46")
         self.verticalLayout_46.setContentsMargins(0, 0, 0, 0)
-        self.widget_4 = CQWidget(self.scrollAreaWidgetContents_2)
+        self.widget_4 = ClickableWidget(self.scrollAreaWidgetContents_2)
         self.widget_4.setObjectName(u"widget_4")
         sizePolicy.setHeightForWidth(self.widget_4.sizePolicy().hasHeightForWidth())
         self.widget_4.setSizePolicy(sizePolicy)
@@ -3879,7 +3886,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_47.setSpacing(0)
         self.horizontalLayout_47.setObjectName(u"horizontalLayout_47")
         self.horizontalLayout_47.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsLine = CQLineEdit(self.frame_39)
+        self.searchDocsLine = SingleLineEdit(self.frame_39)
         self.searchDocsLine.setObjectName(u"searchDocsLine")
         self.searchDocsLine.setEnabled(True)
         self.searchDocsLine.setMinimumSize(QSize(0, 30))
@@ -3953,7 +3960,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_91.setSpacing(0)
         self.verticalLayout_91.setObjectName(u"verticalLayout_91")
         self.verticalLayout_91.setContentsMargins(0, 0, 0, 0)
-        self.designDocsTableWidget = QCustomTableWidget(self.frame_46)
+        self.designDocsTableWidget = Table(self.frame_46)
         self.designDocsTableWidget.setObjectName(u"designDocsTableWidget")
         sizePolicy.setHeightForWidth(self.designDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.designDocsTableWidget.setSizePolicy(sizePolicy)
@@ -4059,7 +4066,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_50.setSpacing(0)
         self.horizontalLayout_50.setObjectName(u"horizontalLayout_50")
         self.horizontalLayout_50.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsLine_2 = CQLineEdit(self.frame_42)
+        self.searchDocsLine_2 = SingleLineEdit(self.frame_42)
         self.searchDocsLine_2.setObjectName(u"searchDocsLine_2")
         self.searchDocsLine_2.setEnabled(True)
         self.searchDocsLine_2.setMinimumSize(QSize(0, 30))
@@ -4130,7 +4137,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_92.setSpacing(0)
         self.verticalLayout_92.setObjectName(u"verticalLayout_92")
         self.verticalLayout_92.setContentsMargins(0, 0, 0, 0)
-        self.constructionDocsTableWidget = QCustomTableWidget(self.frame_47)
+        self.constructionDocsTableWidget = Table(self.frame_47)
         self.constructionDocsTableWidget.setObjectName(u"constructionDocsTableWidget")
         sizePolicy.setHeightForWidth(self.constructionDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.constructionDocsTableWidget.setSizePolicy(sizePolicy)
@@ -4228,7 +4235,7 @@ class Ui_MainWindow(object):
         self.horizontalLayout_53.setSpacing(0)
         self.horizontalLayout_53.setObjectName(u"horizontalLayout_53")
         self.horizontalLayout_53.setContentsMargins(0, 0, 0, 0)
-        self.searchDocsLine_3 = CQLineEdit(self.frame_45)
+        self.searchDocsLine_3 = SingleLineEdit(self.frame_45)
         self.searchDocsLine_3.setObjectName(u"searchDocsLine_3")
         self.searchDocsLine_3.setEnabled(True)
         self.searchDocsLine_3.setMinimumSize(QSize(0, 30))
@@ -4299,7 +4306,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_93.setSpacing(0)
         self.verticalLayout_93.setObjectName(u"verticalLayout_93")
         self.verticalLayout_93.setContentsMargins(0, 0, 0, 0)
-        self.initDocsTableWidget = QCustomTableWidget(self.frame_48)
+        self.initDocsTableWidget = Table(self.frame_48)
         self.initDocsTableWidget.setObjectName(u"initDocsTableWidget")
         sizePolicy.setHeightForWidth(self.initDocsTableWidget.sizePolicy().hasHeightForWidth())
         self.initDocsTableWidget.setSizePolicy(sizePolicy)
@@ -4388,7 +4395,7 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_14.addWidget(self.statusLabel2)
 
-        self.sizeGrip = CQSizeGrip2(self.statusSubContainer)
+        self.sizeGrip = ResizeGrip2(self.statusSubContainer)
         self.sizeGrip.setObjectName(u"sizeGrip")
         self.sizeGrip.setMinimumSize(QSize(20, 20))
         self.sizeGrip.setMaximumSize(QSize(20, 20))
@@ -4405,7 +4412,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.mainMenuStack.setCurrentIndex(2)
+        self.mainMenuStack.setCurrentIndex(0)
         self.regStackedWidget.setCurrentIndex(0)
         self.stackedWidget.setCurrentIndex(0)
         self.stackedWidget_3.setCurrentIndex(2)

@@ -20,9 +20,14 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QDialog,
     QPushButton, QScrollArea, QSizePolicy, QSpacerItem,
     QStackedWidget, QTabWidget, QVBoxLayout, QWidget)
 
-from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, CQWidget, QCustomSlideFrame,
-    QCustomSlideFrame3, QCustomTitleBar)
-import resources_rc_rc
+from widgets.custom_widgets.drop_frames import CQFramePDFFile
+from widgets.custom_widgets.drop_frames import CQFrameZipFile
+from widgets.custom_widgets.title_bar import TitleBar
+from widgets.custom_widgets.clickable_qwidget import ClickableWidget
+from widgets.custom_widgets.sliding_frame import SlideFrame
+from widgets.custom_widgets.sliding_frame import QCustomSlideFrame2
+from widgets.custom_widgets.resources import resources_rc
+
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -59,7 +64,7 @@ class Ui_Dialog(object):
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.mainHeader = QCustomTitleBar(self.centralwidget)
+        self.mainHeader = TitleBar(self.centralwidget)
         self.mainHeader.setObjectName(u"mainHeader")
         self.mainHeader.setEnabled(True)
         self.mainHeader.setStyleSheet(u"#mainHeader {background-color: rgb(67, 67, 67);\n"
@@ -212,7 +217,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_3.addWidget(self.mainInfoFrame)
 
-        self.subWidget = CQWidget(self.mainFrame)
+        self.subWidget = ClickableWidget(self.mainFrame)
         self.subWidget.setObjectName(u"subWidget")
         self.subWidget.setStyleSheet(u"#subWidget {background-color: rgb(165, 165, 165); border-bottom-left-radius: 6px; border-bottom-right-radius: 6px}\n"
 "")
@@ -332,7 +337,7 @@ class Ui_Dialog(object):
 
         self.horizontalLayout_3.addWidget(self.mainFileViewStackedWidget)
 
-        self.worksFrame = QCustomSlideFrame(self.subWidget)
+        self.worksFrame = SlideFrame(self.subWidget)
         self.worksFrame.setObjectName(u"worksFrame")
         self.worksFrame.setMaximumSize(QSize(400, 16777215))
         self.worksFrame.setFrameShape(QFrame.StyledPanel)
@@ -384,7 +389,7 @@ class Ui_Dialog(object):
         self.verticalLayout_32.setSpacing(0)
         self.verticalLayout_32.setObjectName(u"verticalLayout_32")
         self.verticalLayout_32.setContentsMargins(10, 6, 0, 0)
-        self.widget = CQWidget(self.scrollAreaWidgetContents_2)
+        self.widget = ClickableWidget(self.scrollAreaWidgetContents_2)
         self.widget.setObjectName(u"widget")
         self.verticalLayout_33 = QVBoxLayout(self.widget)
         self.verticalLayout_33.setSpacing(0)
@@ -430,7 +435,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_33.addWidget(self.dividerDownloadContents)
 
-        self.downloadFilesBtns = QCustomSlideFrame3(self.widget)
+        self.downloadFilesBtns = QCustomSlideFrame2(self.widget)
         self.downloadFilesBtns.setObjectName(u"downloadFilesBtns")
         self.downloadFilesBtns.setMinimumSize(QSize(330, 110))
         self.downloadFilesBtns.setMaximumSize(QSize(330, 110))
@@ -541,7 +546,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_33.addWidget(self.dividerAddNewVersion)
 
-        self.uploadNewVersionFrames = QCustomSlideFrame3(self.widget)
+        self.uploadNewVersionFrames = QCustomSlideFrame2(self.widget)
         self.uploadNewVersionFrames.setObjectName(u"uploadNewVersionFrames")
         self.uploadNewVersionFrames.setMinimumSize(QSize(330, 140))
         self.uploadNewVersionFrames.setMaximumSize(QSize(330, 140))
@@ -894,7 +899,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_33.addWidget(self.dividerAddNewRevision)
 
-        self.uploadNewRevisionFrames = QCustomSlideFrame3(self.widget)
+        self.uploadNewRevisionFrames = QCustomSlideFrame2(self.widget)
         self.uploadNewRevisionFrames.setObjectName(u"uploadNewRevisionFrames")
         self.uploadNewRevisionFrames.setMinimumSize(QSize(330, 140))
         self.uploadNewRevisionFrames.setMaximumSize(QSize(330, 140))
@@ -1240,7 +1245,7 @@ class Ui_Dialog(object):
 
         self.verticalLayout_33.addWidget(self.dividerOtherActions)
 
-        self.otherActionsFrame = QCustomSlideFrame3(self.widget)
+        self.otherActionsFrame = QCustomSlideFrame2(self.widget)
         self.otherActionsFrame.setObjectName(u"otherActionsFrame")
         self.otherActionsFrame.setMinimumSize(QSize(330, 50))
         self.otherActionsFrame.setMaximumSize(QSize(330, 50))

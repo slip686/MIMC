@@ -20,8 +20,11 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QDateEdit, QDialog,
     QLineEdit, QPushButton, QSizePolicy, QStackedWidget,
     QVBoxLayout, QWidget)
 
-from CustomWidgets import (CQFramePDFFile, CQFrameZipFile, QCustomTitleBar)
-import resources_rc_rc
+from widgets.custom_widgets.drop_frames import CQFramePDFFile
+from widgets.custom_widgets.drop_frames import CQFrameZipFile
+from widgets.custom_widgets.title_bar import TitleBar
+
+from widgets.custom_widgets.resources import resources_rc
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -60,7 +63,7 @@ class Ui_Dialog(object):
         self.verticalLayout_2.setSpacing(0)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(0, 0, 0, 0)
-        self.mainHeader = QCustomTitleBar(self.centralwidget)
+        self.mainHeader = TitleBar(self.centralwidget)
         self.mainHeader.setObjectName(u"mainHeader")
         self.mainHeader.setEnabled(True)
         self.mainHeader.setStyleSheet(u"#mainHeader {background-color: rgb(67, 67, 67);\n"

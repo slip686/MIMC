@@ -1,16 +1,15 @@
+import io
 import json
+from base64 import b64encode
+from data.config import Config
 import requests
-import pickle
 from pathlib import Path
 import os
 
 
 class Request:
-    BASE_DIR = Path(__file__).parent
-    with open(BASE_DIR / "data" / "connection_config.json") as f:
-        file_content = f.read()
-        config = json.loads(file_content)
-        HOST = config["host"]
+    BASE_DIR = Path(__file__).parent.parent
+    HOST = Config.API_HOST
     COOKIE_PATH = f"{BASE_DIR}/data/session_cookie"
     USER_DATA_PATH = f"{BASE_DIR}/data/user_data.json"
 
@@ -29,45 +28,56 @@ class Request:
             return True
 
     def login(self, email=None, password=None, remember=False):
-        headers = {'Content-Type': 'application/json'}
         self.session = requests.session()
 
         if self.cookie and self.user_data:
             with open(Request.COOKIE_PATH, 'rb') as f:
-                self.session.cookies.update(pickle.load(f))
+                header_login_type = {'Authorization': 'Bearer ' + f.read().decode('UTF-8')}
+                response = self.session.get(f'{Request.HOST}/login_test', headers=header_login_type)
+                if response.status_code == 202:
+                    self.session.headers.update(header_login_type)
+                    with open(Request.USER_DATA_PATH, 'rb') as j:
+                        file_content = j.read()
+                        user_data = json.loads(file_content)
+                        return {"content": user_data, "code": response.status_code}
+                if response.status_code == 401:
+                    os.remove(Request.COOKIE_PATH)
+                    os.remove(Request.USER_DATA_PATH)
+                    return {"code": response.status_code}
+                if response.status_code == 403:
+                    return {"code": response.status_code}
 
-            with open(Request.USER_DATA_PATH, 'rb') as f:
-                file_content = f.read()
-                user_data = json.loads(file_content)
-            response = self.session.get(f'{Request.HOST}/login_test')
-            if response.status_code == 202:
-                return {"content": user_data, "code": response.status_code}
-
-        if email and password and remember:
-            response = self.session.post(f'{Request.HOST}/login', headers=headers,
-                                         json={"email": email, "password": password, "remember": remember})
-            if response.status_code == 202:
-                with open(Request.COOKIE_PATH, 'wb') as f:
-                    pickle.dump(self.session.cookies, f)
-                with open(Request.USER_DATA_PATH, 'w') as f:
-                    json.dump(response.json(), f)
-                return {"content": response.json(), "code": response.status_code}
-            if response.status_code == 401:
-                return {"code": response.status_code}
-            if response.status_code == 404:
-                return {"code": response.status_code}
 
         if email and password:
-            response = self.session.post(f'{Request.HOST}/login', headers=headers,
-                                         json={"email": email, "password": password, "remember": remember})
-            if response.status_code == 202:
-                return {"content": response.json(), "code": response.status_code}
-            if response.status_code == 401:
-                return {"code": response.status_code}
+            header_email_password = {'Content-Type': 'application/json'}
+            response = self.session.post(f'{Request.HOST}/login', headers=header_email_password,
+                             json={"email": email, "password": password})
+            if response.status_code == 200:
+                header_login_type = {'Authorization': 'Basic ' +
+                                                      b64encode(f"{email}:{password}".encode('ascii')).decode('utf-8')}
+                if not remember:
+                    response = self.session.get(f'{Request.HOST}/auth/token', headers=header_login_type,
+                                                 json={"email": email, "password": password, "remember": remember})
+                else:
+                    response = self.session.get(f'{Request.HOST}/auth/token?remember="true"', headers=header_login_type,
+                                                 json={"email": email, "password": password, "remember": remember})
+                if response.status_code == 200:
+                    self.session.headers.update({'Authorization': 'Bearer ' + response.json().get('api_token')})
+                    if remember:
+                        with open(Request.COOKIE_PATH, 'wb') as f:
+                            f.write(bytes(response.json().get('api_token').encode('UTF-8')))
+                        with open(Request.USER_DATA_PATH, 'w') as f:
+                            json.dump(response.json(), f)
+                    return {"content": response.json(), "code": response.status_code}
+                if response.status_code in (401, 404):
+                    return {'content': response.json(), 'code': response.status_code}
+                if response.status_code == 403:
+                    return {'content': response.json(), 'code': response.status_code}
             if response.status_code == 404:
-                return {"code": response.status_code}
+                return {'content': response.json(), 'code': response.status_code}
+            if response.status_code == 401:
+                return {'content': response.json(), 'code': response.status_code}
 
-    @property
     def logout(self):
         response = self.session.get(f'{Request.HOST}/logout')
         if self.cookie:
@@ -78,11 +88,13 @@ class Request:
 
     @property
     def connection_test(self):
-        response = self.session.get(f'{Request.HOST}/login_test', timeout=2)
-        return response.status_code
+        if self.session:
+            response = self.session.get(f'{Request.HOST}/login_test', timeout=2)
+            return response.status_code
 
     def close_session(self):
-        self.session.close()
+        if self.session:
+            self.session.close()
 
     def set_message_received(self, message_id):
         response = self.session.get(f'{Request.HOST}/messages/{message_id}/set_received')
@@ -121,10 +133,10 @@ class Request:
         response = self.session.get(f'{Request.HOST}/users')
         return {"content": response.json(), "code": response.status_code}
 
-    def create_project(self, data):
-        headers = {'Content-Type': 'application/json'}
-        response = self.session.post(f'{Request.HOST}/projects', headers=headers, json=data)
-        return {"content": response.content, "code": response.status_code}
+    def create_project(self, data, image_name, image_bytes_array: io.BytesIO):
+        file = {'file': (f'{image_name}', image_bytes_array.getvalue())}
+        response = self.session.post(f'{Request.HOST}/projects?args={data}', files=file)
+        return {"content": response.json(), "code": response.status_code}
 
     def get_project(self, project_id):
         response = self.session.get(f'{Request.HOST}/projects/{project_id}')
@@ -150,50 +162,46 @@ class Request:
             return {"content": response.json(), "code": response.status_code}
         return {"content": 'Not found', "code": response.status_code}
 
+
     def get_structure(self, project_id, doctype):
-        response = self.session.get(f'{Request.HOST}/projects/{project_id}/doc_structure/{doctype}')
+        response = self.session.get(f'{Request.HOST}/place/get_structure/{project_id}/{doctype}')
         if response.status_code == 200:
             return {"content": response.json(), "code": response.status_code}
         return {"content": None, "code": response.status_code}
 
-    def update_place(self, data):
-        headers = {'Content-Type': 'application/json'}
-        response = self.session.put(f'{Request.HOST}/update_place', headers=headers, json=data)
-        return {"content": response.content, "code": response.status_code}
-
-    def exclude_place(self, data):
-        headers = {'Content-Type': 'application/json'}
-        response = self.session.put(f'{Request.HOST}/exclude_place', headers=headers, json=data)
-        return {"content": response.content, "code": response.status_code}
+    def rename_place(self, place_id, new_name):
+        response = self.session.put(f'{Request.HOST}/place/rename/{place_id}/{new_name}')
+        if response.status_code == 200:
+            return {"content": response.json(), "code": response.status_code}
+        return {"content": None, "code": response.status_code}
 
     def delete_place(self, place_id):
-        headers = {'Content-Type': 'application/json'}
-        response = self.session.delete(f'{Request.HOST}/delete_place/{place_id}', headers=headers)
-        return {"content": response.content, "code": response.status_code}
+        response = self.session.delete(f'{Request.HOST}/place/del/{place_id}')
+        return response.status_code
 
-    def add_column_to_structure(self, name):
-        headers = {'Content-Type': 'application/json'}
-        response = self.session.post(f'{Request.HOST}/add_column_to_structure/{name}', headers=headers)
-        return {"content": response.content, "code": response.status_code}
+    def add_place(self, data: dict):
+        response = self.session.post(f'{Request.HOST}/place/add', json=data)
+        if response.status_code == 200:
+            return {'content': response.json(), 'code': response.status_code}
+        return {'code': response.status_code}
 
-    @property
-    def get_structure_columns_names(self):
-        response = self.session.get(f'{Request.HOST}/get_structure_columns_names')
-        return {"content": response.json(), "code": response.status_code}
-
-    def add_place(self, project_id, doctype, data):
+    def add_place_bunch_mode(self, data):
         headers = {'Content-Type': 'application/json'}
-        response = self.session.post(f'{Request.HOST}/add_place/{project_id}/{doctype}', headers=headers, json=data)
-        return {"content": response.content, "code": response.status_code}
+        response = self.session.post(f'{Request.HOST}/place/add/bunch', headers=headers, json=data)
+        if response.status_code == 200:
+            return {'content': response.json(), 'code': response.status_code}
+        return {'code': response.status_code}
+
+    def move_place(self, place_id, parent_place_id):
+        response = self.session.put(f'{Request.HOST}/place/move/{place_id}/{parent_place_id}')
+        return response.status_code
+
 
     def unread_messages(self, user_id):
         response = self.session.get(f'{Request.HOST}/messages/new/{user_id}')
         if response.status_code == 200:
             return {"content": response.json(), "code": response.status_code}
 
-    # def get_old_messages(self, user_id):
-    #     response = self.session.get(f'{Request.HOST}/messages/{user_id}/offset')
-    #     return {"content": response.json(), "code": response.status_code}
 
     def get_ten_old_messages(self, user_id, offset=None):
         response = self.session.get(f'{Request.HOST}/messages/old/{user_id}?offset={offset}')
@@ -202,6 +210,7 @@ class Request:
     def add_doc(self, data):
         headers = {'Content-Type': 'application/json'}
         response = self.session.post(f'{Request.HOST}/add_doc', headers=headers, json=data)
+        print(data)
         return {"content": response.json(), "code": response.status_code}
 
     def move_doc(self, doc_id, data):
@@ -243,6 +252,17 @@ class Request:
         headers = {'Content-Type': 'application/json'}
         response = self.session.put(f'{Request.HOST}/users/restore', headers=headers, json=data)
         return {"content": response.text, "code": response.status_code}
+
+    def get_validation_key(self, data):
+        headers = {'Content-Type': 'application/json'}
+        response = self.session.post(f'{Request.HOST}/get_key', headers=headers, json=data)
+        return {"content": response.text, "code": response.status_code}
+
+    def accept_validation_key(self, data):
+        headers = {'Content-Type': 'application/json'}
+        response = self.session.post(f'{Request.HOST}/accept_key', headers=headers, json=data)
+        return {"content": response.text, "code": response.status_code}
+
 
 
 

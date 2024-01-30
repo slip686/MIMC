@@ -5,17 +5,19 @@ from concurrent.futures import ThreadPoolExecutor
 from threading import Event, Thread
 
 from PySide6.QtCore import Qt, QBuffer, QRect, QSize, QThread, QObject, Slot, Signal, QDate, QSaveFile, QIODevice
-import resources_rc_rc
+from widgets.custom_widgets.resources import resources_rc
 from PySide6.QtGui import QMovie, QIcon, QPixmap, QPainter, QColor
 from PySide6.QtPdf import QPdfDocument
 from PySide6.QtPdfWidgets import QPdfView
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QProgressBar, QSizePolicy
-from AddDocDialog import Ui_Dialog as AddingDialog
-from CustomWidgets import PDFViewer
-from DocViewDialog import Ui_Dialog as ViewingDialog
-from query_list import *
-from core import ProjectDocument, ProjectMainFile, Support_File, get_paths
+from widgets.dialogs.AddDocDialog import Ui_Dialog as AddingDialog
+from widgets.custom_widgets.pdf_viewer import PDFViewer
+from widgets.dialogs.DocViewDialog import Ui_Dialog as ViewingDialog
+# from query_list import *
+from utils import ProjectDocument, ProjectMainFile, Support_File
+import os
 from random import randint as rand
+from utils import get_username
 from pprint import pprint
 
 
@@ -65,14 +67,14 @@ class AddDocDialog(QDialog):
                     for item in v:
                         self.document = ProjectDocument()
 
-                        place_id = []
-                        for i in range(len(k)):
-                            if isinstance(k[i], tuple):
-                                place_id.append(list(k[i]))
-                            else:
-                                place_id.append(k[i])
+                        # place_id = []
+                        # for i in range(len(k)):
+                        #     if isinstance(k[i], tuple):
+                        #         place_id.append(list(k[i]))
+                        #     else:
+                        #         place_id.append(k[i])
 
-                        self.document.place_id = place_id
+                        self.document.place_id = k
                         self.document.document_name = item['doc_name']
                         self.document.document_cypher = item['doc_cypher']
                         self.document.itn = item['ITN']
@@ -264,18 +266,18 @@ class AddDocDialog(QDialog):
             return done
 
         def insert_data_to_db(window_object):
+
             data = {"project_id": window_object.current_project_data_dict['id'],
                     "document_type": document.type,
                     "document_cypher": document.document_cypher,
                     "document_name": document.document_name,
-                    "place_id": str(document.place_id),
+                    "place_id": document.place_id,
                     "document_folder": document.file_folder,
                     "release_to_work_date": document.release_to_work_date,
                     "start_develop_date": document.start_develop_date,
                     "end_develop_date": document.end_develop_date,
                     "document_status": document.document_status,
                     "status_time_set": document.status_time_set}
-
             window_object.session.api.add_doc(data)
 
         if self.multiple_documents:
@@ -944,7 +946,7 @@ class DocViewDialog(QDialog):
             self.executor.submit(self.download_support_file, self.support_doc_to_download, self.stop_event)
 
     def save_main_file(self):
-        login = get_paths()['os_login']
+        login = get_username()
         file = QSaveFile(f"/Users/{login}/Downloads/{self.current_file_info['main_file_info']['file_name']}.pdf")
         file.open(QIODevice.WriteOnly)
         file.write(self.device.data())

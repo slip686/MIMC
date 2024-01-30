@@ -1,5 +1,0 @@
-{
-  "host":"https://exon-api.sliplab.net",
-  "stash_url": "https://cloud.sliplab.net",
-  "msg_broker_url": "messages.sliplab.net"
-}
