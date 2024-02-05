@@ -12,7 +12,6 @@ from openpyxl import load_workbook
 import schedule
 import time
 from threading import Thread
-from pathlib import Path
 
 
 class MainWindow(QMainWindow):

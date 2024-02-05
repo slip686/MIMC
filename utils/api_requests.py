@@ -68,15 +68,9 @@ class Request:
                             f.write(bytes(response.json().get('api_token').encode('UTF-8')))
                         with open(Request.USER_DATA_PATH, 'w') as f:
                             json.dump(response.json(), f)
-                    return {"content": response.json(), "code": response.status_code}
-                if response.status_code in (401, 404):
-                    return {'content': response.json(), 'code': response.status_code}
-                if response.status_code == 403:
-                    return {'content': response.json(), 'code': response.status_code}
-            if response.status_code == 404:
-                return {'content': response.json(), 'code': response.status_code}
-            if response.status_code == 401:
-                return {'content': response.json(), 'code': response.status_code}
+                #     return {"content": response.json(), "code": response.status_code}
+                # return {'content': response.json(), 'code': response.status_code}
+            return {'content': response.json(), 'code': response.status_code}
 
     def logout(self):
         response = self.session.get(f'{Request.HOST}/logout')
